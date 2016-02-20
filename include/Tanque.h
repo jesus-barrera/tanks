@@ -51,6 +51,9 @@ public:
 	// Manejar evento
 	void manejarEvento(SDL_Event& evento);
 
+	// Regresa el ancho del tanque
+	int obtenerAncho();
+
 	// Mueve el tanque a la posición indicada por x y y
 	void fijarPosicion(int x, int y);
 

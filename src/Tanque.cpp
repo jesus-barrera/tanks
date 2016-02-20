@@ -144,6 +144,10 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 
 }
 
+int Tanque::obtenerAncho() {
+	return rect.w;
+}
+
 void Tanque::fijarPosicion(int x, int y) {
 	rect.x = x;
 	rect.y = y;
@@ -157,7 +161,7 @@ void Tanque::fijarDireccion(direccion_t direccion) {
 			break;
 		case DERECHA: angulo = 90;
 			break;
-		case IZQUIERDA: angulo = -90;
+		case IZQUIERDA: angulo = 270;
 			break;
 		default: 
 			return;

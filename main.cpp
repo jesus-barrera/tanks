@@ -6,25 +6,22 @@
 #include <stdio.h>
 
 #include "include/Tanque.h"
+#include "include/Escenario.h"
 #include "include/tipos.h"
 
 using namespace std;
 
 bool inicializar();
 void cerrar();
-bool cargarTexturaSuelo();
-void renderizarSuelo();
 void establecerVistas();
 void mostrarError(string message);
 void renderizarTodo();
-bool manejarTecla(SDL_Keycode key);
 
 SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
 SDL_Window *ventana_principal;
 SDL_Renderer *renderer_principal;
-SDL_Texture *textura_suelo;
-Tanque *tanque, *t2;
+Tanque *tanque_j1, *tanque_j2;
 
 int main(int argc, char* args[]) {
 	bool salir;
@@ -38,10 +35,10 @@ int main(int argc, char* args[]) {
 					salir = true;
 				}
 
-				tanque->manejarEvento(evento);
+				tanque_j1->manejarEvento(evento);
 			}
 
-			tanque->actualizar();
+			tanque_j1->actualizar();
 			renderizarTodo();
 		} while (!salir);
 	}
@@ -79,58 +76,15 @@ bool inicializar() {
 
 				establecerVistas();
 				
-				success = cargarTexturaSuelo() && Tanque::cargarMedios();
+				success = Escenario::inicializar() && Tanque::cargarMedios();
 
-				tanque = new Tanque();
+				tanque_j1 = new Tanque();
 			}
 
 		}
 	}
 	
 	return success;
-}
-
-bool cargarTexturaSuelo() {
-	SDL_Surface* loaded_surface;
-	bool success = true;
-
-	loaded_surface = IMG_Load("media/textures/ground_1.png");
-
-	if (loaded_surface == NULL) {
-		mostrarError("Error al cargar textura");
-		success = false;
-	} else {
-		textura_suelo = SDL_CreateTextureFromSurface(renderer_principal, loaded_surface);
-
-		if (textura_suelo == NULL) {
-			mostrarError("Error al crear textura");
-			success = false;
-		}
-
-		SDL_FreeSurface(loaded_surface);
-	}	
-
-	return success;
-}
-
-void renderizarSuelo() {
-	int i, j, x_repeat, y_repeat;
-	SDL_Rect rect;
-
-	SDL_QueryTexture(textura_suelo, NULL, NULL, &rect.w, &rect.h);
-
-	x_repeat = VENTANA_ANCHO / rect.w;
-	y_repeat = VENTANA_ALTO / rect.h;
-
-	for (i = 0; i < x_repeat; i++) {
-		rect.x = i * rect.w;
-
-		for (j = 0; j < y_repeat; j++) {
-			rect.y = j * rect.h;
-			
-			SDL_RenderCopy(renderer_principal, textura_suelo, NULL, &rect);
-		}
-	}
 }
 
 void establecerVistas() {
@@ -148,17 +102,17 @@ void establecerVistas() {
 void renderizarTodo() {
 	SDL_RenderClear(renderer_principal);
 	SDL_RenderSetViewport(renderer_principal, &vista_juego);
-	renderizarSuelo();
-	tanque->renderizar();
+	Escenario::renderizarFondo();
+	Escenario::renderizarMapa();
+	tanque_j1->renderizar();
 	SDL_RenderPresent(renderer_principal);
 }
 
 void cerrar() {
-	delete(tanque);
+	delete(tanque_j1);
 	Tanque::liberarMemoria();
 
-	SDL_DestroyTexture(textura_suelo);
-	textura_suelo = NULL;
+	Escenario::liberarMemoria();
 
 	SDL_DestroyRenderer(renderer_principal);
 	renderer_principal = NULL;
