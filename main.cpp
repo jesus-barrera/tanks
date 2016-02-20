@@ -39,6 +39,7 @@ int main(int argc, char* args[]) {
 			}
 
 			tanque_j1->actualizar();
+			tanque_j2->actualizar();
 			renderizarTodo();
 		} while (!salir);
 	}
@@ -78,7 +79,10 @@ bool inicializar() {
 				
 				success = Escenario::inicializar() && Tanque::cargarMedios();
 
-				tanque_j1 = new Tanque();
+				tanque_j1 = new Tanque(0, 100);
+				tanque_j2 = new Tanque(100, 100, ABAJO);
+
+				Escenario::crearMapaAleatorio();
 			}
 
 		}
@@ -90,12 +94,12 @@ bool inicializar() {
 void establecerVistas() {
 	vista_juego.x = 0;
 	vista_juego.y = 0;
-	vista_juego.w = VENTANA_ANCHO * 0.8;
-	vista_juego.h = VENTANA_ALTO;
+	vista_juego.w = MAPA_ANCHO;
+	vista_juego.h = MAPA_ALTO;
 
-	vista_estatus.x = VENTANA_ANCHO * 0.8;
+	vista_estatus.x = vista_juego.w;
 	vista_estatus.y = 0;
-	vista_estatus.w = VENTANA_ANCHO * 0.2;
+	vista_estatus.w = VENTANA_ANCHO - vista_juego.w;
 	vista_estatus.h = VENTANA_ALTO;
 }
 
@@ -105,11 +109,13 @@ void renderizarTodo() {
 	Escenario::renderizarFondo();
 	Escenario::renderizarMapa();
 	tanque_j1->renderizar();
+	tanque_j2->renderizar();
 	SDL_RenderPresent(renderer_principal);
 }
 
 void cerrar() {
 	delete(tanque_j1);
+	delete(tanque_j2);
 	Tanque::liberarMemoria();
 
 	Escenario::liberarMemoria();

@@ -1,12 +1,10 @@
-#include <stdio.h>
 #include "../include/Tanque.h";
 
 SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
 
 void Tanque::actualizarSprite() {
-	frame_actual = mover_sprites[frame_num];
-	SDL_QueryTexture(frame_actual, NULL, NULL, &rect.w, &rect.h);
-
+	textura = mover_sprites[frame_num];
+	SDL_QueryTexture(textura, NULL, NULL, &rect.w, &rect.h);
 }
 
 void Tanque::sigFrame() {
@@ -20,8 +18,6 @@ Tanque::Tanque(int x, int y, direccion_t direccion) {
 	fijarVelocidad(0);
 	frame_num = 0;
 	actualizarSprite();
-
-	tiempo_inicio = SDL_GetTicks();
 }
 
 Tanque::~Tanque() {
@@ -29,28 +25,18 @@ Tanque::~Tanque() {
 }
 
 bool Tanque::cargarMedios() {
-	SDL_Texture *textura;
-	SDL_Surface *surface;
+	SDL_Texture *textura;	
 	char nombre_archivo[50];
-	int i;
 
-	for (i = 0; i < TQ_NUM_FRAMES_MOVER; i++) {
+	for (int i = 0; i < TQ_NUM_FRAMES_MOVER; i++) {
 		sprintf(nombre_archivo, "%s/mover_%d.png", TQ_RUTA_MEDIOS, i + 1);
 
-		surface = IMG_Load(nombre_archivo);
+		textura = cargarTextura(nombre_archivo);
 
-		if (surface == NULL) {
+		if (textura == NULL) {
 			return false;
 		} else {
-			textura = SDL_CreateTextureFromSurface(renderer_principal, surface);
-
-			if (textura == NULL) {
-				return false;
-			} else {
-				mover_sprites[i] = textura;
-			}
-
-			SDL_FreeSurface(surface);
+			mover_sprites[i] = textura;
 		}
 	}
 
@@ -69,26 +55,27 @@ void Tanque::actualizar() {
 }
 
 void Tanque::mover() {
-	int x, y;
-
-	x = rect.x;
-	y = rect.y;
+	SDL_Rect sig_rect = rect;
 
 	switch (direccion) {
-		case ARRIBA: y -= velocidad;
+		case ARRIBA: sig_rect.y -= velocidad;
 			break;
-		case ABAJO: y += velocidad;
+		case ABAJO: sig_rect.y += velocidad;
 			break;
-		case DERECHA: x += velocidad;
+		case DERECHA: sig_rect.x += velocidad;
 			break;
-		case IZQUIERDA: x -= velocidad;
+		case IZQUIERDA: sig_rect.x -= velocidad;
 			break;
 		default: ;
 	}
 
-	if ((x >= 0 && x < (VENTANA_ANCHO * 0.8 - rect.w)) && (y >= 0 && y < (VENTANA_ALTO - rect.h))) {
-		rect.x = x;
-		rect.y = y;
+	if ((sig_rect.x >= 0 && sig_rect.x < (vista_juego.w - rect.w)) && 
+		(sig_rect.y >= 0 && sig_rect.y < (vista_juego.h - rect.h)) &&
+		!Escenario::enColisionConMapa(sig_rect)) {
+		
+		rect = sig_rect;
+	} else {
+		fijarVelocidad(0);
 	}
 }
 
@@ -125,6 +112,10 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 			case SDLK_RIGHT:
 				fijarDireccion(DERECHA);
 				break;
+			case SDLK_r:
+				Escenario::crearMapaAleatorio();
+				mover = false;
+				break;
 			default :
 				mover = false;
 		}
@@ -141,11 +132,10 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 			fijarVelocidad(0);
 		}
 	}
-
 }
 
-int Tanque::obtenerAncho() {
-	return rect.w;
+SDL_Rect Tanque::obtenerRect() {
+	return rect;
 }
 
 void Tanque::fijarPosicion(int x, int y) {
@@ -175,5 +165,5 @@ void Tanque::fijarVelocidad(int velocidad) {
 }
 
 void Tanque::renderizar() {
-	SDL_RenderCopyEx(renderer_principal, frame_actual, NULL, &rect, angulo, NULL, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(renderer_principal, textura, NULL, &rect, angulo, NULL, SDL_FLIP_NONE);
 }

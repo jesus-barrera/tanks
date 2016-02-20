@@ -3,25 +3,38 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <stdio.h>
 #include "tipos.h"
+#include "Escenario.h"
 
 #define TQ_FRAMES_POR_SEC 20
 #define TQ_NUM_FRAMES_MOVER 7
 #define TQ_RUTA_MEDIOS "media/tank"
 
+// texturas para la animación de movimiento
 extern SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
 
 class Tanque {
 private:
-	SDL_Rect rect; // mantiene las dimensiones y posicion del tanque
-	SDL_Texture *frame_actual;
-	direccion_t direccion;
+	// Dimensiones y posicion asociadas al tanque
+	SDL_Rect rect;
+
+	// Textura usada en el renderizado
+	SDL_Texture *textura;
+
+	direccion_t direccion; 
+
+	// Número de frame
 	int frame_num;
+
 	int velocidad;
+
 	double angulo;
+
+	// Tiempo desde el ultimo frame
 	unsigned int tiempo_inicio;
 
-	// actualiza el sprite actual
+	// Actualiza el sprite actual
 	void actualizarSprite();
 
 	void sigFrame();
@@ -51,8 +64,7 @@ public:
 	// Manejar evento
 	void manejarEvento(SDL_Event& evento);
 
-	// Regresa el ancho del tanque
-	int obtenerAncho();
+	SDL_Rect obtenerRect();
 
 	// Mueve el tanque a la posición indicada por x y y
 	void fijarPosicion(int x, int y);
