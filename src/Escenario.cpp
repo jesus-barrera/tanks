@@ -1,29 +1,33 @@
 #include "../include/Escenario.h";
 
 SDL_Texture *Escenario::textura_suelo;
-SDL_Texture *Escenario::textura_bloque;
+SDL_Texture *Escenario::bloques[NUM_BLOQUES];
 int Escenario::mapa[MAPA_FILAS][MAPA_COLUMNAS];
+unsigned int Escenario::agua_anim_tiempo;
 
 bool Escenario::inicializar() {
 	srand(time(NULL));
 	
 	textura_suelo = cargarTextura("media/textures/ground_1.png");
-	textura_bloque = cargarTextura("media/textures/bloque_1.png");
+	bloques[BLOQUE_BRICK_1] = cargarTextura("media/textures/bloque_brick_1.png");
+	bloques[BLOQUE_BRICK_2] = cargarTextura("media/textures/bloque_brick_2.png");
+	bloques[BLOQUE_BRICK_3] = cargarTextura("media/textures/bloque_brick_3.png");
+	bloques[BLOQUE_METAL] = cargarTextura("media/textures/bloque_metal.png");
+	bloques[BLOQUE_AGUA_1] = cargarTextura("media/textures/bloque_agua_1.png");
+	bloques[BLOQUE_AGUA_2] = cargarTextura("media/textures/bloque_agua_2.png");
+	bloques[BLOQUE_ARBOL] = cargarTextura("media/textures/bloque_arbol.png");
 
-	if (textura_suelo != NULL && textura_bloque != NULL) {
-		
-		return true;
-	} else {
-		return false;
-	}
+	return true;
 }
 
 void Escenario::liberarMemoria() {
+	for (int i = 0; i < NUM_BLOQUES; i++) {
+		SDL_DestroyTexture(bloques[i]);
+		bloques[i] = NULL;
+	}
+
 	SDL_DestroyTexture(textura_suelo);
 	textura_suelo = NULL;
-
-	SDL_DestroyTexture(textura_bloque);
-	textura_bloque = NULL;
 }
 
 void Escenario::crearMapaAleatorio() {
@@ -31,10 +35,10 @@ void Escenario::crearMapaAleatorio() {
 
 	for (y = 0; y < MAPA_FILAS; y++) {
 		for (x = 0; x < MAPA_COLUMNAS; x++) {
-			mapa[y][x] = 0;
+			mapa[y][x] = NO_BLOQUE;
 
 			if (rand() % 50 > 40) {
-				mapa[y][x] = 5;
+				mapa[y][x] = rand() % 7 + 1;
 			}
 		}
 	}
@@ -61,11 +65,14 @@ void Escenario::renderizarFondo() {
 }
 
 void Escenario::renderizarMapa() {
+	bool animar_agua;
 	int x, y;
 	SDL_Rect rect;
 
 	rect.w = TAMANO_BLOQUE;
 	rect.h = TAMANO_BLOQUE;
+
+	animar_agua = (SDL_GetTicks() - agua_anim_tiempo) >= 1000;
 
 	for (y = 0; y < MAPA_FILAS; y++) {
 		rect.y = y * rect.h;
@@ -74,29 +81,60 @@ void Escenario::renderizarMapa() {
 			rect.x = x * rect.w;
 			
 			if (mapa[y][x]) {
-				SDL_RenderCopy(renderer_principal, textura_bloque, NULL, &rect);
+
+				if ((mapa[y][x] == BLOQUE_AGUA_1 || mapa[y][x] == BLOQUE_AGUA_2) && animar_agua) {
+					if (mapa[y][x] == BLOQUE_AGUA_1) {
+						mapa[y][x] = BLOQUE_AGUA_2;
+					} else {
+						mapa[y][x] = BLOQUE_AGUA_1;
+					}
+				}
+
+				SDL_RenderCopy(renderer_principal, bloques[mapa[y][x]], NULL, &rect);
 			}
 		}
+	}
+
+	if (animar_agua) {
+		agua_anim_tiempo = SDL_GetTicks();
 	}
 }
 
-bool Escenario::enColisionConMapa(SDL_Rect &rect) {
+vector<bloque_pos> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
 	int x1, x2, y1, y2, x, y;
+	bloque_pos bloque;
+	vector<bloque_pos> bloques;
 
 	x1 = rect.x / TAMANO_BLOQUE;
-	x2 = (rect.x + rect.w) / TAMANO_BLOQUE;
+	x2 = ((rect.x + rect.w) / TAMANO_BLOQUE) % MAPA_COLUMNAS;
 
 	y1 = rect.y / TAMANO_BLOQUE;
-	y2 = (rect.y + rect.h) / TAMANO_BLOQUE;
+	y2 = ((rect.y + rect.h) / TAMANO_BLOQUE) % MAPA_FILAS;
 
 	for (y = y1; y <= y2; y++) {
 		for (x = x1; x <= x2; x++) {
-			if (mapa[y][x]) {
-				return true; // colision con el mapa
+			if (mapa[y][x] != NO_BLOQUE) {
+				bloque.y = y;
+				bloque.x = x;
+
+				bloques.push_back(bloque);
 			}
 		}
 	}
 
-	// no hubo colision
-	return false;
+	return bloques;
+}
+
+void Escenario::destruirBloque(bloque_pos position) {
+	int bloque = mapa[position.y][position.x];
+
+	if (bloque >= BLOQUE_BRICK_1 && bloque <= BLOQUE_BRICK_3) {
+		if (bloque == BLOQUE_BRICK_3) {
+			mapa[position.y][position.x] = NO_BLOQUE;
+		} else {
+	 		mapa[position.y][position.x]++;
+		}
+	} else if (bloque == BLOQUE_ARBOL) {
+		mapa[position.y][position.x] = NO_BLOQUE;
+	}
 }

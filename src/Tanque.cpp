@@ -56,6 +56,8 @@ void Tanque::actualizar() {
 
 void Tanque::mover() {
 	SDL_Rect sig_rect = rect;
+	vector<bloque_pos> bloques;
+	vector<bloque_pos>::iterator it;
 
 	switch (direccion) {
 		case ARRIBA: sig_rect.y -= velocidad;
@@ -69,12 +71,18 @@ void Tanque::mover() {
 		default: ;
 	}
 
+	bloques = Escenario::obtenerBloquesEnColision(sig_rect);
+	
 	if ((sig_rect.x >= 0 && sig_rect.x < (vista_juego.w - rect.w)) && 
 		(sig_rect.y >= 0 && sig_rect.y < (vista_juego.h - rect.h)) &&
-		!Escenario::enColisionConMapa(sig_rect)) {
+		bloques.size() == 0) {
 		
 		rect = sig_rect;
 	} else {
+		for (it = bloques.begin(); it != bloques.end(); ++it) {
+			Escenario::destruirBloque((*it));
+		}
+
 		fijarVelocidad(0);
 	}
 }

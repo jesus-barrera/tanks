@@ -3,9 +3,9 @@
 
 #include <SDL.h>
 
-#define TAMANO_BLOQUE 20
-#define MAPA_FILAS 25	
-#define MAPA_COLUMNAS 25
+#define TAMANO_BLOQUE 32
+#define MAPA_FILAS 20	
+#define MAPA_COLUMNAS 20
 
 const int MAPA_ANCHO = MAPA_COLUMNAS * TAMANO_BLOQUE;
 const int MAPA_ALTO = MAPA_FILAS * TAMANO_BLOQUE;
