@@ -39,7 +39,6 @@ int main(int argc, char* args[]) {
 			}
 
 			tanque_j1->actualizar();
-			tanque_j2->actualizar();
 			renderizarTodo();
 		} while (!salir);
 	}
@@ -80,9 +79,6 @@ bool inicializar() {
 				success = Escenario::inicializar() && Tanque::cargarMedios();
 
 				tanque_j1 = new Tanque(0, 100);
-				tanque_j2 = new Tanque(100, 100, ABAJO);
-
-				Escenario::crearMapaAleatorio();
 			}
 
 		}
@@ -109,7 +105,6 @@ void renderizarTodo() {
 	Escenario::renderizarFondo();
 	Escenario::renderizarMapa();
 	tanque_j1->renderizar();
-	tanque_j2->renderizar();
 	SDL_RenderPresent(renderer_principal);
 }
 

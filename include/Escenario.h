@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdlib.h>
@@ -51,7 +52,13 @@ public:
 
 	static vector<bloque_pos> obtenerBloquesEnColision(SDL_Rect &rect);
 
-	static void destruirBloque(bloque_pos bloque);
+	static void destruirBloque(bloque_pos posicion);
+
+	static void insertarBloque(bloque_pos posicion, int bloque);
+
+	static void cargarMapa();
+
+	static void guardarMapa();
 };
 
 #endif

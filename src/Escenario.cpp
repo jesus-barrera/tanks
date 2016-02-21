@@ -125,16 +125,63 @@ vector<bloque_pos> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
 	return bloques;
 }
 
-void Escenario::destruirBloque(bloque_pos position) {
-	int bloque = mapa[position.y][position.x];
+void Escenario::destruirBloque(bloque_pos posicion) {
+	int bloque = mapa[posicion.y][posicion.x];
 
 	if (bloque >= BLOQUE_BRICK_1 && bloque <= BLOQUE_BRICK_3) {
 		if (bloque == BLOQUE_BRICK_3) {
-			mapa[position.y][position.x] = NO_BLOQUE;
+			mapa[posicion.y][posicion.x] = NO_BLOQUE;
 		} else {
-	 		mapa[position.y][position.x]++;
+	 		mapa[posicion.y][posicion.x]++;
 		}
 	} else if (bloque == BLOQUE_ARBOL) {
-		mapa[position.y][position.x] = NO_BLOQUE;
+		mapa[posicion.y][posicion.x] = NO_BLOQUE;
 	}
+}
+
+void Escenario::insertarBloque(bloque_pos posicion, int bloque) {
+	mapa[posicion.y][posicion.x] = bloque;
+}
+
+void Escenario::cargarMapa() {
+	int i, j;
+	unsigned char byte;
+	ifstream input;
+	string nombre;
+	cout << "ingresa el nombre del archivo: ";
+
+	getline(cin, nombre);
+
+	input.open(nombre.c_str(), ios::in | ios::binary);
+
+	for (i = 0; i < MAPA_FILAS; i++) {
+		for (j = 0; j < MAPA_COLUMNAS; j++) {
+			input.read((char *)&byte, sizeof(byte));
+
+			mapa[i][j] = byte;
+		}
+	}
+
+	input.close();
+}
+
+void Escenario::guardarMapa() {
+	int i, j;
+	unsigned char byte;
+	ofstream output;
+	string nombre;
+	cout << "ingresa el nombre del archivo: ";
+
+	getline(cin, nombre);
+
+	output.open(nombre.c_str(), ios::out | ios::binary);
+
+	for (i = 0; i < MAPA_FILAS; i++) {
+		for (j = 0; j < MAPA_COLUMNAS; j++) {
+			byte = mapa[i][j];
+			output.write((char *)&byte, sizeof(byte));
+		}
+	}
+
+	output.close();
 }
