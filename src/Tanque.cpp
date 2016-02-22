@@ -82,8 +82,6 @@ void Tanque::mover() {
 		for (it = bloques.begin(); it != bloques.end(); ++it) {
 			Escenario::destruirBloque((*it));
 		}
-
-		fijarVelocidad(0);
 	}
 }
 
@@ -119,10 +117,6 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 				break;
 			case SDLK_RIGHT:
 				fijarDireccion(DERECHA);
-				break;
-			case SDLK_r:
-				Escenario::crearMapaAleatorio();
-				mover = false;
 				break;
 			default :
 				mover = false;

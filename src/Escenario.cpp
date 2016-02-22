@@ -44,6 +44,29 @@ void Escenario::crearMapaAleatorio() {
 	}
 }
 
+bool Escenario::cargarMapaDesdeArchivo(char *nombre_archivo) {
+	int i, j;
+	unsigned char byte;
+	ifstream input;
+	input.open(nombre_archivo, ios::in | ios::binary);
+
+	if (input.is_open()) {
+		for (i = 0; i < MAPA_FILAS; i++) {
+			for (j = 0; j < MAPA_COLUMNAS; j++) {
+				input.read((char *)&byte, sizeof(byte));
+
+				mapa[i][j] = byte;
+			}
+		}
+
+		input.close();
+
+		return true;
+	}
+
+	return false;
+}
+
 void Escenario::renderizarFondo() {
 	int i, j, x_repeat, y_repeat;
 	SDL_Rect rect;

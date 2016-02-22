@@ -3,6 +3,8 @@
 
 #include <SDL.h>
 
+#define MAPAS_RUTA "mapas"
+
 #define TAMANO_BLOQUE 32
 #define MAPA_FILAS 20	
 #define MAPA_COLUMNAS 20

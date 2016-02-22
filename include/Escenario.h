@@ -2,7 +2,7 @@
 #define _ESCENARIO_INCLUDE_
 
 #include <vector>
-#include <iostream>
+#include <fstream>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdlib.h>
@@ -42,6 +42,8 @@ public:
 	static void liberarMemoria();
 
 	static void crearMapaAleatorio();
+
+	static bool cargarMapaDesdeArchivo(char *nombre_archivo);
 
 	static void renderizarFondo();
 

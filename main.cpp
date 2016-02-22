@@ -82,7 +82,7 @@ bool inicializar() {
 				tanque_j1 = new Tanque(0, 100);
 				tanque_j2 = new Tanque(100, 100, ABAJO);
 
-				Escenario::crearMapaAleatorio();
+				Escenario::cargarMapaDesdeArchivo("mapas/mapa_1.map");
 			}
 
 		}
