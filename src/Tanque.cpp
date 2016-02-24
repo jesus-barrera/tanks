@@ -18,6 +18,7 @@ Tanque::Tanque(int x, int y, direccion_t direccion) {
 	fijarVelocidad(0);
 	frame_num = 0;
 	actualizarSprite();
+	animar_temp.iniciar();
 }
 
 Tanque::~Tanque() {
@@ -86,12 +87,12 @@ void Tanque::mover() {
 }
 
 void Tanque::animar() {
-	if ((SDL_GetTicks() - tiempo_inicio) > 1000 / TQ_FRAMES_POR_SEC) {
+	if (animar_temp.obtenerTiempo() > (1000 / TQ_FRAMES_POR_SEC)) {
 		if (velocidad != 0) {
 			sigFrame();
 		}
 
-		tiempo_inicio = SDL_GetTicks();
+		animar_temp.iniciar();
 	}
 }
 

@@ -7,6 +7,7 @@
 #include <SDL_image.h>
 #include <stdlib.h>
 #include <time.h>
+#include "Temporizador.h"
 #include "tipos.h"
 #include "utiles.h"
 
@@ -34,7 +35,7 @@ private:
 	static SDL_Texture *textura_suelo;
 	static int mapa[MAPA_FILAS][MAPA_COLUMNAS];
 	static SDL_Texture *bloques[NUM_BLOQUES];
-	static unsigned int agua_anim_tiempo;
+	static Temporizador animar_temp;
 
 public:
 	static bool inicializar();

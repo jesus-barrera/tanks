@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "tipos.h"
 #include "Escenario.h"
+#include "Temporizador.h"
 
 #define TQ_FRAMES_POR_SEC 20
 #define TQ_NUM_FRAMES_MOVER 7
@@ -31,8 +32,7 @@ private:
 
 	double angulo;
 
-	// Tiempo desde el ultimo frame
-	unsigned int tiempo_inicio;
+	Temporizador animar_temp;
 
 	// Actualiza el sprite actual
 	void actualizarSprite();

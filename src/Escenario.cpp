@@ -3,7 +3,7 @@
 SDL_Texture *Escenario::textura_suelo;
 SDL_Texture *Escenario::bloques[NUM_BLOQUES];
 int Escenario::mapa[MAPA_FILAS][MAPA_COLUMNAS];
-unsigned int Escenario::agua_anim_tiempo;
+Temporizador Escenario::animar_temp;
 
 bool Escenario::inicializar() {
 	srand(time(NULL));
@@ -16,6 +16,8 @@ bool Escenario::inicializar() {
 	bloques[BLOQUE_AGUA_1] = cargarTextura("media/textures/bloque_agua_1.png");
 	bloques[BLOQUE_AGUA_2] = cargarTextura("media/textures/bloque_agua_2.png");
 	bloques[BLOQUE_ARBOL] = cargarTextura("media/textures/bloque_arbol.png");
+
+	animar_temp.iniciar();
 
 	return true;
 }
@@ -48,6 +50,7 @@ bool Escenario::cargarMapaDesdeArchivo(char *nombre_archivo) {
 	int i, j;
 	unsigned char byte;
 	ifstream input;
+	
 	input.open(nombre_archivo, ios::in | ios::binary);
 
 	if (input.is_open()) {
@@ -95,7 +98,7 @@ void Escenario::renderizarMapa() {
 	rect.w = TAMANO_BLOQUE;
 	rect.h = TAMANO_BLOQUE;
 
-	animar_agua = (SDL_GetTicks() - agua_anim_tiempo) >= 1000;
+	animar_agua = animar_temp.obtenerTiempo() >= 1000;
 
 	for (y = 0; y < MAPA_FILAS; y++) {
 		rect.y = y * rect.h;
@@ -119,7 +122,7 @@ void Escenario::renderizarMapa() {
 	}
 
 	if (animar_agua) {
-		agua_anim_tiempo = SDL_GetTicks();
+		animar_temp.iniciar();
 	}
 }
 
