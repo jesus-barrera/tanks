@@ -126,10 +126,10 @@ void Escenario::renderizarMapa() {
 	}
 }
 
-vector<bloque_pos> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
+vector<SDL_Point> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
 	int x1, x2, y1, y2, x, y;
-	bloque_pos bloque;
-	vector<bloque_pos> bloques;
+	SDL_Point bloque;
+	vector<SDL_Point> bloques;
 
 	x1 = rect.x / TAMANO_BLOQUE;
 	x2 = ((rect.x + rect.w) / TAMANO_BLOQUE) % MAPA_COLUMNAS;
@@ -151,16 +151,16 @@ vector<bloque_pos> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
 	return bloques;
 }
 
-void Escenario::destruirBloque(bloque_pos position) {
-	int bloque = mapa[position.y][position.x];
+void Escenario::destruirBloque(SDL_Point bloque_pos) {
+	int bloque = mapa[bloque_pos.y][bloque_pos.x];
 
 	if (bloque >= BLOQUE_BRICK_1 && bloque <= BLOQUE_BRICK_3) {
 		if (bloque == BLOQUE_BRICK_3) {
-			mapa[position.y][position.x] = NO_BLOQUE;
+			mapa[bloque_pos.y][bloque_pos.x] = NO_BLOQUE;
 		} else {
-	 		mapa[position.y][position.x]++;
+	 		mapa[bloque_pos.y][bloque_pos.x]++;
 		}
 	} else if (bloque == BLOQUE_ARBOL) {
-		mapa[position.y][position.x] = NO_BLOQUE;
+		mapa[bloque_pos.y][bloque_pos.x] = NO_BLOQUE;
 	}
 }

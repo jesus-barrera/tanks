@@ -25,11 +25,6 @@ enum {
 	NUM_BLOQUES
 };
 
-typedef struct bloque_pos {
-	unsigned int x;
-	unsigned int y;
-};
-
 class Escenario {
 private: 
 	static SDL_Texture *textura_suelo;
@@ -52,9 +47,9 @@ public:
 
 	static bool enColisionConMapa(SDL_Rect &rect);
 
-	static vector<bloque_pos> obtenerBloquesEnColision(SDL_Rect &rect);
+	static vector<SDL_Point> obtenerBloquesEnColision(SDL_Rect &rect);
 
-	static void destruirBloque(bloque_pos bloque);
+	static void destruirBloque(SDL_Point bloque_pos);
 };
 
 #endif

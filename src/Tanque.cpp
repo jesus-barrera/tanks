@@ -57,8 +57,8 @@ void Tanque::actualizar() {
 
 void Tanque::mover() {
 	SDL_Rect sig_rect = rect;
-	vector<bloque_pos> bloques;
-	vector<bloque_pos>::iterator it;
+	vector<SDL_Point> bloques;
+	vector<SDL_Point>::iterator it;
 
 	switch (direccion) {
 		case ARRIBA: sig_rect.y -= velocidad;
