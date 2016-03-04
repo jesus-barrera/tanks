@@ -18,7 +18,7 @@ void establecerVistas();
 void mostrarError(string message);
 void renderizarTodo();
 
-enum {INICIAR, CONECTAR, EDITAR, SALIR};
+enum {MENU, JUGAR};
 
 SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
@@ -30,17 +30,51 @@ int main(int argc, char* args[]) {
 	bool salir;
 	SDL_Event evento;
 
+	int vista = MENU;
+	int opcion;
+
 	if (inicializar()) {
 		do { 
-			while (SDL_PollEvent(&evento)) {
-				if (evento.type == SDL_QUIT) {
-					salir = true;
-				}
+			switch (vista) {
+				case MENU:
+					opcion = -1;
+
+					while (SDL_PollEvent(&evento)) {
+						if (evento.type == SDL_QUIT) {
+							salir = true;
+						}
+
+						opcion = Menu::manejarEvento(evento);
+					}
+
+					if (opcion == BOTON_INICIAR) {
+						vista = JUGAR;
+					}
+					else if (opcion == BOTON_SALIR) {
+						salir = true;
+					}
+
+					SDL_RenderClear(renderer_principal);
+					Menu::renderizar();
+					SDL_RenderPresent(renderer_principal);
+
+					break;
+				case JUGAR:
+					while (SDL_PollEvent(&evento)) {
+						if (evento.type == SDL_QUIT) {
+							salir = true;
+						}
+
+						tanque_j1->manejarEvento(evento);
+					}
+
+					tanque_j1->actualizar();
+					tanque_j2->actualizar();
+
+					renderizarTodo();
+					break;
 			}
 
-			SDL_RenderClear(renderer_principal);
-			Menu::renderizar();
-			SDL_RenderPresent(renderer_principal);
 		} while (!salir);
 	}
 
@@ -112,7 +146,6 @@ void renderizarTodo() {
 	Escenario::renderizarMapa();
 	tanque_j1->renderizar();
 	tanque_j2->renderizar();
-	Menu::renderizar();
 	SDL_RenderPresent(renderer_principal);
 }
 

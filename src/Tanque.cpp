@@ -80,6 +80,7 @@ void Tanque::mover() {
 		
 		rect = sig_rect;
 	} else {
+		fijarVelocidad(0);
 		for (it = bloques.begin(); it != bloques.end(); ++it) {
 			Escenario::destruirBloque((*it));
 		}

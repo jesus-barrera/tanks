@@ -22,6 +22,7 @@ public:
 	static void inicializar();
 	static void terminar();
 	static void renderizar();
+	static int manejarEvento(SDL_Event& evento);
 };
 
 #endif // MENU_H

@@ -16,11 +16,10 @@ Boton *Menu::botones[NUM_BOTONES];
 void Menu::inicializar() {
 	SDL_Rect boton_rect;
 	
-	boton_rect.x = (VENTANA_ANCHO / 2) - (MENU_BOTON_ANCHO / 2); // centrar boton
+	boton_rect.x = (VENTANA_ANCHO / 2) - (MENU_BOTON_ANCHO / 2); // centrar botón
 	boton_rect.y = 200;
 	boton_rect.w = MENU_BOTON_ANCHO;
 	boton_rect.h = MENU_BOTON_ALTO;
-
 
 	for (int i = 0; i < NUM_BOTONES; i++) {
 		botones[i] = new Boton(texturas_botones[i], boton_rect);
@@ -39,4 +38,20 @@ void Menu::renderizar() {
 	for (int i = 0; i < NUM_BOTONES; i++) {
 		botones[i]->renderizar();
 	}
+}
+
+int Menu::manejarEvento(SDL_Event &evento) {
+	int boton_seleccionado = -1;
+
+	if (evento.type == SDL_MOUSEBUTTONDOWN) {
+		for (int i = 0; i < NUM_BOTONES; i++) {
+			if (botones[i]->estaSeleccionado()) {
+				boton_seleccionado = i;
+
+				break;
+			}
+		}
+	}
+
+	return boton_seleccionado;
 }
