@@ -18,6 +18,7 @@ Tanque::Tanque(int x, int y, direccion_t direccion) {
 	fijarVelocidad(0);
 	frame_num = 0;
 	actualizarSprite();
+	animar_temp.iniciar();
 }
 
 Tanque::~Tanque() {
@@ -56,8 +57,8 @@ void Tanque::actualizar() {
 
 void Tanque::mover() {
 	SDL_Rect sig_rect = rect;
-	vector<bloque_pos> bloques;
-	vector<bloque_pos>::iterator it;
+	vector<SDL_Point> bloques;
+	vector<SDL_Point>::iterator it;
 
 	switch (direccion) {
 		case ARRIBA: sig_rect.y -= velocidad;
@@ -79,23 +80,20 @@ void Tanque::mover() {
 		
 		rect = sig_rect;
 	} else {
-		#ifndef MODO_EDICION
+		fijarVelocidad(0);
 		for (it = bloques.begin(); it != bloques.end(); ++it) {
 			Escenario::destruirBloque((*it));
 		}
-
-		fijarVelocidad(0);
-		#endif
 	}
 }
 
 void Tanque::animar() {
-	if ((SDL_GetTicks() - tiempo_inicio) > 1000 / TQ_FRAMES_POR_SEC) {
+	if (animar_temp.obtenerTiempo() > (1000 / TQ_FRAMES_POR_SEC)) {
 		if (velocidad != 0) {
 			sigFrame();
 		}
 
-		tiempo_inicio = SDL_GetTicks();
+		animar_temp.iniciar();
 	}
 }
 

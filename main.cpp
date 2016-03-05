@@ -7,6 +7,7 @@
 
 #include "include/Tanque.h"
 #include "include/Escenario.h"
+#include "include/Menu.h"
 #include "include/tipos.h"
 
 using namespace std;
@@ -17,6 +18,8 @@ void establecerVistas();
 void mostrarError(string message);
 void renderizarTodo();
 
+enum {MENU, JUGAR};
+
 SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
 SDL_Window *ventana_principal;
@@ -26,20 +29,51 @@ Tanque *tanque_j1, *tanque_j2;
 int main(int argc, char* args[]) {
 	bool salir;
 	SDL_Event evento;
-	SDL_Keycode keycode = -1;
+
+	int vista = MENU;
+	int opcion;
 
 	if (inicializar()) {
 		do { 
-			while (SDL_PollEvent(&evento)) {
-				if (evento.type == SDL_QUIT) {
-					salir = true;
-				}
+			switch (vista) {
+				case MENU:
+					opcion = -1;
 
-				tanque_j1->manejarEvento(evento);
+					while (SDL_PollEvent(&evento)) {
+						if (evento.type == SDL_QUIT) {
+							salir = true;
+						}
+
+						opcion = Menu::manejarEvento(evento);
+					}
+
+					if (opcion == BOTON_INICIAR) {
+						vista = JUGAR;
+					}
+					else if (opcion == BOTON_SALIR) {
+						salir = true;
+					}
+
+					SDL_RenderClear(renderer_principal);
+					Menu::renderizar();
+					SDL_RenderPresent(renderer_principal);
+
+					break;
+				case JUGAR:
+					while (SDL_PollEvent(&evento)) {
+						if (evento.type == SDL_QUIT) {
+							salir = true;
+						}
+
+						tanque_j1->manejarEvento(evento);
+					}
+
+					tanque_j1->actualizar();
+					tanque_j2->actualizar();
+
+					renderizarTodo();
+					break;
 			}
-
-			tanque_j1->actualizar();
-			renderizarTodo();
 		} while (!salir);
 	}
 
@@ -78,7 +112,12 @@ bool inicializar() {
 				
 				success = Escenario::inicializar() && Tanque::cargarMedios();
 
+				Menu::inicializar();
+
 				tanque_j1 = new Tanque(0, 100);
+				tanque_j2 = new Tanque(100, 100, ABAJO);
+
+				Escenario::cargarMapaDesdeArchivo("mapas/mapa_1.map");
 			}
 
 		}
@@ -114,6 +153,7 @@ void cerrar() {
 	Tanque::liberarMemoria();
 
 	Escenario::liberarMemoria();
+	Menu::terminar();
 
 	SDL_DestroyRenderer(renderer_principal);
 	renderer_principal = NULL;

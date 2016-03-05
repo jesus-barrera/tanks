@@ -8,6 +8,7 @@
 #include <SDL_image.h>
 #include <stdlib.h>
 #include <time.h>
+#include "Temporizador.h"
 #include "tipos.h"
 #include "utiles.h"
 
@@ -25,17 +26,12 @@ enum {
 	NUM_BLOQUES
 };
 
-typedef struct bloque_pos {
-	unsigned int x;
-	unsigned int y;
-};
-
 class Escenario {
 private: 
 	static SDL_Texture *textura_suelo;
 	static int mapa[MAPA_FILAS][MAPA_COLUMNAS];
 	static SDL_Texture *bloques[NUM_BLOQUES];
-	static unsigned int agua_anim_tiempo;
+	static Temporizador animar_temp;
 
 public:
 	static bool inicializar();
@@ -44,21 +40,23 @@ public:
 
 	static void crearMapaAleatorio();
 
+	static bool cargarMapaDesdeArchivo(char *nombre_archivo);
+
 	static void renderizarFondo();
 
 	static void renderizarMapa();
 
 	static bool enColisionConMapa(SDL_Rect &rect);
 
-	static vector<bloque_pos> obtenerBloquesEnColision(SDL_Rect &rect);
-
-	static void destruirBloque(bloque_pos posicion);
+	static vector<SDL_Point> obtenerBloquesEnColision(SDL_Rect &rect);
 
 	static void insertarBloque(bloque_pos posicion, int bloque);
 
 	static void cargarMapa();
 
 	static void guardarMapa();
+
+	static void destruirBloque(SDL_Point bloque_pos);
 };
 
 #endif

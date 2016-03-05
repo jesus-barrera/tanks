@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 
-#define MODO_EDICION
+#define MAPAS_RUTA "mapas"
 
 #define TAMANO_BLOQUE 32
 #define MAPA_FILAS 20	
