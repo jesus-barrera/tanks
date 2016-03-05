@@ -5,9 +5,7 @@ SDL_Texture *Escenario::bloques[NUM_BLOQUES];
 int Escenario::mapa[MAPA_FILAS][MAPA_COLUMNAS];
 Temporizador Escenario::animar_temp;
 
-bool Escenario::inicializar() {
-	srand(time(NULL));
-	
+bool Escenario::inicializar() {	
 	textura_suelo = cargarTextura("media/textures/ground_1.png");
 	bloques[BLOQUE_BRICK_1] = cargarTextura("media/textures/bloque_brick_1.png");
 	bloques[BLOQUE_BRICK_2] = cargarTextura("media/textures/bloque_brick_2.png");
@@ -16,6 +14,8 @@ bool Escenario::inicializar() {
 	bloques[BLOQUE_AGUA_1] = cargarTextura("media/textures/bloque_agua_1.png");
 	bloques[BLOQUE_AGUA_2] = cargarTextura("media/textures/bloque_agua_2.png");
 	bloques[BLOQUE_ARBOL] = cargarTextura("media/textures/bloque_arbol.png");
+
+	limpiarMapa();
 
 	animar_temp.iniciar();
 
@@ -30,20 +30,6 @@ void Escenario::liberarMemoria() {
 
 	SDL_DestroyTexture(textura_suelo);
 	textura_suelo = NULL;
-}
-
-void Escenario::crearMapaAleatorio() {
-	int x, y;
-
-	for (y = 0; y < MAPA_FILAS; y++) {
-		for (x = 0; x < MAPA_COLUMNAS; x++) {
-			mapa[y][x] = NO_BLOQUE;
-
-			if (rand() % 50 > 40) {
-				mapa[y][x] = rand() % 7 + 1;
-			}
-		}
-	}
 }
 
 bool Escenario::cargarMapaDesdeArchivo(char *nombre_archivo) {
@@ -126,6 +112,11 @@ void Escenario::renderizarMapa() {
 	}
 }
 
+void Escenario::renderizar() {
+	renderizarFondo();
+	renderizarMapa();
+}
+
 vector<SDL_Point> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
 	int x1, x2, y1, y2, x, y;
 	SDL_Point bloque;
@@ -165,8 +156,12 @@ void Escenario::destruirBloque(SDL_Point bloque_pos) {
 	}
 }
 
-void Escenario::insertarBloque(bloque_pos posicion, int bloque) {
-	mapa[posicion.y][posicion.x] = bloque;
+void Escenario::insertarBloque(SDL_Point posicion, int bloque) {
+	if (posicion.x >= 0 && posicion.x < MAPA_COLUMNAS &&
+		posicion.y >= 0 && posicion.y < MAPA_FILAS) {
+
+		mapa[posicion.y][posicion.x] = bloque;
+	}
 }
 
 void Escenario::cargarMapa() {
@@ -210,4 +205,14 @@ void Escenario::guardarMapa() {
 	}
 
 	output.close();
+}
+
+void Escenario::limpiarMapa() {
+	int i, j;
+
+	for (i = 0; i < MAPA_FILAS; i++) {
+		for (j = 0; j < MAPA_COLUMNAS; j++) {
+			mapa[i][j] = NO_BLOQUE;
+		}
+	}
 }

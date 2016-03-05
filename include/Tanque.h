@@ -47,7 +47,7 @@ public:
 	~Tanque();
 
 	// Carga imagenes y sonidos necesarios
-	static bool cargarMedios();
+	static bool inicializar();
 
 	// Libera la memoria reservada al cargarse los medios
 	static void liberarMemoria();

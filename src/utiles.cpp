@@ -14,3 +14,7 @@ SDL_Texture *cargarTextura(char *nombre_archivo) {
 
 	return textura;
 }
+
+void mostrarError(string mensaje) {
+	cout << mensaje << ": " << SDL_GetError() << endl;
+}

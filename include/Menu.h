@@ -9,7 +9,7 @@
 enum {
 	BOTON_INICIAR,
 	BOTON_CONENCTAR,
-	BOTON_EDICION,
+	BOTON_EDITAR,
 	BOTON_SALIR,
 	NUM_BOTONES
 };
@@ -19,8 +19,8 @@ private:
 	static Boton *botones[NUM_BOTONES];
 
 public:
-	static void inicializar();
-	static void terminar();
+	static bool inicializar();
+	static void liberarMemoria();
 	static void renderizar();
 	static int manejarEvento(SDL_Event& evento);
 };

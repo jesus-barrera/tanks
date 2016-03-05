@@ -2,7 +2,6 @@
 
 #define MENU_BOTON_ANCHO 350
 #define MENU_BOTON_ALTO 75
-#define MENU_BOTON_X_POS 100
 
 char *texturas_botones[NUM_BOTONES] = {
 	"media/menu/btn_iniciar.png",
@@ -13,7 +12,7 @@ char *texturas_botones[NUM_BOTONES] = {
 
 Boton *Menu::botones[NUM_BOTONES];
 
-void Menu::inicializar() {
+bool Menu::inicializar() {
 	SDL_Rect boton_rect;
 	
 	boton_rect.x = (VENTANA_ANCHO / 2) - (MENU_BOTON_ANCHO / 2); // centrar botón
@@ -26,9 +25,11 @@ void Menu::inicializar() {
 
 		boton_rect.y += (MENU_BOTON_ALTO + 10);
 	}
+
+	return true;
 }
 
-void Menu::terminar() {
+void Menu::liberarMemoria() {
 	for (int i = 0; i < NUM_BOTONES; i++) {
 		delete(botones[i]);
 	}

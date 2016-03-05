@@ -25,7 +25,7 @@ Tanque::~Tanque() {
 
 }
 
-bool Tanque::cargarMedios() {
+bool Tanque::inicializar() {
 	SDL_Texture *textura;	
 	char nombre_archivo[50];
 
@@ -75,8 +75,8 @@ void Tanque::mover() {
 	bloques = Escenario::obtenerBloquesEnColision(sig_rect);
 	
 	if ((sig_rect.x >= 0 && sig_rect.x < (vista_juego.w - rect.w)) && 
-		(sig_rect.y >= 0 && sig_rect.y < (vista_juego.h - rect.h))/* &&
-		bloques.size() == 0*/) {
+		(sig_rect.y >= 0 && sig_rect.y < (vista_juego.h - rect.h)) &&
+		bloques.size() == 0) {
 		
 		rect = sig_rect;
 	} else {
@@ -123,42 +123,6 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 			default :
 				mover = false;
 		}
-
-		#ifdef MODO_EDICION
-		int bloque = -1;
-		switch (tecla) {
-			case SDLK_r:
-				bloque = NO_BLOQUE;
-				break;
-			case SDLK_1:
-				bloque = BLOQUE_BRICK_1;
-				break;
-			case SDLK_2:
-				bloque = BLOQUE_METAL;
-				break;			
-			case SDLK_3:
-				bloque = BLOQUE_AGUA_1;
-				break;
-			case SDLK_4:
-				bloque = BLOQUE_ARBOL;
-				break;
-			case SDLK_s:
-				Escenario::guardarMapa();
-				break;
-			case SDLK_l:
-				Escenario::cargarMapa();
-				break;
-			default: ;
-		}
-
-		if (bloque != -1) {
-			bloque_pos p;
-			p.x = rect.x / TAMANO_BLOQUE;
-			p.y = rect.y / TAMANO_BLOQUE;
-
-			Escenario::insertarBloque(p, bloque);
-		}
-		#endif
 
 		if (mover) {
 			tecla_actual = tecla;
