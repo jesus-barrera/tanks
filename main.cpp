@@ -6,30 +6,42 @@
 #include <stdio.h>
 
 #include "include/Tanque.h"
+#include "include/Escenario.h"
+#include "include/Editor.h"
+#include "include/Menu.h"
 #include "include/tipos.h"
+#include "include/utiles.h"
+
+#define	TITULO_JUEGO "Tanques"
 
 using namespace std;
 
 bool inicializar();
 void cerrar();
-bool cargarTexturaSuelo();
-void renderizarSuelo();
 void establecerVistas();
-void mostrarError(string message);
-void renderizarTodo();
-bool manejarTecla(SDL_Keycode key);
+void menu();
+void menuManejarEvento(SDL_Event &evento);
+void jugar();
+void jugarManejarEvento(SDL_Event &evento);
+void editar();
+void editarManejarEvento(SDL_Event &evento);
 
 SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
 SDL_Window *ventana_principal;
 SDL_Renderer *renderer_principal;
-SDL_Texture *textura_suelo;
-Tanque *tanque, *t2;
+Tanque *tanque_j1, *tanque_j2;
+
+bool salir;
+void (*manejarEvento)(SDL_Event &evento);
+void (*fnc_actual)(void);
 
 int main(int argc, char* args[]) {
-	bool salir;
 	SDL_Event evento;
-	SDL_Keycode keycode = -1;
+
+	salir = false;
+	manejarEvento = &(menuManejarEvento);
+	fnc_actual = &menu;
 
 	if (inicializar()) {
 		do { 
@@ -38,11 +50,14 @@ int main(int argc, char* args[]) {
 					salir = true;
 				}
 
-				tanque->manejarEvento(evento);
+				(*manejarEvento)(evento);
 			}
 
-			tanque->actualizar();
-			renderizarTodo();
+			SDL_RenderClear(renderer_principal);
+
+			(*fnc_actual)();
+
+			SDL_RenderPresent(renderer_principal);
 		} while (!salir);
 	}
 
@@ -56,109 +71,122 @@ bool inicializar() {
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		mostrarError("Error al inicializar SDL");
-		success = false;
+		return false;
+	} 
 
-	} else if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
 		mostrarError("Error al inicializar SDL Image");
-		success = false;
+		return false;
+	}
 
-	} else {
-		ventana_principal = SDL_CreateWindow("Tanques", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, VENTANA_ANCHO, VENTANA_ALTO, SDL_WINDOW_SHOWN);
+	ventana_principal = SDL_CreateWindow(TITULO_JUEGO, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, VENTANA_ANCHO, VENTANA_ALTO, SDL_WINDOW_SHOWN);
 
-		if (ventana_principal == NULL) {
-			mostrarError("Error al crear ventana");
-			success = false;
-		} else  {
-			renderer_principal = SDL_CreateRenderer(ventana_principal, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (ventana_principal == NULL) {
+		mostrarError("Error al crear ventana");
+		return false;
+	}
 
-			if (renderer_principal == NULL) {
-				mostrarError("Error al crear renderer");
-				success = false;
-			} else {
-				SDL_SetRenderDrawColor(renderer_principal, 0x8d, 0x8d, 0x8d, 0xff);
+	renderer_principal = SDL_CreateRenderer(ventana_principal, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-				establecerVistas();
-				
-				success = cargarTexturaSuelo() && Tanque::cargarMedios();
+	if (renderer_principal == NULL) {
+		mostrarError("Error al crear renderer");
+		return false;
+	}
 
-				tanque = new Tanque();
-			}
-
-		}
+	SDL_SetRenderDrawColor(renderer_principal, 0x8d, 0x8d, 0x8d, 0xff);
+	establecerVistas();
+	
+	if (!Escenario::inicializar()) {
+		mostrarError("Error al inicializar clase escenario");
+		return false;
 	}
 	
-	return success;
-}
-
-bool cargarTexturaSuelo() {
-	SDL_Surface* loaded_surface;
-	bool success = true;
-
-	loaded_surface = IMG_Load("media/textures/ground_1.png");
-
-	if (loaded_surface == NULL) {
-		mostrarError("Error al cargar textura");
-		success = false;
-	} else {
-		textura_suelo = SDL_CreateTextureFromSurface(renderer_principal, loaded_surface);
-
-		if (textura_suelo == NULL) {
-			mostrarError("Error al crear textura");
-			success = false;
-		}
-
-		SDL_FreeSurface(loaded_surface);
-	}	
-
-	return success;
-}
-
-void renderizarSuelo() {
-	int i, j, x_repeat, y_repeat;
-	SDL_Rect rect;
-
-	SDL_QueryTexture(textura_suelo, NULL, NULL, &rect.w, &rect.h);
-
-	x_repeat = VENTANA_ANCHO / rect.w;
-	y_repeat = VENTANA_ALTO / rect.h;
-
-	for (i = 0; i < x_repeat; i++) {
-		rect.x = i * rect.w;
-
-		for (j = 0; j < y_repeat; j++) {
-			rect.y = j * rect.h;
-			
-			SDL_RenderCopy(renderer_principal, textura_suelo, NULL, &rect);
-		}
+	if (!Menu::inicializar()) {
+		mostrarError("Error al inicializar clase menu");
+		return false;
 	}
+
+	if (!Tanque::inicializar()) {
+		mostrarError("Error al inicializar clase tanque");
+		return false;
+	} else {
+		tanque_j1 = new Tanque();
+		tanque_j2 = new Tanque();
+	}
+
+	return true;
+
+}
+
+void menu() {
+	Menu::renderizar();
+}
+
+void menuManejarEvento(SDL_Event &evento) {
+	int opcion;
+
+	opcion = Menu::manejarEvento(evento);
+
+	switch (opcion) {
+		case BOTON_INICIAR:
+			Escenario::cargarMapaDesdeArchivo(MAPAS_RUTA"/test_1.map");
+			fnc_actual = &jugar;
+			manejarEvento = &jugarManejarEvento;
+			break;
+		case BOTON_EDITAR:
+			Escenario::limpiarMapa();
+			fnc_actual = &editar;
+			manejarEvento = &editarManejarEvento;
+			break;
+		case BOTON_SALIR:
+			salir = true;
+			break;
+		default: 
+			;
+	};
+}
+
+void jugar() {
+	tanque_j1->actualizar();
+	tanque_j2->actualizar();
+
+	SDL_RenderSetViewport(renderer_principal, &vista_juego);
+
+	Escenario::renderizar();
+	tanque_j1->renderizar();
+}
+
+void jugarManejarEvento(SDL_Event &evento) {
+	tanque_j1->manejarEvento(evento);
+}
+
+void editar() {
+	Editor::renderizar();
+}
+
+void editarManejarEvento(SDL_Event &evento) {
+	Editor::manejarEvento(evento);
 }
 
 void establecerVistas() {
 	vista_juego.x = 0;
 	vista_juego.y = 0;
-	vista_juego.w = VENTANA_ANCHO * 0.8;
-	vista_juego.h = VENTANA_ALTO;
+	vista_juego.w = MAPA_ANCHO;
+	vista_juego.h = MAPA_ALTO;
 
-	vista_estatus.x = VENTANA_ANCHO * 0.8;
+	vista_estatus.x = vista_juego.w;
 	vista_estatus.y = 0;
-	vista_estatus.w = VENTANA_ANCHO * 0.2;
+	vista_estatus.w = VENTANA_ANCHO - vista_juego.w;
 	vista_estatus.h = VENTANA_ALTO;
 }
 
-void renderizarTodo() {
-	SDL_RenderClear(renderer_principal);
-	SDL_RenderSetViewport(renderer_principal, &vista_juego);
-	renderizarSuelo();
-	tanque->renderizar();
-	SDL_RenderPresent(renderer_principal);
-}
-
 void cerrar() {
-	delete(tanque);
-	Tanque::liberarMemoria();
+	delete(tanque_j1);
+	delete(tanque_j2);
 
-	SDL_DestroyTexture(textura_suelo);
-	textura_suelo = NULL;
+	Tanque::liberarMemoria();
+	Escenario::liberarMemoria();
+	Menu::liberarMemoria();
 
 	SDL_DestroyRenderer(renderer_principal);
 	renderer_principal = NULL;
@@ -168,8 +196,4 @@ void cerrar() {
 
 	IMG_Quit();
 	SDL_Quit();
-}
-
-void mostrarError(string message) {
-	cout << message << ": " << SDL_GetError() << endl;
 }

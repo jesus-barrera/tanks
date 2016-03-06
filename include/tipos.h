@@ -3,10 +3,21 @@
 
 #include <SDL.h>
 
-#define VENTANA_ANCHO 640
-#define VENTANA_ALTO 480
+#define MAPAS_RUTA "mapas"
+
+#define TAMANO_BLOQUE 16
+#define MAPA_FILAS 40	
+#define MAPA_COLUMNAS 50
+
+const int MAPA_ANCHO = MAPA_COLUMNAS * TAMANO_BLOQUE;
+const int MAPA_ALTO = MAPA_FILAS * TAMANO_BLOQUE;
+
+const int VENTANA_ANCHO = MAPA_ANCHO + 125;
+const int VENTANA_ALTO = MAPA_ALTO;
 
 extern SDL_Renderer *renderer_principal;
+extern SDL_Rect vista_juego;
+extern SDL_Rect vista_estatus;
 
 typedef enum direccion_t {ARRIBA, ABAJO, IZQUIERDA, DERECHA, TOTAL_DIRECCIONES};
 
