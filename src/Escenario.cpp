@@ -7,13 +7,11 @@ Temporizador Escenario::animar_temp;
 
 bool Escenario::inicializar() {	
 	textura_suelo = cargarTextura("media/textures/ground_1.png");
-	bloques[BLOQUE_BRICK_1] = cargarTextura("media/textures/bloque_brick_1.png");
-	bloques[BLOQUE_BRICK_2] = cargarTextura("media/textures/bloque_brick_2.png");
-	bloques[BLOQUE_BRICK_3] = cargarTextura("media/textures/bloque_brick_3.png");
+	bloques[BLOQUE_BRICK] = cargarTextura("media/textures/bloque_ladrillo.png");
 	bloques[BLOQUE_METAL] = cargarTextura("media/textures/bloque_metal.png");
 	bloques[BLOQUE_AGUA_1] = cargarTextura("media/textures/bloque_agua_1.png");
 	bloques[BLOQUE_AGUA_2] = cargarTextura("media/textures/bloque_agua_2.png");
-	bloques[BLOQUE_ARBOL] = cargarTextura("media/textures/bloque_arbol.png");
+	bloques[BLOQUE_ARBUSTO] = cargarTextura("media/textures/bloque_arbusto.png");
 
 	limpiarMapa();
 
@@ -142,16 +140,14 @@ vector<SDL_Point> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
 	return bloques;
 }
 
+SDL_Point Escenario::puntoAPosicionMapa(int x, int y) {
+	return {x / TAMANO_BLOQUE, y / TAMANO_BLOQUE};
+}
+
 void Escenario::destruirBloque(SDL_Point bloque_pos) {
 	int bloque = mapa[bloque_pos.y][bloque_pos.x];
 
-	if (bloque >= BLOQUE_BRICK_1 && bloque <= BLOQUE_BRICK_3) {
-		if (bloque == BLOQUE_BRICK_3) {
-			mapa[bloque_pos.y][bloque_pos.x] = NO_BLOQUE;
-		} else {
-	 		mapa[bloque_pos.y][bloque_pos.x]++;
-		}
-	} else if (bloque == BLOQUE_ARBOL) {
+	if (bloque == BLOQUE_BRICK) {
 		mapa[bloque_pos.y][bloque_pos.x] = NO_BLOQUE;
 	}
 }
@@ -215,4 +211,12 @@ void Escenario::limpiarMapa() {
 			mapa[i][j] = NO_BLOQUE;
 		}
 	}
+}
+
+SDL_Texture *Escenario::obtenerTexturaBloque(int bloque) {
+	if (bloque >= 0 && bloque < NUM_BLOQUES) {
+		return bloques[bloque];
+	}
+
+	return NULL;
 }

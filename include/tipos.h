@@ -5,9 +5,9 @@
 
 #define MAPAS_RUTA "mapas"
 
-#define TAMANO_BLOQUE 32
-#define MAPA_FILAS 20	
-#define MAPA_COLUMNAS 20
+#define TAMANO_BLOQUE 16
+#define MAPA_FILAS 40	
+#define MAPA_COLUMNAS 50
 
 const int MAPA_ANCHO = MAPA_COLUMNAS * TAMANO_BLOQUE;
 const int MAPA_ALTO = MAPA_FILAS * TAMANO_BLOQUE;

@@ -1,10 +1,9 @@
 #include "../include/Tanque.h";
 
-SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
+SDL_Texture *Tanque::mover_sprites[TQ_NUM_FRAMES_MOVER];
 
 void Tanque::actualizarSprite() {
-	textura = mover_sprites[frame_num];
-	SDL_QueryTexture(textura, NULL, NULL, &rect.w, &rect.h);
+	this->textura = mover_sprites[frame_num];
 }
 
 void Tanque::sigFrame() {
@@ -13,6 +12,8 @@ void Tanque::sigFrame() {
 }
 
 Tanque::Tanque(int x, int y, direccion_t direccion) {
+	this->rect.h = this->rect.w = TAMANO_BLOQUE * TQ_TAMANO * 0.85;
+
 	fijarDireccion(direccion);
 	fijarPosicion(x, y);
 	fijarVelocidad(0);
@@ -26,6 +27,7 @@ Tanque::~Tanque() {
 }
 
 bool Tanque::inicializar() {
+	int w, h;
 	SDL_Texture *textura;	
 	char nombre_archivo[50];
 
@@ -40,6 +42,9 @@ bool Tanque::inicializar() {
 			mover_sprites[i] = textura;
 		}
 	}
+
+	// calcular relación de aspecto en la textura
+	SDL_QueryTexture(mover_sprites[0], NULL, NULL, &w, &h);
 
 	return true;
 }
@@ -169,5 +174,5 @@ void Tanque::fijarVelocidad(int velocidad) {
 }
 
 void Tanque::renderizar() {
-	SDL_RenderCopyEx(renderer_principal, textura, NULL, &rect, angulo, NULL, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(renderer_principal, textura, NULL, &(this->rect), angulo, NULL, SDL_FLIP_NONE);
 }

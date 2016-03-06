@@ -15,13 +15,11 @@ using namespace std;
 
 enum {
 	NO_BLOQUE,
-	BLOQUE_BRICK_1,
-	BLOQUE_BRICK_2,
-	BLOQUE_BRICK_3,
+	BLOQUE_BRICK,
 	BLOQUE_METAL,
 	BLOQUE_AGUA_1,
 	BLOQUE_AGUA_2,
-	BLOQUE_ARBOL,
+	BLOQUE_ARBUSTO,
 	NUM_BLOQUES
 };
 
@@ -49,8 +47,10 @@ public:
 
 	static vector<SDL_Point> obtenerBloquesEnColision(SDL_Rect &rect);
 
+	static SDL_Point puntoAPosicionMapa(int x, int y);
+
 	static void destruirBloque(SDL_Point bloque_pos);
-	
+
 	static void insertarBloque(SDL_Point posicion, int bloque);
 
 	static void cargarMapa();
@@ -59,6 +59,7 @@ public:
 
 	static void limpiarMapa();
 
+	static SDL_Texture *obtenerTexturaBloque(int bloque);
 };
 
 #endif

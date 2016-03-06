@@ -7,6 +7,7 @@
 
 #include "include/Tanque.h"
 #include "include/Escenario.h"
+#include "include/Editor.h"
 #include "include/Menu.h"
 #include "include/tipos.h"
 #include "include/utiles.h"
@@ -24,8 +25,6 @@ void jugar();
 void jugarManejarEvento(SDL_Event &evento);
 void editar();
 void editarManejarEvento(SDL_Event &evento);
-
-enum {MENU, JUGAR};
 
 SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
@@ -130,7 +129,7 @@ void menuManejarEvento(SDL_Event &evento) {
 
 	switch (opcion) {
 		case BOTON_INICIAR:
-			Escenario::cargarMapaDesdeArchivo(MAPAS_RUTA"/mapa_1.map");
+			Escenario::cargarMapaDesdeArchivo(MAPAS_RUTA"/test_1.map");
 			fnc_actual = &jugar;
 			manejarEvento = &jugarManejarEvento;
 			break;
@@ -152,6 +151,7 @@ void jugar() {
 	tanque_j2->actualizar();
 
 	SDL_RenderSetViewport(renderer_principal, &vista_juego);
+
 	Escenario::renderizar();
 	tanque_j1->renderizar();
 }
@@ -161,12 +161,11 @@ void jugarManejarEvento(SDL_Event &evento) {
 }
 
 void editar() {
-	SDL_RenderSetViewport(renderer_principal, &vista_juego);
-	Escenario::renderizar();
+	Editor::renderizar();
 }
 
 void editarManejarEvento(SDL_Event &evento) {
-
+	Editor::manejarEvento(evento);
 }
 
 void establecerVistas() {

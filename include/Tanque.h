@@ -8,15 +8,16 @@
 #include "Escenario.h"
 #include "Temporizador.h"
 
+#define TQ_TAMANO 2
 #define TQ_FRAMES_POR_SEC 20
 #define TQ_NUM_FRAMES_MOVER 7
 #define TQ_RUTA_MEDIOS "media/tank"
 
-// texturas para la animación de movimiento
-extern SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
-
 class Tanque {
 private:
+	// texturas para la animación de movimiento
+	static SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
+
 	// Dimensiones y posicion asociadas al tanque
 	SDL_Rect rect;
 
