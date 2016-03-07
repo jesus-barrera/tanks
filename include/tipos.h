@@ -19,6 +19,6 @@ extern SDL_Renderer *renderer_principal;
 extern SDL_Rect vista_juego;
 extern SDL_Rect vista_estatus;
 
-typedef enum direccion_t {ARRIBA, ABAJO, IZQUIERDA, DERECHA, TOTAL_DIRECCIONES};
+typedef enum direccion_t {ARRIBA, DERECHA, ABAJO, IZQUIERDA, TOTAL_DIRECCIONES};
 
 #endif // _TIPOS_INCLUDE_

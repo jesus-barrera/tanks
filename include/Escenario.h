@@ -43,8 +43,6 @@ public:
 
 	static void liberarMemoria();
 
-	static bool cargarMapaDesdeArchivo(char *nombre_archivo);
-
 	static void renderizarFondo();
 
 	static void renderizarMapa();
@@ -61,11 +59,7 @@ public:
 
 	static void insertarBloque(SDL_Point posicion, int bloque);
 
-	static void obtenerBloqueEnPos(int x, int y);
-
-	static void cargarMapa();
-
-	static void guardarMapa();
+	static int obtenerBloque(SDL_Point posicion);
 
 	static void limpiarMapa();
 

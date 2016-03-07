@@ -30,30 +30,6 @@ void Escenario::liberarMemoria() {
 	textura_suelo = NULL;
 }
 
-bool Escenario::cargarMapaDesdeArchivo(char *nombre_archivo) {
-	int i, j;
-	unsigned char byte;
-	ifstream input;
-	
-	input.open(nombre_archivo, ios::in | ios::binary);
-
-	if (input.is_open()) {
-		for (i = 0; i < MAPA_FILAS; i++) {
-			for (j = 0; j < MAPA_COLUMNAS; j++) {
-				input.read((char *)&byte, sizeof(byte));
-
-				mapa[i][j] = byte;
-			}
-		}
-
-		input.close();
-
-		return true;
-	}
-
-	return false;
-}
-
 void Escenario::renderizarFondo() {
 	int i, j, x_repeat, y_repeat;
 	SDL_Rect rect;
@@ -147,7 +123,7 @@ SDL_Point Escenario::obtenerBloqueEnPunto(int x, int y) {
 void Escenario::destruirBloque(SDL_Point bloque_pos) {
 	int bloque = mapa[bloque_pos.y][bloque_pos.x];
 
-	if (bloque == BLOQUE_BRICK) {
+	if (bloque == BLOQUE_BRICK || bloque == BLOQUE_ARBUSTO) {
 		mapa[bloque_pos.y][bloque_pos.x] = NO_BLOQUE;
 	}
 }
@@ -160,47 +136,14 @@ void Escenario::insertarBloque(SDL_Point posicion, int bloque) {
 	}
 }
 
-void Escenario::cargarMapa() {
-	int i, j;
-	unsigned char byte;
-	ifstream input;
-	string nombre;
-	cout << "ingresa el nombre del archivo: ";
+int Escenario::obtenerBloque(SDL_Point posicion) {
+	if (posicion.x >= 0 && posicion.x < MAPA_COLUMNAS &&
+		posicion.y >= 0 && posicion.y < MAPA_FILAS) {
 
-	getline(cin, nombre);
-
-	input.open(nombre.c_str(), ios::in | ios::binary);
-
-	for (i = 0; i < MAPA_FILAS; i++) {
-		for (j = 0; j < MAPA_COLUMNAS; j++) {
-			input.read((char *)&byte, sizeof(byte));
-
-			mapa[i][j] = byte;
-		}
+		return mapa[posicion.y][posicion.x];
+	} else {
+		return NO_BLOQUE;
 	}
-
-	input.close();
-}
-
-void Escenario::guardarMapa() {
-	int i, j;
-	unsigned char byte;
-	ofstream output;
-	string nombre;
-	cout << "ingresa el nombre del archivo: ";
-
-	getline(cin, nombre);
-
-	output.open(nombre.c_str(), ios::out | ios::binary);
-
-	for (i = 0; i < MAPA_FILAS; i++) {
-		for (j = 0; j < MAPA_COLUMNAS; j++) {
-			byte = mapa[i][j];
-			output.write((char *)&byte, sizeof(byte));
-		}
-	}
-
-	output.close();
 }
 
 void Escenario::limpiarMapa() {

@@ -64,29 +64,31 @@ void Tanque::mover() {
 	vector<SDL_Point> bloques;
 	vector<SDL_Point>::iterator it;
 
-	switch (direccion) {
-		case ARRIBA: sig_rect.y -= velocidad;
-			break;
-		case ABAJO: sig_rect.y += velocidad;
-			break;
-		case DERECHA: sig_rect.x += velocidad;
-			break;
-		case IZQUIERDA: sig_rect.x -= velocidad;
-			break;
-		default: ;
-	}
+	if (velocidad != 0) {	
+		switch (direccion) {
+			case ARRIBA: sig_rect.y -= velocidad;
+				break;
+			case ABAJO: sig_rect.y += velocidad;
+				break;
+			case DERECHA: sig_rect.x += velocidad;
+				break;
+			case IZQUIERDA: sig_rect.x -= velocidad;
+				break;
+			default: ;
+		}
 
-	bloques = Escenario::obtenerBloquesEnColision(sig_rect);
-	
-	if ((sig_rect.x >= 0 && sig_rect.x < (vista_juego.w - rect.w)) && 
-		(sig_rect.y >= 0 && sig_rect.y < (vista_juego.h - rect.h)) &&
-		bloques.size() == 0) {
+		bloques = Escenario::obtenerBloquesEnColision(sig_rect);
 		
-		rect = sig_rect;
-	} else {
-		fijarVelocidad(0);
-		for (it = bloques.begin(); it != bloques.end(); ++it) {
-			Escenario::destruirBloque((*it));
+		if ((sig_rect.x >= 0 && sig_rect.x < (vista_juego.w - rect.w)) && 
+			(sig_rect.y >= 0 && sig_rect.y < (vista_juego.h - rect.h)) &&
+			!comprobarColision(&sig_rect) && bloques.size() == 0) {
+			
+			rect = sig_rect;
+		} else {
+			fijarVelocidad(0);
+			for (it = bloques.begin(); it != bloques.end(); ++it) {
+				Escenario::destruirBloque((*it));
+			}
 		}
 	}
 }

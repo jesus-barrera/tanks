@@ -32,6 +32,7 @@ SDL_Rect vista_estatus;
 SDL_Window *ventana_principal;
 SDL_Renderer *renderer_principal;
 Tanque *tanque_j1, *tanque_j2;
+Base *base_1, *base_2;
 
 bool salir;
 void (*manejarEvento)(SDL_Event &evento);
@@ -54,6 +55,7 @@ int main(int argc, char* args[]) {
 				(*manejarEvento)(evento);
 			}
 
+			SDL_SetRenderDrawColor(renderer_principal, 0x8d, 0x8d, 0x8d, 0xff);
 			SDL_RenderClear(renderer_principal);
 
 			(*fnc_actual)();
@@ -94,7 +96,6 @@ bool inicializar() {
 		return false;
 	}
 
-	SDL_SetRenderDrawColor(renderer_principal, 0x8d, 0x8d, 0x8d, 0xff);
 	establecerVistas();
 	
 	if (!Escenario::inicializar()) {
@@ -111,6 +112,9 @@ bool inicializar() {
 	if (!Base::inicializar()) {
 		mostrarError("Error al inicializar clase Base");
 		return false;
+	} else {
+		base_1 = new Base();
+		base_2 = new Base();
 	}
 
 	if (!Tanque::inicializar()) {
@@ -119,9 +123,13 @@ bool inicializar() {
 	} else {
 		tanque_j1 = new Tanque();
 		tanque_j2 = new Tanque();
+
+		tanque_j1->agregarColisionador(base_1);
+		tanque_j1->agregarColisionador(tanque_j2);
+		tanque_j1->agregarColisionador(base_2);
 	}
 
-	Editor::inicializar();
+	Editor::inicializar(tanque_j1, base_1, tanque_j2, base_2);
 
 	return true;
 
@@ -138,7 +146,7 @@ void menuManejarEvento(SDL_Event &evento) {
 
 	switch (opcion) {
 		case BOTON_INICIAR:
-			Escenario::cargarMapaDesdeArchivo(MAPAS_RUTA"/campo_abierto.map");
+			Editor::cargarMapa(MAPAS_RUTA"/campo_abierto.map");
 			fnc_actual = &jugar;
 			manejarEvento = &jugarManejarEvento;
 			break;
@@ -163,6 +171,8 @@ void jugar() {
 	Escenario::renderizar();
 	tanque_j1->renderizar();
 	tanque_j2->renderizar();
+	base_1->renderizar();
+	base_2->renderizar();
 }
 
 void jugarManejarEvento(SDL_Event &evento) {
@@ -192,10 +202,13 @@ void establecerVistas() {
 void cerrar() {
 	delete(tanque_j1);
 	delete(tanque_j2);
+	delete(base_1);
+	delete(base_2);
 
 	Tanque::liberarMemoria();
 	Escenario::liberarMemoria();
 	Menu::liberarMemoria();
+	Base::terminar();
 
 	SDL_DestroyRenderer(renderer_principal);
 	renderer_principal = NULL;

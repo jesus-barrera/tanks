@@ -57,10 +57,42 @@ void Objeto::fijarTextura(SDL_Texture *textura) {
 	this->textura = textura;
 }
 
-bool Objeto::comprobarColision(Objeto *objeto) {
-	SDL_Rect colision_rect = objeto->obtenerRect();
+void Objeto::rotar(direccion_t direccion) {
+	int dir = this->direccion;
 
-	return SDL_IntersectRect(&(this->rect), &colision_rect, NULL);
+	if (direccion == ARRIBA || direccion == DERECHA) {
+		dir = (dir + 1) % TOTAL_DIRECCIONES; 
+
+	} else if (direccion == ABAJO || direccion == IZQUIERDA) {
+		if (--dir < 0) {
+			dir = (int)IZQUIERDA;
+		}
+	}
+	
+	this->fijarDireccion((direccion_t)dir);	
+}
+
+void Objeto::agregarColisionador(Objeto *objeto) {
+	this->colisionadores.push_back(objeto);
+}
+
+bool Objeto::comprobarColision(SDL_Rect *rect) {
+	vector<Objeto *>::iterator it;
+	SDL_Rect colision_rect;
+
+	if (rect == NULL) {
+		rect = &this->rect;
+	}
+
+	for (it = this->colisionadores.begin(); it != this->colisionadores.end(); ++it) {
+		colision_rect = (*it)->obtenerRect();
+
+		if (SDL_HasIntersection(rect, &colision_rect)) {
+			return true;
+		} // else continuar
+	}
+
+	return false;
 }
 
 void Objeto::renderizar(SDL_Rect *clip) {

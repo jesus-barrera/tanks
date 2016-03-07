@@ -9,12 +9,12 @@ Base *Editor::base_2;
 
 Objeto *Editor::objeto_seleccionado = NULL;
 
-bool Editor::inicializar() {
-	jugador_1 = new Tanque();
-	jugador_2 = new Tanque();
+bool Editor::inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2) {
+	Editor::jugador_1 = jugador_1;
+	Editor::jugador_2 = jugador_2;
 
-	base_1 = new Base();
-	base_2 = new Base();
+	Editor::base_1 = base_1;
+	Editor::base_2 = base_2;
 
 	return true;
 }
@@ -25,7 +25,7 @@ void Editor::manejarEvento(SDL_Event &evento) {
 
 		if (objeto_seleccionado != NULL) {
 			if (boton == SDL_BUTTON_MIDDLE) {
-				objeto_seleccionado->fijarDireccion((direccion_t)(((int)(objeto_seleccionado->obtenerDireccion()) + 1) % TOTAL_DIRECCIONES));
+				objeto_seleccionado->rotar(DERECHA);
 			} else {
 				insertarObjeto();
 				objeto_seleccionado = NULL;
@@ -73,10 +73,10 @@ void Editor::manejarEvento(SDL_Event &evento) {
 				Escenario::limpiarMapa();
 				break;
 			case SDLK_s:
-				Escenario::guardarMapa();
+				guardarMapa();
 				break;
 			case SDLK_l:
-				Escenario::cargarMapa();
+				cargarMapa();
 				break;
 			case SDLK_w:
 				if (++tamano_pincel > PINCEL_MAX) {
@@ -161,3 +161,85 @@ void Editor::dibujar(int bloque) {
 		}
 	}
 }
+
+void Editor::cargarMapa() {
+	string nombre;
+	cout << "ingresa el nombre del archivo: ";
+
+	getline(cin, nombre);
+
+	cargarMapa(nombre.c_str());
+}
+
+void Editor::cargarMapa(const char *nombre_archivo) {
+	int i, j;
+	unsigned char byte;
+	ifstream input;
+	input.open(nombre_archivo, ios::in | ios::binary);
+
+	cargarObjetoInfo(input, jugador_1);
+	cargarObjetoInfo(input, base_1);
+	cargarObjetoInfo(input, jugador_2);
+	cargarObjetoInfo(input, base_2);
+
+	for (i = 0; i < MAPA_FILAS; i++) {
+		for (j = 0; j < MAPA_COLUMNAS; j++) {
+			input.read(reinterpret_cast<char *>(&byte), sizeof(byte));
+
+			Escenario::insertarBloque({j, i}, byte);
+		}
+	}
+
+	input.close();
+}
+
+void Editor::guardarMapa() {
+	int i, j;
+	unsigned char byte;
+	ofstream output;
+	string nombre;
+	cout << "ingresa el nombre del archivo: ";
+
+	getline(cin, nombre);
+
+	output.open(nombre.c_str(), ios::out | ios::binary);
+
+	guardarObjetoInfo(output, jugador_1);
+	guardarObjetoInfo(output, base_1);
+	guardarObjetoInfo(output, jugador_2);
+	guardarObjetoInfo(output, base_2);
+
+	for (i = 0; i < MAPA_FILAS; i++) {
+		for (j = 0; j < MAPA_COLUMNAS; j++) {
+			byte = Escenario::obtenerBloque({j, i});
+			output.write(reinterpret_cast<char *>(&byte), sizeof(byte));
+		}
+	}
+
+	output.close();
+}
+
+void Editor::guardarObjetoInfo(ofstream &output, Objeto *objeto) {
+	SDL_Point posicion;
+	short direccion;
+
+	posicion = objeto->obtenerPosicion();
+	direccion = (short)objeto->obtenerDireccion();
+
+	output.write(reinterpret_cast<char*>(&posicion.x), sizeof(posicion.x));
+	output.write(reinterpret_cast<char*>(&posicion.y), sizeof(posicion.y));
+	output.write(reinterpret_cast<char*>(&direccion), sizeof(direccion));
+}
+
+void Editor::cargarObjetoInfo(ifstream &input, Objeto *objeto) {
+	SDL_Point posicion;
+	short direccion;
+
+	input.read(reinterpret_cast<char*>(&posicion.x), sizeof(posicion.x));
+	input.read(reinterpret_cast<char*>(&posicion.y), sizeof(posicion.y));
+	input.read(reinterpret_cast<char*>(&direccion), sizeof(direccion));
+
+	objeto->fijarPosicion(posicion.x, posicion.y);
+	objeto->fijarDireccion((direccion_t) direccion);
+}
+

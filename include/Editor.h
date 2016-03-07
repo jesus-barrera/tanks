@@ -2,6 +2,7 @@
 #define EDITOR_H
 
 #include <SDL.h>
+#include <fstream>
 #include "Escenario.h"
 #include "Tanque.h"
 #include "Base.h"
@@ -9,6 +10,8 @@
 
 #define PINCEL_MAX 2
 #define PINCEL_MIN 1	
+
+using namespace std;
 
 class Editor {
 private:
@@ -21,11 +24,17 @@ private:
 	static Objeto *objeto_seleccionado;
 
 public:
-	static bool inicializar();
+	static bool inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2);
 	static void manejarEvento(SDL_Event &evento);
 	static void renderizar();
 	static void dibujar(int bloque);
 	static void insertarObjeto();
+
+	static void cargarMapa();
+	static void cargarMapa(const char *nombre_archivo);
+	static void guardarMapa();
+	static void cargarObjetoInfo(ifstream &intput, Objeto *objeto);
+	static void guardarObjetoInfo(ofstream &output, Objeto *objeto);
 };
 
 #endif // EDITOR_H
