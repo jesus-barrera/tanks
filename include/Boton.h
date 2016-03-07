@@ -2,19 +2,21 @@
 #define BOTON_H
 
 #include <SDL.h>
+#include "Objeto.h"
 #include "utiles.h"
 #include "tipos.h"
 
-class Boton {
-private:
-	SDL_Rect rect;
-	SDL_Texture *textura;
+enum {
+	BOTON_NORMAL,
+	BOTON_HOVER,
+	BOTON_NUM_ESTADOS
+};
 
+class Boton: public Objeto {
 public:
-	Boton(char *textura_nombre, SDL_Rect rect);
+	Boton(char *textura_nombre, int x, int y);
 	~Boton();
 	bool estaSeleccionado();
-	void renderizar();
 };
 
 #endif // BOTON_H

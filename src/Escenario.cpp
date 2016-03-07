@@ -140,7 +140,7 @@ vector<SDL_Point> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
 	return bloques;
 }
 
-SDL_Point Escenario::puntoAPosicionMapa(int x, int y) {
+SDL_Point Escenario::obtenerBloqueEnPunto(int x, int y) {
 	return {x / TAMANO_BLOQUE, y / TAMANO_BLOQUE};
 }
 

@@ -7,31 +7,20 @@
 #include "tipos.h"
 #include "Escenario.h"
 #include "Temporizador.h"
+#include "Objeto.h"
 
 #define TQ_TAMANO 2
 #define TQ_FRAMES_POR_SEC 20
 #define TQ_NUM_FRAMES_MOVER 7
 #define TQ_RUTA_MEDIOS "media/tank"
 
-class Tanque {
+class Tanque: public Objeto {
 private:
 	// texturas para la animación de movimiento
 	static SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
 
-	// Dimensiones y posicion asociadas al tanque
-	SDL_Rect rect;
-
-	// Textura usada en el renderizado
-	SDL_Texture *textura;
-
-	direccion_t direccion; 
-
 	// Número de frame
 	int frame_num;
-
-	int velocidad;
-
-	double angulo;
 
 	Temporizador animar_temp;
 
@@ -64,20 +53,6 @@ public:
 
 	// Manejar evento
 	void manejarEvento(SDL_Event& evento);
-
-	SDL_Rect obtenerRect();
-
-	// Mueve el tanque a la posición indicada por x y y
-	void fijarPosicion(int x, int y);
-
-	// Establece la dirección del tanque (ARRIBA, ABAJO, IZQUIERDA, DERECHA)
-	void fijarDireccion(direccion_t direccion);
-
-	// Fija la velocidad del tanque
-	void fijarVelocidad(int velocidad);
-
-	// Renderiza el tanque en la ventana
-	void renderizar();
 };
 
 

@@ -23,6 +23,14 @@ enum {
 	NUM_BLOQUES
 };
 
+typedef struct Bloque {
+	int x;
+	int y;
+	int tipo;
+};
+
+typedef struct Bloque Bloque;
+
 class Escenario {
 private: 
 	static SDL_Texture *textura_suelo;
@@ -47,11 +55,13 @@ public:
 
 	static vector<SDL_Point> obtenerBloquesEnColision(SDL_Rect &rect);
 
-	static SDL_Point puntoAPosicionMapa(int x, int y);
+	static SDL_Point obtenerBloqueEnPunto(int x, int y);
 
 	static void destruirBloque(SDL_Point bloque_pos);
 
 	static void insertarBloque(SDL_Point posicion, int bloque);
+
+	static void obtenerBloqueEnPos(int x, int y);
 
 	static void cargarMapa();
 

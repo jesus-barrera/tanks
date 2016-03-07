@@ -11,12 +11,11 @@ void Tanque::sigFrame() {
 	actualizarSprite();
 }
 
-Tanque::Tanque(int x, int y, direccion_t direccion) {
+Tanque::Tanque(int x, int y, direccion_t direccion)
+	  :Objeto(x, y, direccion, 0, NULL) {
+
 	this->rect.h = this->rect.w = TAMANO_BLOQUE * TQ_TAMANO * 0.85;
 
-	fijarDireccion(direccion);
-	fijarPosicion(x, y);
-	fijarVelocidad(0);
 	frame_num = 0;
 	actualizarSprite();
 	animar_temp.iniciar();
@@ -141,38 +140,4 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 			fijarVelocidad(0);
 		}
 	}
-}
-
-SDL_Rect Tanque::obtenerRect() {
-	return rect;
-}
-
-void Tanque::fijarPosicion(int x, int y) {
-	rect.x = x;
-	rect.y = y;
-}
-
-void Tanque::fijarDireccion(direccion_t direccion) {
-	switch (direccion) {
-		case ARRIBA: angulo = 0;
-			break;
-		case ABAJO: angulo = 180;
-			break;
-		case DERECHA: angulo = 90;
-			break;
-		case IZQUIERDA: angulo = 270;
-			break;
-		default: 
-			return;
-	}
-	
-	this->direccion = direccion;
-}
-
-void Tanque::fijarVelocidad(int velocidad) {
-	this->velocidad = velocidad;
-}
-
-void Tanque::renderizar() {
-	SDL_RenderCopyEx(renderer_principal, textura, NULL, &(this->rect), angulo, NULL, SDL_FLIP_NONE);
 }

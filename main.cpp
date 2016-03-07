@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "include/Tanque.h"
+#include "include/Base.h"
 #include "include/Escenario.h"
 #include "include/Editor.h"
 #include "include/Menu.h"
@@ -97,22 +98,30 @@ bool inicializar() {
 	establecerVistas();
 	
 	if (!Escenario::inicializar()) {
-		mostrarError("Error al inicializar clase escenario");
+		mostrarError("Error al inicializar clase Escenario");
 		return false;
 	}
 	
 	if (!Menu::inicializar()) {
-		mostrarError("Error al inicializar clase menu");
+		mostrarError("Error al inicializar clase Menu");
+		return false;
+	}
+
+
+	if (!Base::inicializar()) {
+		mostrarError("Error al inicializar clase Base");
 		return false;
 	}
 
 	if (!Tanque::inicializar()) {
-		mostrarError("Error al inicializar clase tanque");
+		mostrarError("Error al inicializar clase Tanque");
 		return false;
 	} else {
 		tanque_j1 = new Tanque();
 		tanque_j2 = new Tanque();
 	}
+
+	Editor::inicializar();
 
 	return true;
 
@@ -129,7 +138,7 @@ void menuManejarEvento(SDL_Event &evento) {
 
 	switch (opcion) {
 		case BOTON_INICIAR:
-			Escenario::cargarMapaDesdeArchivo(MAPAS_RUTA"/test_1.map");
+			Escenario::cargarMapaDesdeArchivo(MAPAS_RUTA"/campo_abierto.map");
 			fnc_actual = &jugar;
 			manejarEvento = &jugarManejarEvento;
 			break;
@@ -151,9 +160,9 @@ void jugar() {
 	tanque_j2->actualizar();
 
 	SDL_RenderSetViewport(renderer_principal, &vista_juego);
-
 	Escenario::renderizar();
 	tanque_j1->renderizar();
+	tanque_j2->renderizar();
 }
 
 void jugarManejarEvento(SDL_Event &evento) {
