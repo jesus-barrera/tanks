@@ -2,6 +2,17 @@
 
 SDL_Texture *Tanque::mover_sprites[TQ_NUM_FRAMES_MOVER];
 
+Tanque::Tanque() {
+	this->rect.h = this->rect.w = TAMANO_BLOQUE * TQ_TAMANO * 0.85;
+
+	this->fijarAreaColision(&this->rect);
+	this->etiqueta = TQ_ETIQUETA;
+
+	frame_num = 0;
+	actualizarSprite();
+	animar_temp.iniciar();
+}
+
 void Tanque::actualizarSprite() {
 	this->textura = mover_sprites[frame_num];
 }
@@ -11,19 +22,6 @@ void Tanque::sigFrame() {
 	actualizarSprite();
 }
 
-Tanque::Tanque(int x, int y, direccion_t direccion)
-	  :Objeto(x, y, direccion, 0, NULL) {
-
-	this->rect.h = this->rect.w = TAMANO_BLOQUE * TQ_TAMANO * 0.85;
-
-	frame_num = 0;
-	actualizarSprite();
-	animar_temp.iniciar();
-}
-
-Tanque::~Tanque() {
-
-}
 
 bool Tanque::inicializar() {
 	int w, h;
@@ -141,5 +139,11 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 			tecla_actual = -1;
 			fijarVelocidad(0);
 		}
+	}
+}
+
+void Tanque::enColision(Colisionador *objeto) {
+	if (objeto->tieneEtiqueta(BASE_ETIQUETA)) {
+		((Base *)objeto)->estaDestruido(true);
 	}
 }

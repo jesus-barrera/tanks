@@ -23,10 +23,12 @@ void Base::terminar() {
 	SDL_DestroyTexture(Base::sprite);
 }
 
-Base::Base(int x, int y)
-	: Objeto(x, y, ARRIBA, 0, Base::sprite) {
-
+Base::Base() {
 	this->rect.w = this->rect.h = TAMANO_BLOQUE * 2;
+	
+	this->fijarTextura(Base::sprite);
+	this->fijarAreaColision(&this->rect);
+	this->etiqueta = BASE_ETIQUETA;
 
 	this->estaDestruido(false);
 }
@@ -47,4 +49,8 @@ void Base::estaDestruido(bool destruido) {
 
 void Base::renderizar() {
 	Objeto::renderizar(&(this->clip));
+}
+
+void Base::enColision(Colisionador *objeto) {
+	;
 }

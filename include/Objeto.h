@@ -2,16 +2,11 @@
 #define OBJETO_H
 
 #include <SDL.h>
-#include <vector>
 #include "tipos.h"
 #include "Temporizador.h"
 
-using namespace std;
-
 class Objeto {
 protected:
-	vector<Objeto *> colisionadores;
-
 	// Dimensiones y posicion asociadas al objeto
 	SDL_Rect rect;
 
@@ -46,13 +41,9 @@ public:
 
 	void fijarTextura(SDL_Texture *textura);
 
-	bool comprobarColision(SDL_Rect *rect = NULL);
-
 	void renderizar(SDL_Rect *clip = NULL);
 
 	void rotar(direccion_t direccion);
-
-	void agregarColisionador(Objeto *objeto);
 
 	void actualizar();
 	void mover();

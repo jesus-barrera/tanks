@@ -36,14 +36,14 @@ Base *base_1, *base_2;
 
 bool salir;
 void (*manejarEvento)(SDL_Event &evento);
-void (*fnc_actual)(void);
+void (*actualizar)(void);
 
 int main(int argc, char* args[]) {
 	SDL_Event evento;
 
 	salir = false;
 	manejarEvento = &(menuManejarEvento);
-	fnc_actual = &menu;
+	actualizar = &menu;
 
 	if (inicializar()) {
 		do { 
@@ -58,7 +58,7 @@ int main(int argc, char* args[]) {
 			SDL_SetRenderDrawColor(renderer_principal, 0x8d, 0x8d, 0x8d, 0xff);
 			SDL_RenderClear(renderer_principal);
 
-			(*fnc_actual)();
+			(*actualizar)();
 
 			SDL_RenderPresent(renderer_principal);
 		} while (!salir);
@@ -147,12 +147,12 @@ void menuManejarEvento(SDL_Event &evento) {
 	switch (opcion) {
 		case BOTON_INICIAR:
 			Editor::cargarMapa(MAPAS_RUTA"/campo_abierto.map");
-			fnc_actual = &jugar;
+			actualizar = &jugar;
 			manejarEvento = &jugarManejarEvento;
 			break;
 		case BOTON_EDITAR:
 			Escenario::limpiarMapa();
-			fnc_actual = &editar;
+			actualizar = &editar;
 			manejarEvento = &editarManejarEvento;
 			break;
 		case BOTON_SALIR:

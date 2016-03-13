@@ -30,8 +30,6 @@ void Editor::manejarEvento(SDL_Event &evento) {
 				insertarObjeto();
 				objeto_seleccionado = NULL;
 			}
-			
-
 		} else {		
 			if (boton == SDL_BUTTON_LEFT) {
 				dibujar(bloque_seleccionado);
