@@ -46,7 +46,7 @@ int main(int argc, char* args[]) {
 	actualizar = &menu;
 
 	if (inicializar()) {
-		do { 
+		do {
 			while (SDL_PollEvent(&evento)) {
 				if (evento.type == SDL_QUIT) {
 					salir = true;
@@ -64,7 +64,7 @@ int main(int argc, char* args[]) {
 		} while (!salir);
 	}
 
-	cerrar();	
+	cerrar();
 
 	return 0;
 }
@@ -75,7 +75,7 @@ bool inicializar() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		mostrarError("Error al inicializar SDL");
 		return false;
-	} 
+	}
 
 	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
 		mostrarError("Error al inicializar SDL Image");
@@ -97,12 +97,12 @@ bool inicializar() {
 	}
 
 	establecerVistas();
-	
+
 	if (!Escenario::inicializar()) {
 		mostrarError("Error al inicializar clase Escenario");
 		return false;
 	}
-	
+
 	if (!Menu::inicializar()) {
 		mostrarError("Error al inicializar clase Menu");
 		return false;
@@ -115,6 +115,10 @@ bool inicializar() {
 	} else {
 		base_1 = new Base();
 		base_2 = new Base();
+	}
+    if (!Bala::inicializar()) {
+		mostrarError("Error al inicializar clase bala");
+		return false;
 	}
 
 	if (!Tanque::inicializar()) {
@@ -158,7 +162,7 @@ void menuManejarEvento(SDL_Event &evento) {
 		case BOTON_SALIR:
 			salir = true;
 			break;
-		default: 
+		default:
 			;
 	};
 }
@@ -171,12 +175,19 @@ void jugar() {
 	Escenario::renderizar();
 	tanque_j1->renderizar();
 	tanque_j2->renderizar();
+	tanque_j1->bala[0].renderizar();
+	tanque_j1->bala[1].renderizar();
+	tanque_j1->bala[2].renderizar();
+	tanque_j2->bala[0].renderizar();
+	tanque_j2->bala[1].renderizar();
+	tanque_j2->bala[2].renderizar();
 	base_1->renderizar();
 	base_2->renderizar();
 }
 
 void jugarManejarEvento(SDL_Event &evento) {
 	tanque_j1->manejarEvento(evento);
+	tanque_j2->manejarEvento(evento);
 }
 
 void editar() {
@@ -209,6 +220,7 @@ void cerrar() {
 	Escenario::liberarMemoria();
 	Menu::liberarMemoria();
 	Base::terminar();
+	//Bala::liberarMemoria();
 
 	SDL_DestroyRenderer(renderer_principal);
 	renderer_principal = NULL;

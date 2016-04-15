@@ -25,7 +25,7 @@ void Tanque::sigFrame() {
 
 bool Tanque::inicializar() {
 	int w, h;
-	SDL_Texture *textura;	
+	SDL_Texture *textura;
 	char nombre_archivo[50];
 
 	for (int i = 0; i < TQ_NUM_FRAMES_MOVER; i++) {
@@ -40,9 +40,6 @@ bool Tanque::inicializar() {
 		}
 	}
 
-	// calcular relación de aspecto en la textura
-	SDL_QueryTexture(mover_sprites[0], NULL, NULL, &w, &h);
-
 	return true;
 }
 
@@ -55,6 +52,9 @@ void Tanque::liberarMemoria() {
 void Tanque::actualizar() {
 	mover();
 	animar();
+	bala[0].actualizar();
+	bala[1].actualizar();
+	bala[2].actualizar();
 }
 
 void Tanque::mover() {
@@ -62,7 +62,7 @@ void Tanque::mover() {
 	vector<SDL_Point> bloques;
 	vector<SDL_Point>::iterator it;
 
-	if (velocidad != 0) {	
+	if (velocidad != 0) {
 		switch (direccion) {
 			case ARRIBA: sig_rect.y -= velocidad;
 				break;
@@ -76,17 +76,14 @@ void Tanque::mover() {
 		}
 
 		bloques = Escenario::obtenerBloquesEnColision(sig_rect);
-		
-		if ((sig_rect.x >= 0 && sig_rect.x < (vista_juego.w - rect.w)) && 
+
+		if ((sig_rect.x >= 0 && sig_rect.x < (vista_juego.w - rect.w)) &&
 			(sig_rect.y >= 0 && sig_rect.y < (vista_juego.h - rect.h)) &&
 			!comprobarColision(&sig_rect) && bloques.size() == 0) {
-			
+
 			rect = sig_rect;
 		} else {
 			fijarVelocidad(0);
-			for (it = bloques.begin(); it != bloques.end(); ++it) {
-				Escenario::destruirBloque((*it));
-			}
 		}
 	}
 }
@@ -124,6 +121,20 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 			case SDLK_RIGHT:
 				fijarDireccion(DERECHA);
 				break;
+            case SDLK_q:
+                if(bala[0].disponible){
+                    bala[0].Disparar(direccion, rect.x, rect.y);
+                }else{
+                    if(bala[1].disponible){
+                        bala[1].Disparar(direccion,rect.x,rect.y);
+                    }else{
+                        if(bala[2].disponible){
+                            bala[2].Disparar(direccion,rect.x,rect.y);
+                        }
+                    }
+                }
+                mover=false;
+                break;
 			default :
 				mover = false;
 		}
@@ -141,6 +152,10 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 		}
 	}
 }
+
+//for(int disparos=0; disparos<balasdisparadas; disparos++){
+//    bala[]
+//}
 
 void Tanque::enColision(Colisionador *objeto) {
 	if (objeto->tieneEtiqueta(BASE_ETIQUETA)) {
