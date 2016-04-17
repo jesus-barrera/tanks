@@ -9,6 +9,7 @@
 #include <time.h>
 #include "Temporizador.h"
 #include "tipos.h"
+#include "juego.h"
 #include "utiles.h"
 
 using namespace std;

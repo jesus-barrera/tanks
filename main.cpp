@@ -2,28 +2,35 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include <stdlib.h>
-#include <stdio.h>
 
+#include "include/juego.h"
 #include "include/Tanque.h"
 #include "include/Base.h"
 #include "include/Escenario.h"
 #include "include/Editor.h"
 #include "include/Menu.h"
-#include "include/tipos.h"
 #include "include/utiles.h"
-
-#define	TITULO_JUEGO "Tanques"
 
 using namespace std;
 
+// Inicializa los componentes necesarios
 bool inicializar();
+
+// Libera los recursos utilizados por los componentes 
 void cerrar();
-void establecerVistas();
+
+// Establece las dimensiones de las diferentes vistas del juego
+void establecerVistas(); 
+
+// Acciones del menú principal
 void menu();
 void menuManejarEvento(SDL_Event &evento);
+
+// Acciones durante el juego
 void jugar();
 void jugarManejarEvento(SDL_Event &evento);
+
+// Acciones del modo edición
 void editar();
 void editarManejarEvento(SDL_Event &evento);
 
@@ -31,6 +38,7 @@ SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
 SDL_Window *ventana_principal;
 SDL_Renderer *renderer_principal;
+
 Tanque *tanque_j1, *tanque_j2;
 Base *base_1, *base_2;
 
@@ -82,7 +90,14 @@ bool inicializar() {
 		return false;
 	}
 
-	ventana_principal = SDL_CreateWindow(TITULO_JUEGO, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, VENTANA_ANCHO, VENTANA_ALTO, SDL_WINDOW_SHOWN);
+	ventana_principal = SDL_CreateWindow(
+											TITULO_JUEGO, 
+											SDL_WINDOWPOS_UNDEFINED, 
+											SDL_WINDOWPOS_UNDEFINED, 
+											VENTANA_ANCHO, 
+											VENTANA_ALTO, 
+											SDL_WINDOW_SHOWN
+										);
 
 	if (ventana_principal == NULL) {
 		mostrarError("Error al crear ventana");
@@ -116,6 +131,7 @@ bool inicializar() {
 		base_1 = new Base();
 		base_2 = new Base();
 	}
+	
     if (!Bala::inicializar()) {
 		mostrarError("Error al inicializar clase bala");
 		return false;

@@ -7,6 +7,7 @@
 #include "Tanque.h"
 #include "Base.h"
 #include "tipos.h"
+#include "juego.h"
 
 #define PINCEL_MAX 2
 #define PINCEL_MIN 1	

@@ -4,7 +4,6 @@
 #include <SDL.h>
 #include "Objeto.h"
 #include "utiles.h"
-#include "tipos.h"
 
 enum {
 	BOTON_NORMAL,

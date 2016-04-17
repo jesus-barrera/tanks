@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include "tipos.h"
+#include "juego.h"
 #include "Temporizador.h"
 
 class Objeto {

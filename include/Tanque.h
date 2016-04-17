@@ -3,9 +3,8 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include <cstdio>
 
-#include "tipos.h"
+#include "juego.h"
 #include "Escenario.h"
 #include "Temporizador.h"
 #include "Colisionador.h"
@@ -24,29 +23,39 @@ class Tanque: public Colisionador, public Objeto {
 private:
 	// texturas para la animación de movimiento
 	static SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
+
 	// Número de frame
 	int frame_num;
 	Temporizador animar_temp;
+	
 	// Actualiza el sprite actual
 	void actualizarSprite();
 	void sigFrame();
 public:
     Bala bala[MAX_BALAS];
     int balasdisparadas;
+
 	// Inicializa el tanque
 	Tanque();
+
 	// Carga imagenes y sonidos necesarios
 	static bool inicializar();
+	
 	// Libera la memoria reservada al cargarse los medios
 	static void liberarMemoria();
+	
 	// Llamado en cada frame
 	void actualizar();
+	
 	// Mueve el tanque en la dirección sobre la que apunta
 	void mover();
+	
 	// Cambia el frame actual
 	void animar();
+	
 	// Manejar evento
 	void manejarEvento(SDL_Event& evento);
+	
 	// Manejar evento de colisión con objeto
 	void enColision(Colisionador *objeto);
 };

@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include "MenuBoton.h"
 #include "utiles.h"
-#include "tipos.h"
+#include "juego.h"
 
 enum {
 	BOTON_INICIAR,

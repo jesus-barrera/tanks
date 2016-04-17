@@ -5,7 +5,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include "tipos.h"
+#include "juego.h"
 
 using namespace std;
 
