@@ -36,6 +36,10 @@ public:
 
 	SDL_Texture *obtenerTextura();
 
+	int obtenerAlto();
+	
+	int obtenerAncho();
+
 	// Mueve el objeto a la posición indicada por x y y
 	void fijarPosicion(int x, int y);
 

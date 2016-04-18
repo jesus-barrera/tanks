@@ -2,11 +2,13 @@
 
 SDL_Texture *Tanque::mover_sprites[TQ_NUM_FRAMES_MOVER];
 
-Tanque::Tanque() {
+Tanque::Tanque(int tipo) {
 	this->rect.h = this->rect.w = TAMANO_BLOQUE * TQ_TAMANO * 0.85;
 
 	this->fijarAreaColision(&this->rect);
 	this->etiqueta = TQ_ETIQUETA;
+
+	this->tipo = tipo;
 
 	frame_num = 0;
 	actualizarSprite();
@@ -122,14 +124,25 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 				fijarDireccion(DERECHA);
 				break;
             case SDLK_q:
+            	int x, y;
+
+            	x = rect.x;
+            	y = rect.y;
+
+            	if (direccion == IZQUIERDA 	|| direccion == DERECHA) {
+            		y += rect.h / 2 - bala[0].obtenerAlto() / 2;
+            	} else {
+            		x += rect.w / 2 - bala[0].obtenerAncho() / 2;
+            	}
+
                 if(bala[0].disponible){
-                    bala[0].Disparar(direccion, rect.x, rect.y);
+                    bala[0].Disparar(direccion, x, y);
                 }else{
                     if(bala[1].disponible){
-                        bala[1].Disparar(direccion,rect.x,rect.y);
+                        bala[1].Disparar(direccion, x, y);
                     }else{
                         if(bala[2].disponible){
-                            bala[2].Disparar(direccion,rect.x,rect.y);
+                            bala[2].Disparar(direccion, x, y);
                         }
                     }
                 }
@@ -153,12 +166,18 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 	}
 }
 
-//for(int disparos=0; disparos<balasdisparadas; disparos++){
-//    bala[]
-//}
-
 void Tanque::enColision(Colisionador *objeto) {
 	if (objeto->tieneEtiqueta(BASE_ETIQUETA)) {
 		((Base *)objeto)->estaDestruido(true);
 	}
+}
+
+void Tanque::renderizar() {
+	if (this->tipo == TQ_TIPO_ROJO) {
+		SDL_SetTextureColorMod(this->textura, 255, 255, 255);
+	} else {
+		SDL_SetTextureColorMod(this->textura, 0, 200, 200);
+	}
+
+	Objeto::renderizar();
 }

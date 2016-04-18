@@ -5,7 +5,7 @@
 #include <SDL_ttf.h>
 
 #include "include/globales.h"
-#include "include/Juego.h"
+#include "include/Jugar.h"
 #include "include/Tanque.h"
 #include "include/Base.h"
 #include "include/Escenario.h"
@@ -22,42 +22,30 @@ bool inicializar();
 void cerrar();
 
 // Establece las dimensiones de las diferentes viewports
-void establecerVistas(); 
+void establecerVistas();
 
-// Acciones del menú principal
-void menuManejarEvento(SDL_Event &evento);
-
-SDL_Rect vista_juego;
-SDL_Rect vista_estatus;
 SDL_Window *ventana_principal;
-SDL_Renderer *renderer_principal;
-TTF_Font *global_font;
-
-bool salir;
-void (*manejarEvento)(SDL_Event &evento);
-void (*actualizar)(void);
 
 int main(int argc, char* args[]) {
 	SDL_Event evento;
 
-	salir = false;
-	manejarEvento = &(menuManejarEvento);
-	actualizar = &Menu::actualizar;
-
 	if (inicializar()) {
+		salir = false;
+		irAEscena("menu");
+		
 		do {
 			while (SDL_PollEvent(&evento)) {
 				if (evento.type == SDL_QUIT) {
 					salir = true;
 				}
 
-				(*manejarEvento)(evento);
+				escena->manejarEvento(evento);
 			}
 
 			SDL_SetRenderDrawColor(renderer_principal, 0x8d, 0x8d, 0x8d, 0xff);
 			SDL_RenderClear(renderer_principal);
 
-			(*actualizar)();
+			escena->actualizar();
 
 			SDL_RenderPresent(renderer_principal);
 		} while (!salir);
@@ -144,34 +132,15 @@ bool inicializar() {
 		return false;
 	}
 
-	Juego::inicializar();
-	Editor::inicializar(Juego::tanque_j1, Juego::base_1, Juego::tanque_j2, Juego::base_2);
-	Editor::cargarMapa(MAPAS_RUTA"/campo_abierto.map");
+	Jugar::inicializar();
+	Editor::inicializar();
+
+	// Registrar escenas
+	registrarEscena(new Menu(), "menu");
+	registrarEscena(new Editor(), "editar");
+	registrarEscena(new Jugar(), "jugar");
 
 	return true;
-}
-
-void menuManejarEvento(SDL_Event &evento) {
-	int opcion;
-
-	opcion = Menu::manejarEvento(evento);
-
-	switch (opcion) {
-		case BOTON_INICIAR:
-			actualizar = &Juego::actualizar;
-			manejarEvento = &Juego::manejarEvento;
-			break;
-		case BOTON_EDITAR:
-			Editor::entrar();
-			actualizar = &Editor::actualizar;
-			manejarEvento = &Editor::manejarEvento;
-			break;
-		case BOTON_SALIR:
-			salir = true;
-			break;
-		default:
-			;
-	};
 }
 
 void establecerVistas() {
@@ -192,7 +161,7 @@ void cerrar() {
 	Menu::liberarMemoria();
 	Editor::liberarMemoria();
 	Base::liberarMemoria();
-	Juego::liberar();
+	Jugar::liberar();
 	//Bala::liberarMemoria();
 
 	SDL_DestroyRenderer(renderer_principal);

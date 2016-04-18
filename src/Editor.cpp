@@ -111,6 +111,7 @@ void Editor::manejarEvento(SDL_Event &evento) {
 				guardarMapa();
 				break;
 			case EDITOR_BTN_SALIR:
+				irAEscena("menu");
 				;
 				break;
 		}
@@ -170,15 +171,15 @@ void Editor::manejarEvento(SDL_Event &evento) {
 	}
 }
 
-bool Editor::inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2) {
+bool Editor::inicializar() {
 	int btn_y;
 	int btn_x;
 
-	Editor::jugador_1 = jugador_1;
-	Editor::jugador_2 = jugador_2;
+	jugador_1 = new Tanque(TQ_TIPO_ROJO);
+	jugador_2 = new Tanque(TQ_TIPO_AZUL);
 
-	Editor::base_1 = base_1;
-	Editor::base_2 = base_2;
+	base_1 = new Base();
+	base_2 = new Base();
 
 	// Crear botones
 	btn_y = VENTANA_ALTO - 50 * EDITOR_NUM_BTN;
@@ -191,8 +192,6 @@ bool Editor::inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Bas
 		btn_y += 50;
 	}
 
-	Editor::entrar();
-
 	return true;
 }
 
@@ -200,6 +199,11 @@ void Editor::liberarMemoria() {
 	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
 		delete(botones[i]);
 	}
+
+	delete(jugador_1);
+	delete(jugador_2);
+	delete(base_1);
+	delete(base_2);
 }
 
 void Editor::insertarObjeto() {
@@ -240,19 +244,19 @@ void Editor::cargarMapa() {
 
 	getline(cin, nombre);
 
-	cargarMapa(nombre.c_str());
+	cargarMapa(nombre.c_str(), jugador_1, base_1, jugador_2, base_2);
 }
 
-void Editor::cargarMapa(const char *nombre_archivo) {
+void Editor::cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque *t2, Base *b2) {
 	int i, j;
 	unsigned char byte;
 	ifstream input;
 	input.open(nombre_archivo, ios::in | ios::binary);
 
-	cargarObjetoInfo(input, jugador_1);
-	cargarObjetoInfo(input, base_1);
-	cargarObjetoInfo(input, jugador_2);
-	cargarObjetoInfo(input, base_2);
+	cargarObjetoInfo(input, (t1) ? t1 : jugador_1);
+	cargarObjetoInfo(input, (b1) ? b1 : base_1);
+	cargarObjetoInfo(input, (t2) ? t2 : jugador_2);
+	cargarObjetoInfo(input, (b2) ? b2 : base_2);
 
 	for (i = 0; i < MAPA_FILAS; i++) {
 		for (j = 0; j < MAPA_COLUMNAS; j++) {

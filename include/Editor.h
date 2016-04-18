@@ -4,6 +4,7 @@
 #include <fstream>
 #include <SDL.h>
 #include "Escenario.h"
+#include "Escena.h"
 #include "Tanque.h"
 #include "Base.h"
 #include "Boton.h"
@@ -25,7 +26,7 @@ enum {
 
 using namespace std;
 
-class Editor {
+class Editor: public Escena {
 private:
 	static int bloque_seleccionado;
 	static int tamano_pincel;
@@ -37,21 +38,24 @@ private:
 	static Boton *botones[EDITOR_NUM_BTN];
 
 public:
-	// Métodos de Escena
-	static void entrar();
-	static void actualizar();
-	static void manejarEvento(SDL_Event &evento);
-
-	static bool inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2);
+	static bool inicializar();
 	static void liberarMemoria();
-	static void dibujar(int bloque);
-	static void insertarObjeto();
+	
+	// Métodos de Escena
+	void entrar();
+	void actualizar();
+	void manejarEvento(SDL_Event &evento);
 
-	static void cargarMapa();
-	static void cargarMapa(const char *nombre_archivo);
-	static void guardarMapa();
+	void dibujar(int bloque);
+	void insertarObjeto();
+
+	// Servicio para cargar mapa
+	static void cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque *t2, Base *b2);
 	static void cargarObjetoInfo(ifstream &intput, Objeto *objeto);
-	static void guardarObjetoInfo(ofstream &output, Objeto *objeto);
+	
+	void cargarMapa();
+	void guardarMapa();
+	void guardarObjetoInfo(ofstream &output, Objeto *objeto);
 };
 
 #endif // EDITOR_H

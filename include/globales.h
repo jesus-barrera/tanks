@@ -7,6 +7,10 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <map>
+#include <string>
+
+#include "Escena.h"
 
 #define MAPAS_RUTA "mapas"
 #define	TITULO_JUEGO "Tanques"
@@ -23,9 +27,17 @@
 #define VENTANA_ANCHO (MAPA_ANCHO + 125)
 #define VENTANA_ALTO  MAPA_ALTO
 
+using namespace std;
+
 extern TTF_Font *global_font;
 extern SDL_Renderer *renderer_principal;
 extern SDL_Rect vista_juego;
 extern SDL_Rect vista_estatus;
+extern Escena *escena;
+extern bool salir;
+
+bool registrarEscena(Escena *escena, string nombre);
+void irAEscena(string nombre);
+void terminarJuego();
 
 #endif // _GLOBALES_H_INCLUDED_

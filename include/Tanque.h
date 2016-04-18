@@ -19,24 +19,36 @@
 #define TQ_ETIQUETA "tank"
 #define MAX_BALAS 3
 
+enum {
+	TQ_TIPO_ROJO,
+	TQ_TIPO_AZUL,
+	TQ_NUM_TIPOS
+};
+
 class Tanque: public Colisionador, public Objeto {
 private:
+	int tipo;
+
 	// texturas para la animación de movimiento
 	static SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
 
 	// Número de frame
 	int frame_num;
+
+	// Temporizador para la animación
 	Temporizador animar_temp;
 	
 	// Actualiza el sprite actual
 	void actualizarSprite();
+
+	// Cambia al siguiente sprite en la animación actual
 	void sigFrame();
 public:
     Bala bala[MAX_BALAS];
     int balasdisparadas;
 
 	// Inicializa el tanque
-	Tanque();
+	Tanque(int tipo = TQ_TIPO_ROJO);
 
 	// Carga imagenes y sonidos necesarios
 	static bool inicializar();
@@ -58,6 +70,9 @@ public:
 	
 	// Manejar evento de colisión con objeto
 	void enColision(Colisionador *objeto);
+
+	// Renderizar la textura
+	void renderizar();
 };
 
 

@@ -2,6 +2,8 @@
 #define MENU_H
 
 #include <SDL.h>
+#include "Escena.h"
+#include "Editor.h"
 #include "Escenario.h"
 #include "Boton.h"
 #include "utiles.h"
@@ -15,17 +17,18 @@ enum {
 	NUM_BOTONES
 };
 
-class Menu {
+class Menu: public Escena {
 private:
 	static Boton *botones[NUM_BOTONES];
 
 public:
-	// Métodos de Escena
-	static void actualizar();
-	static int manejarEvento(SDL_Event &evento);
-
 	static bool inicializar();
 	static void liberarMemoria();
+
+	// Métodos de Escena
+	void entrar();
+	void actualizar();
+	void manejarEvento(SDL_Event &evento);
 };
 
 #endif // MENU_H

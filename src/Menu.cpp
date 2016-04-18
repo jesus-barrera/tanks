@@ -9,6 +9,10 @@ char *etiquetas_botones[NUM_BOTONES] = {
 
 Boton *Menu::botones[NUM_BOTONES];
 
+void Menu::entrar() {
+	Editor::cargarMapa(MAPAS_RUTA"/campo_abierto.map", NULL, NULL, NULL, NULL);
+}
+
 void Menu::actualizar() {
 	SDL_RenderSetViewport(renderer_principal, &vista_juego);
 
@@ -26,11 +30,21 @@ void Menu::actualizar() {
 	}
 }
 
-int Menu::manejarEvento(SDL_Event &evento) {
+void Menu::manejarEvento(SDL_Event &evento) {
 	if (evento.type == SDL_MOUSEBUTTONDOWN) {
-		return Boton::obtenerBotonSeleccionado(Menu::botones, NUM_BOTONES);
-	} else {
-		return -1;
+		switch (Boton::obtenerBotonSeleccionado(Menu::botones, NUM_BOTONES)) {
+			case BOTON_INICIAR:
+				irAEscena("jugar");
+				break;
+			case BOTON_EDITAR:
+				irAEscena("editar");
+				break;
+			case BOTON_SALIR:
+				terminarJuego();
+				break;
+			default:
+				;
+		}
 	}
 }
 

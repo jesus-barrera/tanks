@@ -27,6 +27,14 @@ SDL_Texture *Objeto::obtenerTextura() {
 	return this->textura;
 }
 
+int Objeto::obtenerAlto() {
+	return this->rect.h;
+}
+
+int Objeto::obtenerAncho() {
+	return this->rect.w;
+}
+
 void Objeto::fijarPosicion(int x, int y) {
 	this->rect.x = x;
 	this->rect.y = y;
