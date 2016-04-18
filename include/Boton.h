@@ -3,19 +3,20 @@
 
 #include <SDL.h>
 #include "Objeto.h"
+#include "Hoverable.h"
 #include "utiles.h"
 
-enum {
-	BOTON_NORMAL,
-	BOTON_HOVER,
-	BOTON_NUM_ESTADOS
-};
+#define BTN_HOVER_OFFSET 20
+#define MENU_BTN_HEIGHT (FONT_PTSIZE + 22)
 
-class Boton: public Objeto {
+class Boton: public Objeto, public Hoverable {
 public:
 	Boton(char *textura_nombre, int x, int y);
 	~Boton();
-	bool estaSeleccionado();
+	void renderizar();
+
+	// Encuentra el boton seleccionado en un arreglo de botones
+	static int obtenerBotonSeleccionado(Boton *botones[], int num_botones);
 };
 
 #endif // BOTON_H

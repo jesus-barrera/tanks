@@ -132,6 +132,8 @@ bool inicializar() {
 		return false;
 	}
 
+
+
 	if (!Menu::inicializar()) {
 		mostrarError("Error al inicializar clase Menu");
 		return false;
@@ -164,13 +166,15 @@ bool inicializar() {
 	}
 
 	Editor::inicializar(tanque_j1, base_1, tanque_j2, base_2);
+	Editor::cargarMapa(MAPAS_RUTA"/campo_abierto.map");
 
 	return true;
 
 }
 
 void menu() {
-	Escenario::renderizarFondo();
+	SDL_RenderSetViewport(renderer_principal, &vista_juego);
+	Escenario::renderizar();
 	Menu::renderizar();
 }
 
@@ -181,12 +185,11 @@ void menuManejarEvento(SDL_Event &evento) {
 
 	switch (opcion) {
 		case BOTON_INICIAR:
-			Editor::cargarMapa(MAPAS_RUTA"/campo_abierto.map");
 			actualizar = &jugar;
 			manejarEvento = &jugarManejarEvento;
 			break;
 		case BOTON_EDITAR:
-			Escenario::limpiarMapa();
+			Editor::setup();
 			actualizar = &editar;
 			manejarEvento = &editarManejarEvento;
 			break;

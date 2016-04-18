@@ -3,22 +3,22 @@
 char *etiquetas_botones[NUM_BOTONES] = {
 	"Nueva partida",
 	"Buscar partida",
-	"Editar mapa",
+	"Crear mapa",
 	"Salir"
 };
 
-MenuBoton *Menu::botones[NUM_BOTONES];
+Boton *Menu::botones[NUM_BOTONES];
 
 bool Menu::inicializar() {
-	int x, y;
+	int btn_x, btn_y;
 
-	y = VENTANA_ALTO - MENU_BTN_HEIGHT * NUM_BOTONES;
-	x = 15;
+	btn_y = VENTANA_ALTO - MENU_BTN_HEIGHT * NUM_BOTONES;
+	btn_x = 15;
 
 	for (int i = 0; i < NUM_BOTONES; i++) {
-		botones[i] = new MenuBoton(etiquetas_botones[i], x, y);
+		botones[i] = new Boton(etiquetas_botones[i], btn_x, btn_y);
 
-		y += MENU_BTN_HEIGHT;
+		btn_y += MENU_BTN_HEIGHT;
 	}
 
 	return true;
@@ -37,17 +37,9 @@ void Menu::renderizar() {
 }
 
 int Menu::manejarEvento(SDL_Event &evento) {
-	int boton_seleccionado = -1;
-
 	if (evento.type == SDL_MOUSEBUTTONDOWN) {
-		for (int i = 0; i < NUM_BOTONES; i++) {
-			if (botones[i]->estaSeleccionado()) {
-				boton_seleccionado = i;
-
-				break;
-			}
-		}
+		return Boton::obtenerBotonSeleccionado(Menu::botones, NUM_BOTONES);
+	} else {
+		return -1;
 	}
-
-	return boton_seleccionado;
 }

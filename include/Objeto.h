@@ -22,13 +22,18 @@ protected:
 
 	// Angulo de dirección
 	double angulo;
+	
 public:
 	Objeto(int x = 0, int y = 0, direccion_t direccion = ARRIBA, int velocidad = 0, SDL_Texture *textura = NULL);
 
 	SDL_Rect obtenerRect();
+
 	SDL_Point obtenerPosicion();
+
 	direccion_t obtenerDireccion();
+
 	int obtenerVelocidad();
+
 	SDL_Texture *obtenerTextura();
 
 	// Mueve el objeto a la posición indicada por x y y
@@ -47,6 +52,7 @@ public:
 	void rotar(direccion_t direccion);
 
 	void actualizar();
+
 	void mover();
 };
 

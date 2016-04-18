@@ -2,7 +2,7 @@
 #define MENU_H
 
 #include <SDL.h>
-#include "MenuBoton.h"
+#include "Boton.h"
 #include "utiles.h"
 #include "juego.h"
 
@@ -16,7 +16,8 @@ enum {
 
 class Menu {
 private:
-	static MenuBoton *botones[NUM_BOTONES];
+	static Boton *botones[NUM_BOTONES];
+	
 public:
 	static bool inicializar();
 	static void liberarMemoria();

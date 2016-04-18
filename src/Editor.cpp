@@ -9,14 +9,53 @@ Base *Editor::base_2;
 
 Objeto *Editor::objeto_seleccionado = NULL;
 
+Boton *Editor::botones[EDITOR_NUM_BTN];
+
+char *btn_etiquetas[EDITOR_NUM_BTN] = {
+	"Cargar",
+	"Guardar",
+	"Salir"
+};
+
 bool Editor::inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2) {
+	int btn_y;
+	int btn_x;
+
 	Editor::jugador_1 = jugador_1;
 	Editor::jugador_2 = jugador_2;
 
 	Editor::base_1 = base_1;
 	Editor::base_2 = base_2;
 
+	btn_y = VENTANA_ALTO - 50 * EDITOR_NUM_BTN;
+	btn_x = 10;
+
+	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
+		Editor::botones[i] = new Boton(btn_etiquetas[i], btn_x, btn_y);
+		Editor::botones[i]->setViewport(&vista_estatus);
+
+		btn_y += 50;
+	}
+
+	Editor::setup();
+
 	return true;
+}
+
+void Editor::setup() {
+	Escenario::limpiarMapa();
+
+	// jugador_1->fijarDireccion(ARRIBA);
+	// jugador_1->fijarPosicion(0, 0);
+	
+	// jugador_2->fijarDireccion(ARRIBA);
+	// jugador_2->fijarPosicion(jugador_1->obtenerRect().w + 20, 0);
+
+	// base_1->fijarDireccion(ARRIBA);
+	// base_1->fijarPosicion(0, 50);
+	
+	// base_2->fijarDireccion(ARRIBA);
+	// base_2->fijarPosicion(jugador_1->obtenerRect().w + 20, 50);
 }
 
 void Editor::manejarEvento(SDL_Event &evento) {
@@ -38,11 +77,21 @@ void Editor::manejarEvento(SDL_Event &evento) {
 			}
 		}
 
+		switch (Boton::obtenerBotonSeleccionado(Editor::botones, EDITOR_NUM_BTN)) {
+			case EDITOR_BTN_CARGAR: 
+				cargarMapa(); 
+				break;
+			case EDITOR_BTN_GUARDAR:
+				guardarMapa();
+				break;
+			case EDITOR_BTN_SALIR:
+				break;
+		}
 	} else if (evento.type == SDL_MOUSEMOTION) {
 
 		if (objeto_seleccionado != NULL) {
 			insertarObjeto();
-		} else {		
+		} else {	
 			int estado_mouse = SDL_GetMouseState(NULL, NULL);
 			
 			if (estado_mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
@@ -69,12 +118,6 @@ void Editor::manejarEvento(SDL_Event &evento) {
 				break;
 			case SDLK_r:
 				Escenario::limpiarMapa();
-				break;
-			case SDLK_s:
-				guardarMapa();
-				break;
-			case SDLK_l:
-				cargarMapa();
 				break;
 			case SDLK_w:
 				if (++tamano_pincel > PINCEL_MAX) {
@@ -119,12 +162,17 @@ void Editor::renderizar() {
 	SDL_RenderSetViewport(renderer_principal, &vista_juego);
 
 	Escenario::renderizar();
-	jugador_1->renderizar();
-	jugador_2->renderizar();
 	base_1->renderizar();
 	base_2->renderizar();
 
 	SDL_RenderSetViewport(renderer_principal, &vista_estatus);
+	jugador_1->renderizar();
+	jugador_2->renderizar();
+
+	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
+		Editor::botones[i]->renderizar();
+	}
+	
 	SDL_RenderCopy(renderer_principal, bloque, NULL, &bloque_rect);
 }
 
