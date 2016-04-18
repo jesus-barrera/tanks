@@ -5,15 +5,15 @@
 #include "Boton.h"
 #include "utiles.h"
 
-#define MENU_BOTON_ANCHO 350
-#define MENU_BOTON_ALTO 75
+
+#define BTN_HOVER_OFFSET 20
+#define MENU_BTN_HEIGHT (FONT_PTSIZE + 22)
 
 class MenuBoton: public Boton {
 private:
 	static SDL_Rect clips[BOTON_NUM_ESTADOS];
 public:
 	MenuBoton(char *nombre_textura, int x, int y);
-	static void inicializar();
 	void renderizar();
 };
 

@@ -1,10 +1,10 @@
 #include "../include/Menu.h"
 
-char *texturas_botones[NUM_BOTONES] = {
-	"media/menu/btn_iniciar.png",
-	"media/menu/btn_conectar.png",
-	"media/menu/btn_editar.png",
-	"media/menu/btn_salir.png"
+char *etiquetas_botones[NUM_BOTONES] = {
+	"Nueva partida",
+	"Buscar partida",
+	"Editar mapa",
+	"Salir"
 };
 
 MenuBoton *Menu::botones[NUM_BOTONES];
@@ -12,15 +12,13 @@ MenuBoton *Menu::botones[NUM_BOTONES];
 bool Menu::inicializar() {
 	int x, y;
 
-	MenuBoton::inicializar();
-
-	x = (VENTANA_ANCHO / 2) - (MENU_BOTON_ANCHO / 2); // centrar botones
-	y = 300;
+	y = VENTANA_ALTO - MENU_BTN_HEIGHT * NUM_BOTONES;
+	x = 15;
 
 	for (int i = 0; i < NUM_BOTONES; i++) {
-		botones[i] = new MenuBoton(texturas_botones[i], x, y);
+		botones[i] = new MenuBoton(etiquetas_botones[i], x, y);
 
-		y += (MENU_BOTON_ALTO + 10);
+		y += MENU_BTN_HEIGHT;
 	}
 
 	return true;

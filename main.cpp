@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "include/juego.h"
 #include "include/Tanque.h"
@@ -38,6 +39,7 @@ SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
 SDL_Window *ventana_principal;
 SDL_Renderer *renderer_principal;
+TTF_Font *global_font;
 
 Tanque *tanque_j1, *tanque_j2;
 Base *base_1, *base_2;
@@ -90,6 +92,18 @@ bool inicializar() {
 		return false;
 	}
 
+	if (TTF_Init() == -1) {
+		mostrarError("Error al inicializar SDL ttf");
+		return false;
+	} else {
+		global_font = TTF_OpenFont("media/fonts/Roboto-Regular.ttf", FONT_PTSIZE);
+
+		if (global_font == NULL) {
+			mostrarError("Error al cargar fuente");
+			return false;
+		}
+	}
+
 	ventana_principal = SDL_CreateWindow(
 											TITULO_JUEGO, 
 											SDL_WINDOWPOS_UNDEFINED, 
@@ -131,7 +145,7 @@ bool inicializar() {
 		base_1 = new Base();
 		base_2 = new Base();
 	}
-	
+
     if (!Bala::inicializar()) {
 		mostrarError("Error al inicializar clase bala");
 		return false;
@@ -156,6 +170,7 @@ bool inicializar() {
 }
 
 void menu() {
+	Escenario::renderizarFondo();
 	Menu::renderizar();
 }
 
@@ -244,6 +259,9 @@ void cerrar() {
 	SDL_DestroyWindow(ventana_principal);
 	ventana_principal = NULL;
 
+	TTF_CloseFont(global_font);
+
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }

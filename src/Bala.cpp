@@ -3,7 +3,7 @@
 SDL_Texture *Bala::mover_sprites[TQ_NUM_FRAMES_MOVER];
 
 Bala::Bala() {
-	this->rect.h = this->rect.w = TAMANO_BLOQUE;
+	this->rect.h = this->rect.w = TAMANO_BLOQUE * 0.5;
 
 	this->fijarAreaColision(&this->rect);
 	this->etiqueta = TQ_ETIQUETA;

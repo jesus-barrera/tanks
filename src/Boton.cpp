@@ -1,7 +1,9 @@
 #include "../include/Boton.h"
 
-Boton::Boton(char *textura_nombre, int x, int y): Objeto(x, y) {
-	this->textura = cargarTextura(textura_nombre);
+Boton::Boton(char *texto, int x, int y): Objeto(x, y) {
+	this->textura = renderizarTexto(string(texto), {0xFF, 0xFF, 0xFF});
+	
+	SDL_QueryTexture(this->textura, NULL, NULL, &(this->rect.w), &(this->rect.h));
 }
 
 Boton::~Boton() {
