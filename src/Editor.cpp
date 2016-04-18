@@ -2,6 +2,7 @@
 
 int Editor::bloque_seleccionado = BLOQUE_BRICK;
 int Editor::tamano_pincel = PINCEL_MIN;
+
 Tanque *Editor::jugador_1;
 Tanque *Editor::jugador_2;
 Base *Editor::base_1;
@@ -12,57 +13,78 @@ Objeto *Editor::objeto_seleccionado = NULL;
 Boton *Editor::botones[EDITOR_NUM_BTN];
 
 char *btn_etiquetas[EDITOR_NUM_BTN] = {
+	"Limpiar",
 	"Cargar",
 	"Guardar",
 	"Salir"
 };
 
-bool Editor::inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2) {
-	int btn_y;
-	int btn_x;
-
-	Editor::jugador_1 = jugador_1;
-	Editor::jugador_2 = jugador_2;
-
-	Editor::base_1 = base_1;
-	Editor::base_2 = base_2;
-
-	btn_y = VENTANA_ALTO - 50 * EDITOR_NUM_BTN;
-	btn_x = 10;
-
-	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
-		Editor::botones[i] = new Boton(btn_etiquetas[i], btn_x, btn_y);
-		Editor::botones[i]->setViewport(&vista_estatus);
-
-		btn_y += 50;
-	}
-
-	Editor::setup();
-
-	return true;
-}
-
-void Editor::setup() {
+/*
+ * Debe llamarse cada vez que se entra a la vista de edición.
+ * Limpia el mapa y reposiciona los objetos.
+ */
+void Editor::entrar() {
 	Escenario::limpiarMapa();
 
-	// jugador_1->fijarDireccion(ARRIBA);
-	// jugador_1->fijarPosicion(0, 0);
+	// Reposicionar objetos
+	jugador_1->fijarDireccion(ARRIBA);
+	jugador_1->fijarPosicion(0, 0);
 	
-	// jugador_2->fijarDireccion(ARRIBA);
-	// jugador_2->fijarPosicion(jugador_1->obtenerRect().w + 20, 0);
+	jugador_2->fijarDireccion(ARRIBA);
+	jugador_2->fijarPosicion(0, 0);
 
-	// base_1->fijarDireccion(ARRIBA);
-	// base_1->fijarPosicion(0, 50);
+	base_1->fijarDireccion(ARRIBA);
+	base_1->fijarPosicion(0, 0);
 	
-	// base_2->fijarDireccion(ARRIBA);
-	// base_2->fijarPosicion(jugador_1->obtenerRect().w + 20, 50);
+	base_2->fijarDireccion(ARRIBA);
+	base_2->fijarPosicion(0, 0);
 }
 
+/*
+ * Llamada en cada ciclo del juego
+ */
+void Editor::actualizar() {
+	SDL_Rect bloque_rect;
+	SDL_Texture *bloque;
+
+	SDL_RenderSetViewport(renderer_principal, &vista_juego);
+
+	// Renderizar fondo y bloques
+	Escenario::renderizar();
+
+	// Renderizar objetos
+	base_1->renderizar();
+	base_2->renderizar();
+	jugador_1->renderizar();
+	jugador_2->renderizar();
+
+	SDL_RenderSetViewport(renderer_principal, &vista_estatus);
+
+	// Renderizar botones
+	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
+		Editor::botones[i]->renderizar();
+	}
+
+	// Renderizar bloque seleccionado
+	bloque = Escenario::obtenerTexturaBloque(bloque_seleccionado);
+	
+	bloque_rect.w = 50;
+	bloque_rect.h = 50;
+
+	bloque_rect.x = vista_estatus.w / 2 - bloque_rect.w / 2;
+	bloque_rect.y = vista_estatus.h / 2 - bloque_rect.h / 2;
+
+	SDL_RenderCopy(renderer_principal, bloque, NULL, &bloque_rect);
+}
+
+/*
+ * Se encarga de manejar los eventos del mouse y teclado
+ */
 void Editor::manejarEvento(SDL_Event &evento) {
 	if (evento.type == SDL_MOUSEBUTTONDOWN) {
 		int boton = evento.button.button;
 
-		if (objeto_seleccionado != NULL) {
+		if (objeto_seleccionado not_eq NULL) {
 			if (boton == SDL_BUTTON_MIDDLE) {
 				objeto_seleccionado->rotar(DERECHA);
 			} else {
@@ -77,7 +99,11 @@ void Editor::manejarEvento(SDL_Event &evento) {
 			}
 		}
 
+		// Revisar si se presionó algun botón
 		switch (Boton::obtenerBotonSeleccionado(Editor::botones, EDITOR_NUM_BTN)) {
+			case EDITOR_BTN_LIMPIAR: 
+				Escenario::limpiarMapa(); 
+				break;
 			case EDITOR_BTN_CARGAR: 
 				cargarMapa(); 
 				break;
@@ -85,10 +111,10 @@ void Editor::manejarEvento(SDL_Event &evento) {
 				guardarMapa();
 				break;
 			case EDITOR_BTN_SALIR:
+				;
 				break;
 		}
 	} else if (evento.type == SDL_MOUSEMOTION) {
-
 		if (objeto_seleccionado != NULL) {
 			insertarObjeto();
 		} else {	
@@ -115,9 +141,6 @@ void Editor::manejarEvento(SDL_Event &evento) {
 				break;
 			case SDLK_4:
 				bloque_seleccionado = BLOQUE_ARBUSTO;
-				break;
-			case SDLK_r:
-				Escenario::limpiarMapa();
 				break;
 			case SDLK_w:
 				if (++tamano_pincel > PINCEL_MAX) {
@@ -147,33 +170,36 @@ void Editor::manejarEvento(SDL_Event &evento) {
 	}
 }
 
-void Editor::renderizar() {
-	SDL_Rect bloque_rect;
-	SDL_Texture *bloque;
+bool Editor::inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2) {
+	int btn_y;
+	int btn_x;
 
-	bloque = Escenario::obtenerTexturaBloque(bloque_seleccionado);
-	
-	bloque_rect.w = 50;
-	bloque_rect.h = 50;
+	Editor::jugador_1 = jugador_1;
+	Editor::jugador_2 = jugador_2;
 
-	bloque_rect.x = vista_estatus.w / 2 - bloque_rect.w / 2;
-	bloque_rect.y = vista_estatus.h / 2 - bloque_rect.h / 2;
+	Editor::base_1 = base_1;
+	Editor::base_2 = base_2;
 
-	SDL_RenderSetViewport(renderer_principal, &vista_juego);
-
-	Escenario::renderizar();
-	base_1->renderizar();
-	base_2->renderizar();
-
-	SDL_RenderSetViewport(renderer_principal, &vista_estatus);
-	jugador_1->renderizar();
-	jugador_2->renderizar();
+	// Crear botones
+	btn_y = VENTANA_ALTO - 50 * EDITOR_NUM_BTN;
+	btn_x = 10;
 
 	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
-		Editor::botones[i]->renderizar();
+		Editor::botones[i] = new Boton(btn_etiquetas[i], btn_x, btn_y);
+		Editor::botones[i]->setViewport(&vista_estatus);
+
+		btn_y += 50;
 	}
-	
-	SDL_RenderCopy(renderer_principal, bloque, NULL, &bloque_rect);
+
+	Editor::entrar();
+
+	return true;
+}
+
+void Editor::liberarMemoria() {
+	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
+		delete(botones[i]);
+	}
 }
 
 void Editor::insertarObjeto() {

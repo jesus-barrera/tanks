@@ -5,7 +5,7 @@
 #include <SDL_image.h>
 #include <cstdio>
 
-#include "juego.h"
+#include "globales.h"
 #include "Escenario.h"
 #include "Temporizador.h"
 #include "Colisionador.h"

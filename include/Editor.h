@@ -8,12 +8,15 @@
 #include "Base.h"
 #include "Boton.h"
 #include "tipos.h"
-#include "juego.h"
+#include "globales.h"
 
+// Rango de tamaños de pincel
 #define PINCEL_MAX 2
 #define PINCEL_MIN 1	
 
+// Botones disponibles
 enum {
+	EDITOR_BTN_LIMPIAR,
 	EDITOR_BTN_CARGAR,
 	EDITOR_BTN_GUARDAR,
 	EDITOR_BTN_SALIR,
@@ -24,14 +27,6 @@ using namespace std;
 
 class Editor {
 private:
-
-	class EspecialObject {
-	public:
-		Objeto *obj;
-		SDL_Point posicion;
-		bool seleccionado;
-	};
-
 	static int bloque_seleccionado;
 	static int tamano_pincel;
 	static Tanque *jugador_1;
@@ -42,10 +37,13 @@ private:
 	static Boton *botones[EDITOR_NUM_BTN];
 
 public:
-	static bool inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2);
-	static void setup();
+	// Métodos de Escena
+	static void entrar();
+	static void actualizar();
 	static void manejarEvento(SDL_Event &evento);
-	static void renderizar();
+
+	static bool inicializar(Tanque *jugador_1, Base *base_1, Tanque *jugador_2, Base *base_2);
+	static void liberarMemoria();
 	static void dibujar(int bloque);
 	static void insertarObjeto();
 

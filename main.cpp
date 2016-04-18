@@ -4,7 +4,8 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include "include/juego.h"
+#include "include/globales.h"
+#include "include/Juego.h"
 #include "include/Tanque.h"
 #include "include/Base.h"
 #include "include/Escenario.h"
@@ -14,35 +15,23 @@
 
 using namespace std;
 
-// Inicializa los componentes necesarios
+// Inicializa los componentes
 bool inicializar();
 
-// Libera los recursos utilizados por los componentes 
+// Libera los recursos utilizados
 void cerrar();
 
-// Establece las dimensiones de las diferentes vistas del juego
+// Establece las dimensiones de las diferentes viewports
 void establecerVistas(); 
 
 // Acciones del menú principal
-void menu();
 void menuManejarEvento(SDL_Event &evento);
-
-// Acciones durante el juego
-void jugar();
-void jugarManejarEvento(SDL_Event &evento);
-
-// Acciones del modo edición
-void editar();
-void editarManejarEvento(SDL_Event &evento);
 
 SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
 SDL_Window *ventana_principal;
 SDL_Renderer *renderer_principal;
 TTF_Font *global_font;
-
-Tanque *tanque_j1, *tanque_j2;
-Base *base_1, *base_2;
 
 bool salir;
 void (*manejarEvento)(SDL_Event &evento);
@@ -53,7 +42,7 @@ int main(int argc, char* args[]) {
 
 	salir = false;
 	manejarEvento = &(menuManejarEvento);
-	actualizar = &menu;
+	actualizar = &Menu::actualizar;
 
 	if (inicializar()) {
 		do {
@@ -126,12 +115,12 @@ bool inicializar() {
 	}
 
 	establecerVistas();
+	SDL_SetRenderDrawBlendMode(renderer_principal, SDL_BLENDMODE_BLEND);
 
 	if (!Escenario::inicializar()) {
 		mostrarError("Error al inicializar clase Escenario");
 		return false;
 	}
-
 
 
 	if (!Menu::inicializar()) {
@@ -143,9 +132,6 @@ bool inicializar() {
 	if (!Base::inicializar()) {
 		mostrarError("Error al inicializar clase Base");
 		return false;
-	} else {
-		base_1 = new Base();
-		base_2 = new Base();
 	}
 
     if (!Bala::inicializar()) {
@@ -156,26 +142,13 @@ bool inicializar() {
 	if (!Tanque::inicializar()) {
 		mostrarError("Error al inicializar clase Tanque");
 		return false;
-	} else {
-		tanque_j1 = new Tanque();
-		tanque_j2 = new Tanque();
-
-		tanque_j1->agregarColisionador(base_1);
-		tanque_j1->agregarColisionador(tanque_j2);
-		tanque_j1->agregarColisionador(base_2);
 	}
 
-	Editor::inicializar(tanque_j1, base_1, tanque_j2, base_2);
+	Juego::inicializar();
+	Editor::inicializar(Juego::tanque_j1, Juego::base_1, Juego::tanque_j2, Juego::base_2);
 	Editor::cargarMapa(MAPAS_RUTA"/campo_abierto.map");
 
 	return true;
-
-}
-
-void menu() {
-	SDL_RenderSetViewport(renderer_principal, &vista_juego);
-	Escenario::renderizar();
-	Menu::renderizar();
 }
 
 void menuManejarEvento(SDL_Event &evento) {
@@ -185,13 +158,13 @@ void menuManejarEvento(SDL_Event &evento) {
 
 	switch (opcion) {
 		case BOTON_INICIAR:
-			actualizar = &jugar;
-			manejarEvento = &jugarManejarEvento;
+			actualizar = &Juego::actualizar;
+			manejarEvento = &Juego::manejarEvento;
 			break;
 		case BOTON_EDITAR:
-			Editor::setup();
-			actualizar = &editar;
-			manejarEvento = &editarManejarEvento;
+			Editor::entrar();
+			actualizar = &Editor::actualizar;
+			manejarEvento = &Editor::manejarEvento;
 			break;
 		case BOTON_SALIR:
 			salir = true;
@@ -199,37 +172,6 @@ void menuManejarEvento(SDL_Event &evento) {
 		default:
 			;
 	};
-}
-
-void jugar() {
-	tanque_j1->actualizar();
-	tanque_j2->actualizar();
-
-	SDL_RenderSetViewport(renderer_principal, &vista_juego);
-	Escenario::renderizar();
-	tanque_j1->renderizar();
-	tanque_j2->renderizar();
-	tanque_j1->bala[0].renderizar();
-	tanque_j1->bala[1].renderizar();
-	tanque_j1->bala[2].renderizar();
-	tanque_j2->bala[0].renderizar();
-	tanque_j2->bala[1].renderizar();
-	tanque_j2->bala[2].renderizar();
-	base_1->renderizar();
-	base_2->renderizar();
-}
-
-void jugarManejarEvento(SDL_Event &evento) {
-	tanque_j1->manejarEvento(evento);
-	tanque_j2->manejarEvento(evento);
-}
-
-void editar() {
-	Editor::renderizar();
-}
-
-void editarManejarEvento(SDL_Event &evento) {
-	Editor::manejarEvento(evento);
 }
 
 void establecerVistas() {
@@ -245,15 +187,12 @@ void establecerVistas() {
 }
 
 void cerrar() {
-	delete(tanque_j1);
-	delete(tanque_j2);
-	delete(base_1);
-	delete(base_2);
-
 	Tanque::liberarMemoria();
 	Escenario::liberarMemoria();
 	Menu::liberarMemoria();
-	Base::terminar();
+	Editor::liberarMemoria();
+	Base::liberarMemoria();
+	Juego::liberar();
 	//Bala::liberarMemoria();
 
 	SDL_DestroyRenderer(renderer_principal);

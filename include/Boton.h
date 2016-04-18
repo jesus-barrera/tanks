@@ -7,7 +7,6 @@
 #include "utiles.h"
 
 #define BTN_HOVER_OFFSET 20
-#define MENU_BTN_HEIGHT (FONT_PTSIZE + 22)
 
 class Boton: public Objeto, public Hoverable {
 public:

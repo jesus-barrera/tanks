@@ -1,7 +1,7 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include "juego.h"
+#include "globales.h"
 #include "Objeto.h"
 #include "Colisionador.h"
 #include "utiles.h"
@@ -24,7 +24,7 @@ private:
 
 public:
 	static bool inicializar();
-	static void terminar();
+	static void liberarMemoria();
 
 	Base();
 

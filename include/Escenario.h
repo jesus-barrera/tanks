@@ -2,14 +2,12 @@
 #define _ESCENARIO_INCLUDE_
 
 #include <vector>
-#include <iostream>
 #include <fstream>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <time.h>
 #include "Temporizador.h"
 #include "tipos.h"
-#include "juego.h"
+#include "globales.h"
 #include "utiles.h"
 
 using namespace std;
@@ -23,14 +21,6 @@ enum {
 	BLOQUE_ARBUSTO,
 	NUM_BLOQUES
 };
-
-typedef struct Bloque {
-	int x;
-	int y;
-	int tipo;
-};
-
-typedef struct Bloque Bloque;
 
 class Escenario {
 private: 

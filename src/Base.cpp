@@ -19,7 +19,7 @@ bool Base::inicializar() {
 	return Base::sprite != NULL;
 }
 
-void Base::terminar() {
+void Base::liberarMemoria() {
 	SDL_DestroyTexture(Base::sprite);
 }
 
