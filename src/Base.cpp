@@ -23,12 +23,14 @@ void Base::liberarMemoria() {
 	SDL_DestroyTexture(Base::sprite);
 }
 
-Base::Base() {
+Base::Base(int tipo) {
 	this->rect.w = this->rect.h = TAMANO_BLOQUE * 2;
 	
 	this->fijarTextura(Base::sprite);
 	this->fijarAreaColision(&this->rect);
 	this->etiqueta = BASE_ETIQUETA;
+
+	this->tipo = tipo;
 
 	this->estaDestruido(false);
 }
@@ -48,6 +50,12 @@ void Base::estaDestruido(bool destruido) {
 }
 
 void Base::renderizar() {
+	if (this->tipo == BASE_TIPO_ROJO) {
+		SDL_SetTextureColorMod(this->textura, 255, 100, 0);
+	} else if (this->tipo == BASE_TIPO_AZUL) {
+		SDL_SetTextureColorMod(this->textura, 0, 70, 255);
+	}
+
 	Objeto::renderizar(&(this->clip));
 }
 

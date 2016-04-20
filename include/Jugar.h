@@ -7,6 +7,7 @@
 #include "Tanque.h"
 #include "Base.h"
 #include "Editor.h"
+#include "Boton.h"
 #include "globales.h"
 
 class Jugar: public Escena {
@@ -16,6 +17,7 @@ public:
 	static Tanque *tanque_j2;
 	static Base *base_1;
 	static Base *base_2;
+	static Boton *boton_salir;
 
 	static void inicializar();
 	static void liberar();

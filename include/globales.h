@@ -39,5 +39,6 @@ extern bool salir;
 bool registrarEscena(Escena *escena, string nombre);
 void irAEscena(string nombre);
 void terminarJuego();
+void liberarEscenas();
 
 #endif // _GLOBALES_H_INCLUDED_

@@ -21,7 +21,7 @@ bool inicializar();
 // Libera los recursos utilizados
 void cerrar();
 
-// Establece las dimensiones de las diferentes viewports
+// Establece las dimensiones de los diferentes viewports
 void establecerVistas();
 
 SDL_Window *ventana_principal;
@@ -163,6 +163,8 @@ void cerrar() {
 	Base::liberarMemoria();
 	Jugar::liberar();
 	//Bala::liberarMemoria();
+
+	liberarEscenas();
 
 	SDL_DestroyRenderer(renderer_principal);
 	renderer_principal = NULL;

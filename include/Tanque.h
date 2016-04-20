@@ -13,36 +13,57 @@
 #include "Bala.h"
 
 #define TQ_TAMANO 2
-#define TQ_FRAMES_POR_SEC 20
+
+#define TQ_REAPARECER_TIEMPO 1500
+
+#define TQ_FRAMES_POR_SEC 10
 #define TQ_NUM_FRAMES_MOVER 7
+#define TQ_NUM_FRAMES_EXPLOSION 5
+
 #define TQ_RUTA_MEDIOS "media/tank"
 #define TQ_ETIQUETA "tank"
+
 #define MAX_BALAS 3
 
 enum {
 	TQ_TIPO_ROJO,
-	TQ_TIPO_AZUL,
-	TQ_NUM_TIPOS
+	TQ_TIPO_AZUL
+};
+
+enum {
+	TQ_ST_MOVER,
+	TQ_ST_EXPLOTAR,
+	TQ_ST_ESPERAR
 };
 
 class Tanque: public Colisionador, public Objeto {
 private:
 	int tipo;
+	int estado;
 
-	// texturas para la animación de movimiento
-	static SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
+	// textura para la animación de movimiento
+	static SDL_Texture *mover_sprite;
+
+	// Clips para la explosión
+	static SDL_Rect mover_clips[TQ_NUM_FRAMES_MOVER];
+	
+	// textura para la animación de explosión
+	static SDL_Texture *explosion_sprite;
+
+	// Clips para la explosión
+	static SDL_Rect explosion_clips[TQ_NUM_FRAMES_EXPLOSION];
 
 	// Número de frame
 	int frame_num;
 
 	// Temporizador para la animación
 	Temporizador animar_temp;
-	
-	// Actualiza el sprite actual
-	void actualizarSprite();
 
-	// Cambia al siguiente sprite en la animación actual
-	void sigFrame();
+	// Temporizador para la reaparición
+	Temporizador reaparecer_temp;
+
+	// bool esAnimationFrame()
+	bool comprobarAnim();
 public:
     Bala bala[MAX_BALAS];
     int balasdisparadas;
@@ -50,29 +71,29 @@ public:
 	// Inicializa el tanque
 	Tanque(int tipo = TQ_TIPO_ROJO);
 
-	// Carga imagenes y sonidos necesarios
+	// Carga recursos necesarios
 	static bool inicializar();
 	
-	// Libera la memoria reservada al cargarse los medios
+	// Libera los recursos
 	static void liberarMemoria();
 	
-	// Llamado en cada frame
+	// Llamado en cada ciclo de juego
 	void actualizar();
 	
-	// Mueve el tanque en la dirección sobre la que apunta
+	// Mueve el tanque segun su velocidad y dirección
 	void mover();
-	
-	// Cambia el frame actual
-	void animar();
 	
 	// Manejar evento
 	void manejarEvento(SDL_Event& evento);
 	
-	// Manejar evento de colisión con objeto
+	// Manejar evento de colisión
 	void enColision(Colisionador *objeto);
 
-	// Renderizar la textura
+	// Renderizar
 	void renderizar();
+
+	// Destruir el tanque
+	void destruir();
 };
 
 

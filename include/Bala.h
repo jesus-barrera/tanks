@@ -11,19 +11,18 @@
 #include "Colisionador.h"
 #include "Objeto.h"
 #include "Base.h"
-#include "Bala.h"
 #include "utiles.h"
 
-#define TQ_TAMANO 2
-#define TQ_FRAMES_POR_SEC 20
-#define TQ_NUM_FRAMES_MOVER 1
-#define TQ_RUTA_MEDIOS "media/tank"
-#define TQ_ETIQUETA "bala"
+#define BALA_TAMANO 2
+#define BALA_FRAMES_POR_SEC 20
+#define BALA_NUM_FRAMES_MOVER 1
+#define BALA_RUTA_MEDIOS "media/tank"
+#define BALA_ETIQUETA "bala"
 
 class Bala: public Colisionador, public Objeto {
 public:
 	// texturas para la animación de movimiento
-	static SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
+	static SDL_Texture *mover_sprites[BALA_NUM_FRAMES_MOVER];
 	// Número de frame
 	int frame_num;
 	bool disponible=true;

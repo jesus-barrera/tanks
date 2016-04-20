@@ -16,8 +16,43 @@ char *btn_etiquetas[EDITOR_NUM_BTN] = {
 	"Limpiar",
 	"Cargar",
 	"Guardar",
-	"Salir"
+	"Volver"
 };
+
+bool Editor::inicializar() {
+	int btn_y;
+	int btn_x;
+
+	jugador_1 = new Tanque(TQ_TIPO_ROJO);
+	jugador_2 = new Tanque(TQ_TIPO_AZUL);
+
+	base_1 = new Base(BASE_TIPO_ROJO);
+	base_2 = new Base(BASE_TIPO_AZUL);
+
+	// Crear botones
+	btn_y = VENTANA_ALTO - 50 * EDITOR_NUM_BTN;
+	btn_x = 10;
+
+	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
+		Editor::botones[i] = new Boton(btn_etiquetas[i], btn_x, btn_y);
+		Editor::botones[i]->setViewport(&vista_estatus);
+
+		btn_y += 50;
+	}
+
+	return true;
+}
+
+void Editor::liberarMemoria() {
+	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
+		delete(botones[i]);
+	}
+
+	delete(jugador_1);
+	delete(jugador_2);
+	delete(base_1);
+	delete(base_2);
+}
 
 /*
  * Debe llamarse cada vez que se entra a la vista de edición.
@@ -169,41 +204,6 @@ void Editor::manejarEvento(SDL_Event &evento) {
 				;
 		}
 	}
-}
-
-bool Editor::inicializar() {
-	int btn_y;
-	int btn_x;
-
-	jugador_1 = new Tanque(TQ_TIPO_ROJO);
-	jugador_2 = new Tanque(TQ_TIPO_AZUL);
-
-	base_1 = new Base();
-	base_2 = new Base();
-
-	// Crear botones
-	btn_y = VENTANA_ALTO - 50 * EDITOR_NUM_BTN;
-	btn_x = 10;
-
-	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
-		Editor::botones[i] = new Boton(btn_etiquetas[i], btn_x, btn_y);
-		Editor::botones[i]->setViewport(&vista_estatus);
-
-		btn_y += 50;
-	}
-
-	return true;
-}
-
-void Editor::liberarMemoria() {
-	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
-		delete(botones[i]);
-	}
-
-	delete(jugador_1);
-	delete(jugador_2);
-	delete(base_1);
-	delete(base_2);
 }
 
 void Editor::insertarObjeto() {

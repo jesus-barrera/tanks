@@ -1,12 +1,12 @@
 #include "../include/Bala.h";
 
-SDL_Texture *Bala::mover_sprites[TQ_NUM_FRAMES_MOVER];
+SDL_Texture *Bala::mover_sprites[BALA_NUM_FRAMES_MOVER];
 
 Bala::Bala() {
 	this->rect.h = this->rect.w = TAMANO_BLOQUE * 0.5;
 
 	this->fijarAreaColision(&this->rect);
-	this->etiqueta = TQ_ETIQUETA;
+	this->etiqueta = BALA_ETIQUETA;
 
 	frame_num = 0;
 	actualizarSprite();
@@ -18,7 +18,7 @@ void Bala::actualizarSprite() {
 }
 
 void Bala::sigFrame() {
-	frame_num = (frame_num + 1) % TQ_NUM_FRAMES_MOVER;
+	frame_num = (frame_num + 1) % BALA_NUM_FRAMES_MOVER;
 	actualizarSprite();
 }
 
@@ -37,7 +37,7 @@ bool Bala::inicializar() {
 }
 
 void Bala::liberarMemoria() {
-	for (int i = 0; i < TQ_NUM_FRAMES_MOVER; i++) {
+	for (int i = 0; i < BALA_NUM_FRAMES_MOVER; i++) {
 		SDL_DestroyTexture(mover_sprites[i]);
 	}
 }
@@ -90,7 +90,7 @@ bool Bala::mover() {
 }
 
 void Bala::animar() {
-	if (animar_temp.obtenerTiempo() > (1000 / TQ_FRAMES_POR_SEC)) {
+	if (animar_temp.obtenerTiempo() > (1000 / BALA_FRAMES_POR_SEC)) {
 		if (velocidad != 0) {
 			//sigFrame();
 		}

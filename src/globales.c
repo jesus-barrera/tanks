@@ -28,3 +28,13 @@ void irAEscena(string nombre) {
 void terminarJuego() {
 	salir = true;
 }
+
+void liberarEscenas() {
+	map<string, Escena *>::iterator it;
+
+	for (it = escenas.begin(); it != escenas.end(); it++) {
+		delete(it->second);
+	} 
+
+	escenas.clear();
+}
