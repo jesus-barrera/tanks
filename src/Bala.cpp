@@ -1,7 +1,8 @@
 #include "../include/utiles.h"
 #include "../include/Escenario.h"
-#include "../include/Base.h";
-#include "../include/Bala.h";
+#include "../include/Base.h"
+#include "../include/Tanque.h"
+#include "../include/Bala.h"
 
 SDL_Texture *Bala::mover_sprites[BALA_NUM_FRAMES_MOVER];
 
@@ -102,7 +103,9 @@ void Bala::animar() {
 
 void Bala::enColision(Colisionador *objeto) {
 	if (objeto->tieneEtiqueta(BASE_ETIQUETA)) {
-		((Base *)objeto)->estaDestruido(true);
+		((Base *) objeto)->estaDestruido(true);
+	} else if (objeto->tieneEtiqueta(TQ_ETIQUETA)) {
+		((Tanque *) objeto)->destruir();
 	}
 }
 

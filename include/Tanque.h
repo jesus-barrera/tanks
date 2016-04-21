@@ -22,6 +22,16 @@
 
 #define MAX_BALAS 3
 
+// Botones
+enum {
+	MOVER_ARRIBA,
+	MOVER_ABAJO,
+	MOVER_IZQUIERDA,
+	MOVER_DERECHA,
+	DISPARAR,
+	NUM_ACCIONES
+};
+
 enum {
 	TQ_TIPO_ROJO,
 	TQ_TIPO_AZUL
@@ -50,6 +60,12 @@ private:
 	// Clips para la explosión
 	static SDL_Rect explosion_clips[TQ_NUM_FRAMES_EXPLOSION];
 
+	// Configuración del control
+	int *controles;
+
+	// Tecla actual presionada
+	SDL_Keycode tecla_actual;
+
 	// Número de frame
 	int frame_num;
 
@@ -62,11 +78,18 @@ private:
 	// bool esAnimationFrame()
 	bool comprobarAnim();
 public:
+	// Configuraciones del control
+	static int control_config[2][NUM_ACCIONES];
+
     Bala bala[MAX_BALAS];
+
     int balasdisparadas;
 
 	// Inicializa el tanque
 	Tanque(int tipo = TQ_TIPO_ROJO);
+
+	// Establece los controles para el tanque
+	void fijarControles(int controles[]);
 
 	// Carga recursos necesarios
 	static bool inicializar();

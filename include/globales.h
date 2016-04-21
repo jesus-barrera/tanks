@@ -26,6 +26,8 @@
 #define VENTANA_ANCHO (MAPA_ANCHO + 125)
 #define VENTANA_ALTO  MAPA_ALTO
 
+#define PI 3.14593
+
 using namespace std;
 
 extern TTF_Font *global_font;

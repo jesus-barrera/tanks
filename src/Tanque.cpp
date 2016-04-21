@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "../include/globales.h"
 #include "../include/utiles.h"
 
@@ -8,6 +10,7 @@ SDL_Texture *Tanque::mover_sprite;
 SDL_Texture *Tanque::explosion_sprite;
 SDL_Rect Tanque::explosion_clips[];
 SDL_Rect Tanque::mover_clips[];
+int Tanque::control_config[][NUM_ACCIONES];
 
 Tanque::Tanque(int tipo) {
 	this->rect.h = this->rect.w = TAMANO_BLOQUE * TQ_TAMANO * 0.85;
@@ -18,8 +21,15 @@ Tanque::Tanque(int tipo) {
 	this->estado = TQ_ST_MOVER;
 	this->tipo = tipo;
 
+	this->tecla_actual = -1;
+
 	frame_num = 0;
 	animar_temp.iniciar();
+}
+
+// Establece los controles para el tanque
+void Tanque::fijarControles(int controles[]) {
+	this->controles = controles;
 }
 
 bool Tanque::inicializar() {
@@ -64,6 +74,19 @@ bool Tanque::inicializar() {
 		mover_clips[i].h = 29;
 	}
 
+	// Definier controles
+	control_config[0][MOVER_ARRIBA]    = SDLK_UP;
+	control_config[0][MOVER_ABAJO]     = SDLK_DOWN;
+	control_config[0][MOVER_IZQUIERDA] = SDLK_LEFT;
+	control_config[0][MOVER_DERECHA]   = SDLK_RIGHT;
+	control_config[0][DISPARAR]        = SDLK_SPACE;
+
+	control_config[1][MOVER_ARRIBA]    = SDLK_w;
+	control_config[1][MOVER_ABAJO]     = SDLK_s;
+	control_config[1][MOVER_IZQUIERDA] = SDLK_a;
+	control_config[1][MOVER_DERECHA]   = SDLK_d;
+	control_config[1][DISPARAR]        = SDLK_r;
+
 	return true;
 }
 
@@ -102,6 +125,7 @@ void Tanque::actualizar() {
 		case TQ_ST_ESPERAR:
 			if (reaparecer_temp.obtenerTiempo() >= TQ_REAPARECER_TIEMPO) {
 				estado = TQ_ST_MOVER;
+				fijarAreaColision(&rect);
 				frame_num = 0;
 			}
 			break;
@@ -145,57 +169,52 @@ void Tanque::mover() {
 }
 
 void Tanque::manejarEvento(SDL_Event &evento) {
-	static SDL_Keycode tecla_actual = -1;
-
 	bool mover = true;
 	SDL_Keycode tecla;
 
 	if (estado == TQ_ST_MOVER && evento.type == SDL_KEYDOWN && evento.key.repeat == 0) {
 		tecla = evento.key.keysym.sym;
 
-		switch (tecla) {
-			case SDLK_UP:
-				fijarDireccion(ARRIBA);
-				break;
-			case SDLK_DOWN:
-				fijarDireccion(ABAJO);
-				break;
-			case SDLK_LEFT:
-				fijarDireccion(IZQUIERDA);
-				break;
-			case SDLK_RIGHT:
-				fijarDireccion(DERECHA);
-				break;
-            case SDLK_q:
-            	int x, y;
+		if (tecla == controles[MOVER_ARRIBA]) {
+			fijarDireccion(ARRIBA);
 
-            	x = rect.x;
-            	y = rect.y;
+		} else if (tecla == controles[MOVER_ABAJO]) {
+			fijarDireccion(ABAJO);
 
-            	if (direccion == IZQUIERDA 	|| direccion == DERECHA) {
-            		y += rect.h / 2 - bala[0].obtenerAlto() / 2;
-            	} else {
-            		x += rect.w / 2 - bala[0].obtenerAncho() / 2;
-            	}
+		} else if (tecla == controles[MOVER_IZQUIERDA]) {
+			fijarDireccion(IZQUIERDA);
 
-                if(bala[0].disponible){
-                    bala[0].Disparar(direccion, x, y);
+		} else if (tecla == controles[MOVER_DERECHA]) {
+			fijarDireccion(DERECHA);
+
+		} else if (tecla == controles[DISPARAR]) {
+        	int x, y;
+        	double r, h;
+        	r = angulo * PI/180;
+
+        	h = (double)rect.h / 2;
+
+        	x = rect.x + (rect.w / 2 - bala[0].obtenerAncho() / 2);
+        	y = rect.y + (rect.h / 2 - bala[0].obtenerAlto() / 2);
+
+        	x += sin(r) * h;
+        	y -= cos(r) * h;
+
+            if(bala[0].disponible){
+                bala[0].Disparar(direccion, x, y);
+            }else{
+                if(bala[1].disponible){
+                    bala[1].Disparar(direccion, x, y);
                 }else{
-                    if(bala[1].disponible){
-                        bala[1].Disparar(direccion, x, y);
-                    }else{
-                        if(bala[2].disponible){
-                            bala[2].Disparar(direccion, x, y);
-                        }
+                    if(bala[2].disponible){
+                        bala[2].Disparar(direccion, x, y);
                     }
                 }
-                mover=false;
-                break;
-            case SDLK_e:
-            	destruir();
-            	break;
-			default :
-				mover = false;
+            }
+
+            mover=false;
+		} else {
+			mover = false;
 		}
 
 		if (mover) {
@@ -253,6 +272,7 @@ void Tanque::renderizar() {
 
 void Tanque::destruir() {
 	estado = TQ_ST_EXPLOTAR;
+	fijarAreaColision(NULL);
 	fijarVelocidad(0);
 
 	frame_num = 0;

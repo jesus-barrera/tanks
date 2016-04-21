@@ -14,8 +14,6 @@
 #define BALA_RUTA_MEDIOS "media/tank"
 #define BALA_ETIQUETA "bala"
 
-class Tanque;
-
 class Bala: public Colisionador, public Objeto {
 public:
 	// texturas para la animación de movimiento

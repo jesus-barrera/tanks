@@ -6,6 +6,7 @@
 
 #include "include/globales.h"
 #include "include/Jugar.h"
+#include "include/Bala.h"
 #include "include/Tanque.h"
 #include "include/Base.h"
 #include "include/Escenario.h"

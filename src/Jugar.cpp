@@ -17,13 +17,27 @@ void Jugar::inicializar() {
 	base_1 = new Base(BASE_TIPO_ROJO);
 	base_2 = new Base(BASE_TIPO_AZUL);
 
-	tanque_j1->bala[0].agregarColisionador(tanque_j2);
-	tanque_j1->bala[1].agregarColisionador(tanque_j2);
-	tanque_j1->bala[2].agregarColisionador(tanque_j2);
+	// Definir colisiones entre los objetos
+	for (int i = 0; i < MAX_BALAS; i++) {
+		tanque_j1->bala[i].agregarColisionador(tanque_j2);
+		tanque_j1->bala[i].agregarColisionador(base_2);
+		tanque_j1->bala[i].agregarColisionador(base_1);
 
-	tanque_j1->bala[0].agregarColisionador(base_2);
-	tanque_j1->bala[1].agregarColisionador(base_2);
-	tanque_j1->bala[2].agregarColisionador(base_2);
+		tanque_j2->bala[i].agregarColisionador(tanque_j1);
+		tanque_j2->bala[i].agregarColisionador(base_1);
+		tanque_j2->bala[i].agregarColisionador(base_2);
+
+		tanque_j2->agregarColisionador(tanque_j1);
+		tanque_j1->agregarColisionador(tanque_j2);
+		
+		tanque_j1->agregarColisionador(base_1);
+		tanque_j1->agregarColisionador(base_2);
+		tanque_j2->agregarColisionador(base_1);
+		tanque_j2->agregarColisionador(base_2);
+	}
+
+	tanque_j1->fijarControles(Tanque::control_config[0]);
+	tanque_j2->fijarControles(Tanque::control_config[1]);
 
 	boton_salir = new Boton("Salir", 15, VENTANA_ALTO - 50);
 	boton_salir->setViewport(&vista_estatus);
@@ -43,7 +57,7 @@ void Jugar::entrar() {
 	base_1->estaDestruido(false);
 	base_2->estaDestruido(false);
 
-	jugador = tanque_j1;
+	jugador = tanque_j2;
 }
 
 void Jugar::actualizar() {
@@ -81,6 +95,7 @@ void Jugar::manejarEvento(SDL_Event &evento) {
 			irAEscena("menu");
 		}
 	} else {
-		jugador->manejarEvento(evento);
+		tanque_j2->manejarEvento(evento);
+		tanque_j1->manejarEvento(evento);
 	}
 }
