@@ -1,3 +1,6 @@
+#include "../include/globales.h"
+#include "../include/Editor.h"
+#include "../include/Escenario.h"
 #include "../include/Menu.h"
 
 char *etiquetas_botones[NUM_BOTONES] = {
@@ -15,7 +18,6 @@ void Menu::entrar() {
 
 void Menu::actualizar() {
 	SDL_RenderSetViewport(renderer_principal, &vista_juego);
-
 
 	// Renderizar fondo y bloques
 	Escenario::renderizar();

@@ -1,10 +1,8 @@
 #ifndef BOTON_H
 #define BOTON_H
 
-#include <SDL.h>
 #include "Objeto.h"
 #include "Hoverable.h"
-#include "utiles.h"
 
 #define BTN_HOVER_OFFSET 20
 

@@ -1,3 +1,4 @@
+#include "../include/globales.h"
 #include "../include/Objeto.h"
 
 Objeto::Objeto(int x, int y, direccion_t direccion, int velocidad, SDL_Texture *textura) {

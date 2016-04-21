@@ -1,3 +1,6 @@
+#include "../include/utiles.h"
+#include "../include/Escenario.h"
+#include "../include/Base.h";
 #include "../include/Bala.h";
 
 SDL_Texture *Bala::mover_sprites[BALA_NUM_FRAMES_MOVER];
@@ -21,7 +24,6 @@ void Bala::sigFrame() {
 	frame_num = (frame_num + 1) % BALA_NUM_FRAMES_MOVER;
 	actualizarSprite();
 }
-
 
 bool Bala::inicializar() {
 	SDL_Texture *text;

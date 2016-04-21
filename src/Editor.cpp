@@ -1,3 +1,6 @@
+#include "../include/Escenario.h"
+#include "../include/tipos.h"
+#include "../include/globales.h"
 #include "../include/Editor.h"
 
 int Editor::bloque_seleccionado = BLOQUE_BRICK;

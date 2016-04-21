@@ -1,3 +1,6 @@
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include "../include/globales.h"
 #include "../include/utiles.h";
 
 SDL_Texture *cargarTextura(char *nombre_archivo) {

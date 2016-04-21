@@ -3,11 +3,7 @@
 
 #include <SDL.h>
 #include "Escena.h"
-#include "Editor.h"
-#include "Escenario.h"
 #include "Boton.h"
-#include "utiles.h"
-#include "globales.h"
 
 enum {
 	BOTON_INICIAR,

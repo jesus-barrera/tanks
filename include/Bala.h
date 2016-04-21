@@ -2,22 +2,19 @@
 #define BALA_H_INCLUDED
 
 #include <SDL.h>
-#include <SDL_image.h>
-#include <cstdio>
 
 #include "globales.h"
-#include "Escenario.h"
 #include "Temporizador.h"
 #include "Colisionador.h"
 #include "Objeto.h"
-#include "Base.h"
-#include "utiles.h"
 
 #define BALA_TAMANO 2
 #define BALA_FRAMES_POR_SEC 20
 #define BALA_NUM_FRAMES_MOVER 1
 #define BALA_RUTA_MEDIOS "media/tank"
 #define BALA_ETIQUETA "bala"
+
+class Tanque;
 
 class Bala: public Colisionador, public Objeto {
 public:

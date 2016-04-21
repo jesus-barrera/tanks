@@ -7,7 +7,6 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
-#include <map>
 #include <string>
 
 #include "Escena.h"

@@ -1,5 +1,9 @@
-#include "../include/Tanque.h";
+#include "../include/globales.h"
+#include "../include/utiles.h"
 
+#include "../include/Tanque.h"
+
+// Definir atributos estáticos
 SDL_Texture *Tanque::mover_sprite;
 SDL_Texture *Tanque::explosion_sprite;
 SDL_Rect Tanque::explosion_clips[];
@@ -19,7 +23,7 @@ Tanque::Tanque(int tipo) {
 }
 
 bool Tanque::inicializar() {
-	// Cargar textura para la explosión usando colorkey
+	// Cargar textura del tanque
 	mover_sprite = cargarTextura(TQ_RUTA_MEDIOS"/mover.png");
 
 	// Cargar textura para la explosión usando colorkey

@@ -1,14 +1,10 @@
 #ifndef _ESCENARIO_INCLUDE_
 #define _ESCENARIO_INCLUDE_
 
-#include <vector>
-#include <fstream>
 #include <SDL.h>
-#include <SDL_image.h>
-#include "Temporizador.h"
-#include "tipos.h"
+#include <vector>
 #include "globales.h"
-#include "utiles.h"
+#include "Temporizador.h"
 
 using namespace std;
 

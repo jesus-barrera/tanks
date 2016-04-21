@@ -1,3 +1,5 @@
+#include <SDL.h>
+
 #include "../include/Temporizador.h";
 
 Temporizador::Temporizador() {

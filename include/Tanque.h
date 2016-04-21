@@ -2,14 +2,11 @@
 #define _TANK_INCLUDE_
 
 #include <SDL.h>
-#include <SDL_image.h>
 
-#include "globales.h"
 #include "Escenario.h"
 #include "Temporizador.h"
 #include "Colisionador.h"
 #include "Objeto.h"
-#include "Base.h"
 #include "Bala.h"
 
 #define TQ_TAMANO 2
@@ -44,7 +41,7 @@ private:
 	// textura para la animación de movimiento
 	static SDL_Texture *mover_sprite;
 
-	// Clips para la explosión
+	// Clips para la animación de movimiento
 	static SDL_Rect mover_clips[TQ_NUM_FRAMES_MOVER];
 	
 	// textura para la animación de explosión

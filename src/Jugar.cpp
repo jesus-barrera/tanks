@@ -1,3 +1,5 @@
+#include "../include/globales.h"
+#include "../include/Editor.h"
 #include "../include/Jugar.h"
 
 Tanque *Jugar::jugador;

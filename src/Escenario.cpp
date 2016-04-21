@@ -1,4 +1,6 @@
-#include "../include/Escenario.h";
+#include "../include/tipos.h"
+#include "../include/utiles.h"
+#include "../include/Escenario.h"
 
 SDL_Texture *Escenario::textura_suelo;
 SDL_Texture *Escenario::bloques[NUM_BLOQUES];

@@ -3,13 +3,10 @@
 
 #include <fstream>
 #include <SDL.h>
-#include "Escenario.h"
 #include "Escena.h"
 #include "Tanque.h"
 #include "Base.h"
 #include "Boton.h"
-#include "tipos.h"
-#include "globales.h"
 
 // Rango de tamaños de pincel
 #define PINCEL_MAX 2

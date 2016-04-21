@@ -1,3 +1,4 @@
+#include <map>
 #include "../include/globales.h"
 
 TTF_Font *global_font;

@@ -1,3 +1,7 @@
+#include <SDL.h>
+
+#include "../include/globales.h"
+#include "../include/utiles.h"
 #include "../include/Boton.h"
 
 Boton::Boton(char *texto, int x, int y): Objeto(x, y), Hoverable(&this->rect) {
