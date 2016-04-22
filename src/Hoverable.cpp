@@ -15,6 +15,7 @@ void Hoverable::setViewport(const SDL_Rect *viewport) {
 
 bool Hoverable::isMouseOver() {
 	SDL_Point mouse_pos;
+	SDL_Rect area = *(this->area);
 
 	SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
 
@@ -23,5 +24,6 @@ bool Hoverable::isMouseOver() {
 		mouse_pos.y -= viewport->y;
 	}
 
-	return SDL_PointInRect(&mouse_pos, this->area);
+	return (mouse_pos.x >= area.x && mouse_pos.x < area.x + area.w) &&
+		   (mouse_pos.y >= area.y && mouse_pos.y < area.y + area.h);
 }
