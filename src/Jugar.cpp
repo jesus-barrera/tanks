@@ -52,7 +52,7 @@ void Jugar::liberar() {
 }
 
 void Jugar::entrar() {
-	Editor::cargarMapa(MAPAS_RUTA"/campo_abierto.map", tanque_j1, base_1, tanque_j2, base_2);
+	Editor::cargarMapa(MAPAS_RUTA"campo_abierto.map", tanque_j1, base_1, tanque_j2, base_2);
 
 	base_1->estaDestruido(false);
 	base_2->estaDestruido(false);

@@ -12,6 +12,7 @@
 #include "Escena.h"
 
 #define	TITULO_JUEGO "Tanques"
+#define ARCH_MAPAS_INFO "mapas/maps_info.txt"
 
 #define FONT_PTSIZE 28
 

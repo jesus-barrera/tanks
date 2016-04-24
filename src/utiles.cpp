@@ -1,13 +1,13 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "../include/globales.h"
-#include "../include/utiles.h";
+#include "../include/utiles.h"
 
-SDL_Texture *cargarTextura(char *nombre_archivo) {
+SDL_Texture *cargarTextura(string nombre_archivo) {
 	SDL_Surface *surface;
 	SDL_Texture *textura = NULL;
 
-	surface = IMG_Load(nombre_archivo);
+	surface = IMG_Load(nombre_archivo.c_str());
 
 	if (surface != NULL) {
 		textura = SDL_CreateTextureFromSurface(renderer_principal, surface);
@@ -18,11 +18,11 @@ SDL_Texture *cargarTextura(char *nombre_archivo) {
 	return textura;
 }
 
-SDL_Texture *cargarTextura(char* nombre_archivo, Uint8 r, Uint8 g, Uint8 b) {
+SDL_Texture *cargarTextura(string nombre_archivo, Uint8 r, Uint8 g, Uint8 b) {
 		SDL_Surface *surface;
 	SDL_Texture *textura = NULL;
 
-	surface = IMG_Load(nombre_archivo);
+	surface = IMG_Load(nombre_archivo.c_str());
 
 	if (surface != NULL) {
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, r, g, b));

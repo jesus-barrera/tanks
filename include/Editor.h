@@ -8,10 +8,10 @@
 #include "Base.h"
 #include "Boton.h"
 #include "Etiqueta.h"
+#include "SelectorMapa.h"
 
-#define ARCH_MAPAS_CONFIG "mapas/maps_config.txt"
-#define MAPAS_RUTA        "mapas/"
-#define ARCH_MAPA_TIPO    ".map"
+#define MAPAS_RUTA     "mapas/"
+#define ARCH_MAPA_TIPO ".map"
 
 // Rango de tamaños de pincel
 #define PINCEL_MAX 2
@@ -26,10 +26,19 @@ enum {
 	EDITOR_NUM_BTN
 };
 
+// Estados
+enum {
+	EDITOR_ST_SELEC_MAPA,
+	EDITOR_ST_EDITAR
+};
+
 using namespace std;
 
 class Editor: public Escena {
 private:
+	static SelectorMapa *selector_mapa;
+	static MapaInfo *mapa_info;
+	static int estado;
 	static int bloque_seleccionado;
 	static int tamano_pincel;
 	static Tanque *jugador_1;
@@ -38,6 +47,7 @@ private:
 	static Base *base_2;
 	static Objeto *objeto_seleccionado;
 	static Boton *botones[EDITOR_NUM_BTN];
+	static Boton *cancelar_btn;
 	static Etiqueta *nombre_mapa;
 
 public:
@@ -58,6 +68,7 @@ public:
 	
 	void cargarMapa();
 	void guardarMapa();
+	void guardarMapa(const char *nombre_archivo);
 	void guardarObjetoInfo(ofstream &output, Objeto *objeto);
 };
 

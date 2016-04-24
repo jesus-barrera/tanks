@@ -3,7 +3,7 @@
 #include "../include/Escenario.h"
 #include "../include/Menu.h"
 
-char *etiquetas_botones[NUM_BOTONES] = {
+string etiquetas_botones[NUM_BOTONES] = {
 	"Nueva partida",
 	"Buscar partida",
 	"Crear mapa",

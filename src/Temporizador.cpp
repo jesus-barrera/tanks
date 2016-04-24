@@ -1,6 +1,6 @@
 #include <SDL.h>
 
-#include "../include/Temporizador.h";
+#include "../include/Temporizador.h"
 
 Temporizador::Temporizador() {
 	this->detener();
