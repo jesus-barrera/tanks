@@ -11,7 +11,6 @@
 
 #include "Escena.h"
 
-#define MAPAS_RUTA "mapas"
 #define	TITULO_JUEGO "Tanques"
 
 #define FONT_PTSIZE 28
@@ -23,7 +22,7 @@
 #define MAPA_ANCHO (MAPA_COLUMNAS * TAMANO_BLOQUE)
 #define MAPA_ALTO  (MAPA_FILAS * TAMANO_BLOQUE)
 
-#define VENTANA_ANCHO (MAPA_ANCHO + 125)
+#define VENTANA_ANCHO (MAPA_ANCHO + 200)
 #define VENTANA_ALTO  MAPA_ALTO
 
 #define PI 3.14593

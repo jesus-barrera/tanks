@@ -39,7 +39,7 @@ void Jugar::inicializar() {
 	tanque_j1->fijarControles(Tanque::control_config[0]);
 	tanque_j2->fijarControles(Tanque::control_config[1]);
 
-	boton_salir = new Boton("Salir", 15, VENTANA_ALTO - 50);
+	boton_salir = new Boton("Abandonar", 15, VENTANA_ALTO - 50);
 	boton_salir->setViewport(&vista_estatus);
 }
 

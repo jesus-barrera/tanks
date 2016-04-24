@@ -7,6 +7,11 @@
 #include "Tanque.h"
 #include "Base.h"
 #include "Boton.h"
+#include "Etiqueta.h"
+
+#define ARCH_MAPAS_CONFIG "mapas/maps_config.txt"
+#define MAPAS_RUTA        "mapas/"
+#define ARCH_MAPA_TIPO    ".map"
 
 // Rango de tamaños de pincel
 #define PINCEL_MAX 2
@@ -33,6 +38,7 @@ private:
 	static Base *base_2;
 	static Objeto *objeto_seleccionado;
 	static Boton *botones[EDITOR_NUM_BTN];
+	static Etiqueta *nombre_mapa;
 
 public:
 	static bool inicializar();

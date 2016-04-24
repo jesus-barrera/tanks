@@ -6,7 +6,7 @@
 #include "Escena.h"
 #include "Tanque.h"
 #include "Base.h"
-#include "Boton.h"|
+#include "Boton.h"
 
 class Jugar: public Escena {
 public: 

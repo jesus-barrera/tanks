@@ -1,3 +1,6 @@
+#include <ctime>
+#include <sstream>
+
 #include "../include/Escenario.h"
 #include "../include/tipos.h"
 #include "../include/globales.h"
@@ -14,6 +17,8 @@ Base *Editor::base_2;
 Objeto *Editor::objeto_seleccionado = NULL;
 
 Boton *Editor::botones[EDITOR_NUM_BTN];
+
+Etiqueta *Editor::nombre_mapa;
 
 char *btn_etiquetas[EDITOR_NUM_BTN] = {
 	"Limpiar",
@@ -43,6 +48,8 @@ bool Editor::inicializar() {
 		btn_y += 50;
 	}
 
+	Editor::nombre_mapa = new Etiqueta("", 30, {0x15, 0x9A, 0x00}, 15, 15);
+
 	return true;
 }
 
@@ -55,6 +62,7 @@ void Editor::liberarMemoria() {
 	delete(jugador_2);
 	delete(base_1);
 	delete(base_2);
+	delete(nombre_mapa);
 }
 
 /*
@@ -63,6 +71,7 @@ void Editor::liberarMemoria() {
  */
 void Editor::entrar() {
 	Escenario::limpiarMapa();
+	this->nombre_mapa->fijarTexto("");
 
 	// Reposicionar objetos
 	jugador_1->fijarDireccion(ARRIBA);
@@ -97,6 +106,9 @@ void Editor::actualizar() {
 	jugador_2->renderizar();
 
 	SDL_RenderSetViewport(renderer_principal, &vista_estatus);
+
+	// Renderizar nombre del mapa
+	nombre_mapa->renderizar();
 
 	// Renderizar botones
 	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
@@ -139,8 +151,9 @@ void Editor::manejarEvento(SDL_Event &evento) {
 
 		// Revisar si se presionó algun botón
 		switch (Boton::obtenerBotonSeleccionado(Editor::botones, EDITOR_NUM_BTN)) {
-			case EDITOR_BTN_LIMPIAR: 
+			case EDITOR_BTN_LIMPIAR:
 				Escenario::limpiarMapa(); 
+				this->nombre_mapa->fijarTexto("");
 				break;
 			case EDITOR_BTN_CARGAR: 
 				cargarMapa(); 
@@ -248,6 +261,8 @@ void Editor::cargarMapa() {
 	getline(cin, nombre);
 
 	cargarMapa(nombre.c_str(), jugador_1, base_1, jugador_2, base_2);
+
+	this->nombre_mapa->fijarTexto(nombre);
 }
 
 void Editor::cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque *t2, Base *b2) {
@@ -276,12 +291,16 @@ void Editor::guardarMapa() {
 	int i, j;
 	unsigned char byte;
 	ofstream output;
+	ofstream config;
 	string nombre;
-	cout << "ingresa el nombre del archivo: ";
+	stringstream nombre_arch;
 
+	cout << "ingresa el nombre del mapa: ";
 	getline(cin, nombre);
 
-	output.open(nombre.c_str(), ios::out | ios::binary);
+	// Generar nombre del archivo
+	nombre_arch << MAPAS_RUTA << time(NULL) << ARCH_MAPA_TIPO;
+	output.open(nombre_arch.str().c_str(), ios::out | ios::binary);
 
 	guardarObjetoInfo(output, jugador_1);
 	guardarObjetoInfo(output, base_1);
@@ -295,6 +314,11 @@ void Editor::guardarMapa() {
 		}
 	}
 
+	config.open(ARCH_MAPAS_CONFIG, ios::app);
+
+	config << nombre << ":" << nombre_arch.str() << endl;
+
+	config.close();
 	output.close();
 }
 
