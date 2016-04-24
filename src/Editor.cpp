@@ -48,7 +48,7 @@ bool Editor::inicializar() {
 		btn_y += 50;
 	}
 
-	Editor::nombre_mapa = new Etiqueta("", 30, {0x15, 0x9A, 0x00}, 15, 15);
+	Editor::nombre_mapa = new Etiqueta("", 15, 15, 30, {0x15, 0x9A, 0x00});
 
 	return true;
 }

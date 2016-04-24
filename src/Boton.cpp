@@ -4,28 +4,36 @@
 #include "../include/utiles.h"
 #include "../include/Boton.h"
 
-Boton::Boton(char *texto, int x, int y): Objeto(x, y), Hoverable(&this->rect) {
-	this->textura = renderizarTexto(string(texto), {0xFF, 0xFF, 0xFF});
-	
-	SDL_QueryTexture(this->textura, NULL, NULL, &(this->rect.w), &(this->rect.h));
-}
+SDL_Color Boton::color_principal    = {0xFF, 0xFF, 0xFF};
+SDL_Color Boton::color_seleccionado = {0xFF, 0x00, 0x00};
 
-Boton::~Boton() {
-	SDL_DestroyTexture(this->textura);
+Boton::Boton(string texto, int x, int y, int tam_fuente) 
+		: Etiqueta(texto, x, y, tam_fuente, Boton::color_principal), 
+		  Hoverable(&this->rect) {
+
+	this->seleccionado = false;
 }
 
 void Boton::renderizar() {
-	SDL_Rect dst_rect;
+	bool is_mouse_over = this->isMouseOver();
 
-	dst_rect = this->rect;
+	if (this->seleccionado != is_mouse_over) {
+		// Actualizar color
+		if (is_mouse_over) {
+			this->fijarColor(Boton::color_seleccionado);
+		} else {
+			this->fijarColor(Boton::color_principal);
+		}
 
-	if (this->isMouseOver()) {
-		dst_rect.x += BTN_HOVER_OFFSET;
+		this->seleccionado = is_mouse_over;
 	}
 
-	SDL_RenderCopy(renderer_principal, this->textura, NULL, &dst_rect);
+	Etiqueta::renderizar();
 }
 
+/**
+ * Encuentra el boton seleccionado en un arreglo de botones
+ */
 int Boton::obtenerBotonSeleccionado(Boton *botones[], int num_botones) {
 	int boton_seleccionado = -1;
 

@@ -7,7 +7,7 @@
 using namespace std;
 
 class Etiqueta {
-private:
+protected:
 	string texto;
 	SDL_Texture *textura;
 	SDL_Color color;
@@ -17,7 +17,7 @@ private:
 	void actualizarTextura(bool redimensionar);
 
 public:
-	Etiqueta(string texto, int tam_fuente = 25, SDL_Color color = {0, 0, 0}, int x = 0, int y = 0);
+	Etiqueta(string texto, int x = 0, int y = 0, int tam_fuente = 25, SDL_Color color = {0, 0, 0});
 	~Etiqueta();
 
 	void fijarTexto(string texto);

@@ -2,7 +2,7 @@
 #include "../include/globales.h"
 #include "../include/Etiqueta.h"
 
-Etiqueta::Etiqueta(string texto, int tam_fuente, SDL_Color color, int x, int y) {
+Etiqueta::Etiqueta(string texto, int x, int y, int tam_fuente, SDL_Color color) {
 	this->texto = texto;
 	this->tam_fuente = tam_fuente;
 	this->color = color;

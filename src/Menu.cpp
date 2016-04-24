@@ -22,7 +22,7 @@ void Menu::actualizar() {
 	// Renderizar fondo y bloques
 	Escenario::renderizar();
 
-	// Dibujar negra transparente
+	// Dibujar capa negra transparente
 	SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0x99);
 	SDL_RenderFillRect(renderer_principal, &vista_juego);
 	
@@ -57,7 +57,7 @@ bool Menu::inicializar() {
 	btn_x = 15;
 
 	for (int i = 0; i < NUM_BOTONES; i++) {
-		botones[i] = new Boton(etiquetas_botones[i], btn_x, btn_y);
+		botones[i] = new Boton(etiquetas_botones[i], btn_x, btn_y, MENU_BTN_TAM);
 
 		btn_y += 50;
 	}
