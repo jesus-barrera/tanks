@@ -1,9 +1,10 @@
 #include "../include/colores.h"
 #include "../include/TextInput.h"
 
-TextInput::TextInput(string prompt, int x, int y) {
-	etiqueta = new Etiqueta(prompt, x, y, TEXTINPUT_TAM_FUENTE, COLOR_AZUL);
-	input    = new Etiqueta("", x + etiqueta->obtenerAncho(), y, TEXTINPUT_TAM_FUENTE);
+TextInput::TextInput(string prompt, int x, int y, int max) {
+	etiqueta = new Etiqueta(prompt, x, y, DEFAULT_FONT_SIZE, COLOR_AZUL);
+	input    = new Etiqueta("", x + etiqueta->obtenerAncho(), y);
+	max_len  = max;
 }
 
 TextInput::~TextInput() {
@@ -23,7 +24,7 @@ void TextInput::manejarEvento(SDL_Event &evento) {
 
 			input->fijarTexto(texto);
 		}
-	} else if (evento.type == SDL_TEXTINPUT) {
+	} else if (evento.type == SDL_TEXTINPUT && (max_len < 0 || texto.size() < max_len)) {
 		texto.append(evento.text.text);
 		input->fijarTexto(texto);
 	}

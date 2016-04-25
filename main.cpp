@@ -73,13 +73,6 @@ bool inicializar() {
 	if (TTF_Init() == -1) {
 		mostrarError("Error al inicializar SDL ttf");
 		return false;
-	} else {
-		global_font = TTF_OpenFont("media/fonts/Roboto-Regular.ttf", FONT_PTSIZE);
-
-		if (global_font == NULL) {
-			mostrarError("Error al cargar fuente");
-			return false;
-		}
 	}
 
 	ventana_principal = SDL_CreateWindow(
@@ -166,14 +159,13 @@ void cerrar() {
 	//Bala::liberarMemoria();
 
 	liberarEscenas();
+	cerrarFuentes();
 
 	SDL_DestroyRenderer(renderer_principal);
 	renderer_principal = NULL;
 
 	SDL_DestroyWindow(ventana_principal);
 	ventana_principal = NULL;
-
-	TTF_CloseFont(global_font);
 
 	TTF_Quit();
 	IMG_Quit();

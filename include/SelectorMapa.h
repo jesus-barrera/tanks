@@ -7,7 +7,6 @@
 
 #define SM_X_OFFSET 15
 #define SM_Y_OFFSET 10
-#define SM_TAM_MENSAJE 40
 
 class MapaInfo {
 public:

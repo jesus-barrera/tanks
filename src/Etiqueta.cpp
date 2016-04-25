@@ -10,44 +10,34 @@ Etiqueta::Etiqueta(string texto, int x, int y, int tam_fuente, SDL_Color color) 
 	this->rect.y = y;
 
 	this->textura = NULL;
-	this->actualizarTextura(true);
+	this->actualizarTextura();
 }
 
 Etiqueta::~Etiqueta() {
 	SDL_DestroyTexture(this->textura);
 }
 
-void Etiqueta::actualizarTextura(bool redimensionar) {
+void Etiqueta::actualizarTextura() {
 	SDL_DestroyTexture(this->textura);
 
-	this->textura = renderizarTexto(this->texto, this->color);
+	this->textura = renderizarTexto(this->texto, this->color, this->tam_fuente);
 
-	if (redimensionar) {
-		this->fijarTamFuente(this->tam_fuente);
-	}
+	SDL_QueryTexture(this->textura, NULL, NULL, &this->rect.w, &this->rect.h);
+}
+
+void Etiqueta::fijarTamFuente(int tam) {
+	this->tam_fuente = tam;
+	this->actualizarTextura();
 }
 
 void Etiqueta::fijarTexto(string texto) {
 	this->texto = texto;
-	this->actualizarTextura(true);
-}
-
-void Etiqueta::fijarTamFuente(int tam) {
-	if (this->textura) {
-		SDL_QueryTexture(this->textura, NULL, NULL, &this->rect.w, &this->rect.h);
-		
-		this->rect.w *= (float)tam / this->rect.h;
-	} else {
-		this->rect.w = 0;
-	}
-	
-	this->rect.h = tam;
-	this->tam_fuente = tam;
+	this->actualizarTextura();
 }
 
 void Etiqueta::fijarColor(SDL_Color color) {
 	this->color = color;
-	this->actualizarTextura(false);
+	this->actualizarTextura();
 }
 
 void Etiqueta::fijarPosicion(int x, int y) {
@@ -59,7 +49,7 @@ int Etiqueta::obtenerAncho() {
 	return this->rect.w;
 }
 
-int Etiqueta::obtenerTamFuente() {
+int Etiqueta::obtenerAltura() {
 	return this->rect.h;
 }
 

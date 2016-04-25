@@ -38,6 +38,7 @@ string btn_etiquetas[EDITOR_NUM_BTN] = {
 bool Editor::inicializar() {
 	int btn_y;
 	int btn_x;
+	int btn_sep;
 
 	// Crear objetos
 	jugador_1 = new Tanque(TQ_TIPO_ROJO);
@@ -47,26 +48,28 @@ bool Editor::inicializar() {
 	base_2 = new Base(BASE_TIPO_AZUL);
 
 	// Crear botones
-	btn_y = VENTANA_ALTO - 50 * EDITOR_NUM_BTN;
+	btn_sep = EDITOR_TAM_BTN + 10; 
+	btn_y = VENTANA_ALTO - (btn_sep * EDITOR_NUM_BTN + 10);
 	btn_x = 15;
 
 	for (int i = 0; i < EDITOR_NUM_BTN; i++) {
-		Editor::botones[i] = new Boton(btn_etiquetas[i], btn_x, btn_y);
+		Editor::botones[i] = new Boton(btn_etiquetas[i], btn_x, btn_y, EDITOR_TAM_BTN);
 		Editor::botones[i]->setViewport(&vista_estatus);
 
-		btn_y += 50;
+		btn_y += btn_sep;
 	}
 
-	cancelar_btn = new Boton("Cancelar", btn_x, VENTANA_ALTO - 50);
+	btn_y = VENTANA_ALTO - (btn_sep * 2 + 10);
+	aceptar_btn = new Boton("Aceptar", btn_x,  btn_y, EDITOR_TAM_BTN);
+	aceptar_btn->setViewport(&vista_estatus);
+	cancelar_btn = new Boton("Cancelar", btn_x, btn_y +  btn_sep, EDITOR_TAM_BTN);
 	cancelar_btn->setViewport(&vista_estatus);
 
-	aceptar_btn = new Boton("Aceptar", btn_x, VENTANA_ALTO - 100);
-	aceptar_btn->setViewport(&vista_estatus);
 
 	// Crear otros
-	Editor::nombre_mapa   = new Etiqueta("");
+	Editor::nombre_mapa   = new Etiqueta("", 15);
 	Editor::selector_mapa = new SelectorMapa();
-	Editor::input_nombre  = new TextInput("Nombre del mapa: ");
+	Editor::input_nombre  = new TextInput("Nombre del mapa: ", 15, VENTANA_ALTO - 35, MAXLEN_NOMBRE_MAPA);
 
 	return true;
 }

@@ -5,16 +5,15 @@
 #include <SDL.h>
 #include "Etiqueta.h"
 
-#define TEXTINPUT_TAM_FUENTE 40
-
 class TextInput {
 private:
 	Etiqueta *etiqueta;
 	Etiqueta *input;
 	string texto;
+	int max_len;
 
 public:
-	TextInput(string prompt, int x = 0, int y = 0);
+	TextInput(string prompt, int x = 0, int y = 0, int max_len = -1);
 	~TextInput();
 
 	void actualizar();

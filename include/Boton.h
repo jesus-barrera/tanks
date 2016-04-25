@@ -5,7 +5,6 @@
 #include "Etiqueta.h"
 
 #define BTN_HOVER_OFFSET 20
-#define BTN_DEFAULT_FONT_SIZE 35
 
 class Boton: public Etiqueta, public Hoverable {
 private:
@@ -14,7 +13,7 @@ private:
 	bool seleccionado;
 
 public:
-	Boton(string texto, int x, int y, int tam_fuente = BTN_DEFAULT_FONT_SIZE);
+	Boton(string texto, int x, int y, int tam_fuente = DEFAULT_FONT_SIZE);
 	void renderizar();
 
 	static int obtenerBotonSeleccionado(Boton *botones[], int num_botones);

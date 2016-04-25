@@ -5,7 +5,7 @@
 #include "Escena.h"
 #include "Boton.h"
 
-#define MENU_BTN_TAM 45
+#define MENU_BTN_TAM 30
 
 enum {
 	BOTON_INICIAR,

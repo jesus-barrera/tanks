@@ -14,8 +14,6 @@
 #define	TITULO_JUEGO "Tanques"
 #define ARCH_MAPAS_INFO "mapas/maps_info.txt"
 
-#define FONT_PTSIZE 28
-
 #define TAMANO_BLOQUE 22
 #define MAPA_FILAS    30
 #define MAPA_COLUMNAS 36
@@ -30,7 +28,6 @@
 
 using namespace std;
 
-extern TTF_Font *global_font;
 extern SDL_Renderer *renderer_principal;
 extern SDL_Rect vista_juego;
 extern SDL_Rect vista_estatus;

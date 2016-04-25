@@ -10,7 +10,6 @@ SelectorMapa::SelectorMapa() {
 	mensaje = new Etiqueta("Selecciona un mapa");
 	
 	mensaje->fijarColor(COLOR_AZUL);
-	mensaje->fijarTamFuente(SM_TAM_MENSAJE);
 	mensaje->fijarPosicion(SM_X_OFFSET, SM_Y_OFFSET);
 }
 
@@ -62,7 +61,7 @@ MapaInfo *SelectorMapa::obtenerMapaSelecInfo() {
  */
 int SelectorMapa::cargarMapasInfo() {
 	size_t pos;
-	int btn_x, btn_y;
+	int btn_x, btn_y, btn_sep;
 
 	string linea;
 	MapaInfo info;
@@ -72,8 +71,9 @@ int SelectorMapa::cargarMapasInfo() {
 	mapas.clear();
 	borrarBotones();
 
-	btn_x = SM_X_OFFSET + 5;
-	btn_y = SM_Y_OFFSET + SM_TAM_MENSAJE + 10;
+	btn_sep = DEFAULT_FONT_SIZE + 10;
+	btn_x = SM_X_OFFSET + 20;
+	btn_y = SM_Y_OFFSET + btn_sep + 10;
 
 	if (archivo.is_open()) {
 		while (getline(archivo, linea)) {
@@ -85,9 +85,9 @@ int SelectorMapa::cargarMapasInfo() {
 
 				mapas.push_back(info);
 				botones.push_back(new Boton(info.nombre, btn_x, btn_y));
-				botones.back()->fijarTamFuente(SM_TAM_MENSAJE * 0.85);
+				botones.back()->fijarTamFuente(DEFAULT_FONT_SIZE * 0.85);
 
-				btn_y += SM_TAM_MENSAJE;
+				btn_y += btn_sep;
 			}
 		}
 

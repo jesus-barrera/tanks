@@ -13,6 +13,8 @@
 
 #define MAPAS_RUTA     "mapas/"
 #define ARCH_MAPA_TIPO ".map"
+#define MAXLEN_NOMBRE_MAPA 20
+#define EDITOR_TAM_BTN 20
 
 // Rango de tamaños de pincel
 #define PINCEL_MAX 2

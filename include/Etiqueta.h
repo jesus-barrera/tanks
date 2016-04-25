@@ -5,6 +5,8 @@
 #include <string>
 #include "colores.h"
 
+#define DEFAULT_FONT_SIZE 20
+
 using namespace std;
 
 class Etiqueta {
@@ -15,10 +17,10 @@ protected:
 	SDL_Rect rect;
 	int tam_fuente;
 
-	void actualizarTextura(bool redimensionar);
+	void actualizarTextura();
 
 public:
-	Etiqueta(string texto, int x = 0, int y = 0, int tam_fuente = 25, SDL_Color color = COLOR_BLANCO);
+	Etiqueta(string texto, int x = 0, int y = 0, int tam_fuente = DEFAULT_FONT_SIZE, SDL_Color color = COLOR_BLANCO);
 	~Etiqueta();
 
 	void fijarTexto(string texto);
@@ -27,7 +29,7 @@ public:
 	void fijarPosicion(int x, int y);
 
 	int obtenerAncho();
-	int obtenerTamFuente();
+	int obtenerAltura();
 	string obtenerTexto();
 
 	void renderizar();
