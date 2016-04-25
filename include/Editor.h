@@ -9,6 +9,7 @@
 #include "Boton.h"
 #include "Etiqueta.h"
 #include "SelectorMapa.h"
+#include "TextInput.h"
 
 #define MAPAS_RUTA     "mapas/"
 #define ARCH_MAPA_TIPO ".map"
@@ -29,13 +30,15 @@ enum {
 // Estados
 enum {
 	EDITOR_ST_SELEC_MAPA,
-	EDITOR_ST_EDITAR
+	EDITOR_ST_EDITAR,
+	EDITOR_ST_INPUT
 };
 
 using namespace std;
 
 class Editor: public Escena {
 private:
+	static TextInput *input_nombre;
 	static SelectorMapa *selector_mapa;
 	static MapaInfo *mapa_info;
 	static int estado;
@@ -48,8 +51,12 @@ private:
 	static Objeto *objeto_seleccionado;
 	static Boton *botones[EDITOR_NUM_BTN];
 	static Boton *cancelar_btn;
+	static Boton *aceptar_btn;
 	static Etiqueta *nombre_mapa;
 
+	void editarManejarEvento(SDL_Event &evento);
+	void selecMapaManejarEvento(SDL_Event &evento);
+	void inputManejarEvento(SDL_Event &evento);
 public:
 	static bool inicializar();
 	static void liberarMemoria();
@@ -67,7 +74,8 @@ public:
 	static void cargarObjetoInfo(ifstream &intput, Objeto *objeto);
 	
 	void cargarMapa();
-	void guardarMapa();
+	void botonGuardarPresionado();
+	void crearMapa(string nombre);
 	void guardarMapa(const char *nombre_archivo);
 	void guardarObjetoInfo(ofstream &output, Objeto *objeto);
 };

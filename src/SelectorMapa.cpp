@@ -2,13 +2,14 @@
 #include <iostream>
 #include "../include/globales.h"
 #include "../include/SelectorMapa.h"
+#include "../include/colores.h"
 
 using namespace std;
 
 SelectorMapa::SelectorMapa() {
 	mensaje = new Etiqueta("Selecciona un mapa");
 	
-	mensaje->fijarColor({0x00, 0xaa, 0xdd});
+	mensaje->fijarColor(COLOR_AZUL);
 	mensaje->fijarTamFuente(SM_TAM_MENSAJE);
 	mensaje->fijarPosicion(SM_X_OFFSET, SM_Y_OFFSET);
 }
@@ -33,10 +34,6 @@ void SelectorMapa::actualizar() {
 	int i, tam;
 
 	tam = mapas.size();
-
-	// Dibujar capa negra transparente
-	SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0x99);
-	SDL_RenderFillRect(renderer_principal, &vista_juego);
 
 	mensaje->renderizar();
 	for (i = 0; i < tam; i++) {

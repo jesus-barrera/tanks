@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <string>
+#include "colores.h"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ protected:
 	void actualizarTextura(bool redimensionar);
 
 public:
-	Etiqueta(string texto, int x = 0, int y = 0, int tam_fuente = 25, SDL_Color color = {0, 0, 0});
+	Etiqueta(string texto, int x = 0, int y = 0, int tam_fuente = 25, SDL_Color color = COLOR_BLANCO);
 	~Etiqueta();
 
 	void fijarTexto(string texto);
@@ -25,6 +26,8 @@ public:
 	void fijarColor(SDL_Color color);
 	void fijarPosicion(int x, int y);
 
+	int obtenerAncho();
+	int obtenerTamFuente();
 	string obtenerTexto();
 
 	void renderizar();

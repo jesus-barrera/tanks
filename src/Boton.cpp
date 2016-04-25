@@ -3,9 +3,10 @@
 #include "../include/globales.h"
 #include "../include/utiles.h"
 #include "../include/Boton.h"
+#include "../include/colores.h"
 
-SDL_Color Boton::color_principal    = {0xFF, 0xFF, 0xFF};
-SDL_Color Boton::color_seleccionado = {0xFF, 0x00, 0x00};
+SDL_Color Boton::color_principal    = COLOR_BLANCO;
+SDL_Color Boton::color_seleccionado = COLOR_ROJO;
 
 Boton::Boton(string texto, int x, int y, int tam_fuente) 
 		: Etiqueta(texto, x, y, tam_fuente, Boton::color_principal), 

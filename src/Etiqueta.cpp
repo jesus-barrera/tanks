@@ -55,6 +55,14 @@ void Etiqueta::fijarPosicion(int x, int y) {
 	this->rect.y = y;
 }
 
+int Etiqueta::obtenerAncho() {
+	return this->rect.w;
+}
+
+int Etiqueta::obtenerTamFuente() {
+	return this->rect.h;
+}
+
 string Etiqueta::obtenerTexto() {
 	return this->texto;
 }
