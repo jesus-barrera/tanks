@@ -5,6 +5,8 @@
  * Nuevos tipos de datos y estructuras se definen aqui.
  */
 
+typedef unsigned char byte;
+
 enum direccion_t {ARRIBA, DERECHA, ABAJO, IZQUIERDA, TOTAL_DIRECCIONES};
 
 #endif // _TIPOS_H_INCLUDED_

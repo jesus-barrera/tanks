@@ -103,6 +103,8 @@ void Editor::entrar() {
 
 	estado = EDITOR_ST_EDITAR;
 
+	selector_mapa->cargarMapasInfo();
+
 	// Reposicionar objetos
 	jugador_1->fijarDireccion(ARRIBA);
 	jugador_1->fijarPosicion(0, 0);
@@ -287,8 +289,8 @@ void Editor::selecMapaManejarEvento(SDL_Event &evento) {
 		mapa_info = selector_mapa->obtenerMapaSelecInfo();
 
 		if (mapa_info) {
-			Editor::cargarMapa(mapa_info->ruta.c_str(), jugador_1, base_1, jugador_2, base_2);
-			nombre_mapa->fijarTexto(mapa_info->nombre);
+			Editor::cargarMapa(mapa_info->ruta, jugador_1, base_1, jugador_2, base_2);
+			nombre_mapa->fijarTexto((string)(mapa_info->nombre));
 
 			estado = EDITOR_ST_EDITAR; // ir a editar
 		} else if (cancelar_btn->isMouseOver()) {
@@ -353,10 +355,6 @@ void Editor::dibujar(int bloque) {
 }
 
 void Editor::cargarMapa() {
-	string nombre;
-
-	selector_mapa->cargarMapasInfo();
-
 	estado = EDITOR_ST_SELEC_MAPA;
 }
 
@@ -385,7 +383,7 @@ void Editor::cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque
 void Editor::botonGuardarPresionado() {
 	if (mapa_info) {
 		// Mapa cargado, sobreescribir
-		guardarMapa(mapa_info->ruta.c_str());
+		guardarMapa(mapa_info->ruta);
 	} else {
 		// Nuevo mapa, solicitar nombre del mapa
 		SDL_StartTextInput();
@@ -394,19 +392,16 @@ void Editor::botonGuardarPresionado() {
 }
 
 void Editor::crearMapa(string nombre) {
-	ofstream infofile;
-	stringstream nombre_arch;
+	stringstream ssruta;
+	string ruta;
 
 	// Generar ruta del archivo
-	nombre_arch << MAPAS_RUTA << time(NULL) << ARCH_MAPA_TIPO;
-	guardarMapa(nombre_arch.str().c_str());
+	ssruta << MAPAS_USUARIO_RUTA << time(NULL) << ARCH_MAPA_TIPO;
+	ruta = ssruta.str();
 
-	infofile.open(ARCH_MAPAS_INFO, ios::app);
-	infofile << nombre << ":" << nombre_arch.str() << endl;
-	infofile.close();
-
-	mapa_info = selector_mapa->agregar(nombre, nombre_arch.str());
-	nombre_mapa->fijarTexto(mapa_info->nombre);
+	guardarMapa(ruta.c_str());
+	mapa_info = selector_mapa->agregar(nombre, ruta);
+	nombre_mapa->fijarTexto((string)mapa_info->nombre);
 }
 
 void Editor::guardarMapa(const char *nombre_archivo) {

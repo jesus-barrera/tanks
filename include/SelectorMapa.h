@@ -4,18 +4,14 @@
 #include <SDL.h>
 #include <vector>
 #include "Boton.h"
+#include "MapaInfoDAO.h"
 
 #define SM_X_OFFSET 15
 #define SM_Y_OFFSET 10
 
-class MapaInfo {
-public:
-	string nombre;
-	string ruta;
-};
-
 class SelectorMapa {
 private: 
+	MapaInfoDAO mapas_dao;
 	vector<MapaInfo> mapas;
 	vector<Boton *> botones;
 	Etiqueta *mensaje;
@@ -28,7 +24,7 @@ public:
 	MapaInfo *obtenerMapaSelecInfo();
 	void borrarBotones();
 
-	int cargarMapasInfo();
+	void cargarMapasInfo();
 	MapaInfo *agregar(string nombre, string ruta);
 };
 

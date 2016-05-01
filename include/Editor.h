@@ -11,7 +11,8 @@
 #include "SelectorMapa.h"
 #include "TextInput.h"
 
-#define MAPAS_RUTA     "mapas/"
+#define MAPAS_RUTA "mapas/"
+#define MAPAS_USUARIO_RUTA MAPAS_RUTA"user/"
 #define ARCH_MAPA_TIPO ".map"
 #define MAXLEN_NOMBRE_MAPA 20
 #define EDITOR_TAM_BTN 20

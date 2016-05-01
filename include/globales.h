@@ -12,7 +12,6 @@
 #include "Escena.h"
 
 #define	TITULO_JUEGO "Tanques"
-#define ARCH_MAPAS_INFO "mapas/maps_info.txt"
 
 #define TAMANO_BLOQUE 22
 #define MAPA_FILAS    30

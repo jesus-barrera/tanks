@@ -5,3 +5,4 @@ bin/
 obj/
 *.depend
 tanques
+mapas/mapas_info.dat
