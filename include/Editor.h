@@ -33,24 +33,27 @@ enum {
 enum {
 	EDITOR_ST_SELEC_MAPA,
 	EDITOR_ST_EDITAR,
-	EDITOR_ST_INPUT
+	EDITOR_ST_LEER
 };
 
 using namespace std;
 
 class Editor: public Escena {
 private:
-	static TextInput *input_nombre;
 	static SelectorMapa *selector_mapa;
 	static MapaInfo *mapa_info;
 	static int estado;
+
 	static int bloque_seleccionado;
 	static int tamano_pincel;
+	static Objeto *objeto_seleccionado;
+	
 	static Tanque *jugador_1;
 	static Tanque *jugador_2;
 	static Base *base_1;
 	static Base *base_2;
-	static Objeto *objeto_seleccionado;
+
+	static TextInput *input_nombre;
 	static Boton *botones[EDITOR_NUM_BTN];
 	static Boton *cancelar_btn;
 	static Boton *aceptar_btn;

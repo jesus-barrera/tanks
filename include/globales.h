@@ -2,7 +2,7 @@
 #define _GLOBALES_H_INCLUDED_
 
 /*
- * Aqui se definen las constantes y variables globales.
+ * Aqui se definen las constantes y variables globales del juego.
  */ 
 
 #include <SDL.h>
@@ -21,7 +21,8 @@
 #define MAPA_ANCHO (MAPA_COLUMNAS * TAMANO_BLOQUE)
 #define MAPA_ALTO  (MAPA_FILAS * TAMANO_BLOQUE)
 
-#define VENTANA_ANCHO (MAPA_ANCHO + 200)
+#define PANEL_ANCHO 200
+#define VENTANA_ANCHO (MAPA_ANCHO + PANEL_ANCHO)
 #define VENTANA_ALTO  MAPA_ALTO
 
 #define PI 3.14593

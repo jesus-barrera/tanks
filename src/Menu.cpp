@@ -1,4 +1,4 @@
-#include "../include/globales.h"
+#include "../include/utiles.h"
 #include "../include/Editor.h"
 #include "../include/Escenario.h"
 #include "../include/Menu.h"
@@ -22,9 +22,7 @@ void Menu::actualizar() {
 	// Renderizar fondo y bloques
 	Escenario::renderizar();
 
-	// Dibujar capa negra transparente
-	SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0x99);
-	SDL_RenderFillRect(renderer_principal, &vista_juego);
+	renderizarCapaGris();
 	
 	// Renderizar botones
 	for (int i = 0; i < NUM_BOTONES; i++) {

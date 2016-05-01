@@ -3,7 +3,7 @@
 
 #include "../include/Escenario.h"
 #include "../include/tipos.h"
-#include "../include/globales.h"
+#include "../include/utiles.h"
 #include "../include/Editor.h"
 
 // Inicializar atributos estáticos
@@ -64,7 +64,6 @@ bool Editor::inicializar() {
 	aceptar_btn->setViewport(&vista_estatus);
 	cancelar_btn = new Boton("Cancelar", btn_x, btn_y +  btn_sep, EDITOR_TAM_BTN);
 	cancelar_btn->setViewport(&vista_estatus);
-
 
 	// Crear otros
 	Editor::nombre_mapa   = new Etiqueta("", 15);
@@ -137,15 +136,13 @@ void Editor::actualizar() {
 	jugador_2->renderizar();
 
 	if (estado == EDITOR_ST_SELEC_MAPA) {
-		SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0x99);
-		SDL_RenderFillRect(renderer_principal, &vista_juego);	
+		renderizarCapaGris();
 		selector_mapa->actualizar();
-		
+
 		SDL_RenderSetViewport(renderer_principal, &vista_estatus);
 		cancelar_btn->renderizar();
-	} else if (estado == EDITOR_ST_INPUT) {
-		SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0x99);
-		SDL_RenderFillRect(renderer_principal, &vista_juego);
+	} else if (estado == EDITOR_ST_LEER) {
+		renderizarCapaGris();
 		input_nombre->actualizar();
 		
 		SDL_RenderSetViewport(renderer_principal, &vista_estatus);
@@ -183,7 +180,7 @@ void Editor::manejarEvento(SDL_Event &evento) {
 		editarManejarEvento(evento);
 	} else if (estado == EDITOR_ST_SELEC_MAPA) {
 		selecMapaManejarEvento(evento);
-	} else if (estado == EDITOR_ST_INPUT) {
+	} else if (estado == EDITOR_ST_LEER) {
 		inputManejarEvento(evento);
 	}
 }
@@ -387,12 +384,12 @@ void Editor::cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque
 
 void Editor::botonGuardarPresionado() {
 	if (mapa_info) {
-		// Mapa cargado
+		// Mapa cargado, sobreescribir
 		guardarMapa(mapa_info->ruta.c_str());
 	} else {
 		// Nuevo mapa, solicitar nombre del mapa
 		SDL_StartTextInput();
-		estado = EDITOR_ST_INPUT;
+		estado = EDITOR_ST_LEER;
 	}
 }
 
