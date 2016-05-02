@@ -6,44 +6,68 @@
 #include "../include/colores.h"
 
 SDL_Color Boton::color_principal    = COLOR_BLANCO;
-SDL_Color Boton::color_seleccionado = COLOR_ROJO;
+SDL_Color Boton::color_seleccionado = COLOR_VERDE;
+SDL_Color Boton::color_mouse_over   = COLOR_ROJO;
 
 Boton::Boton(string texto, int x, int y, int tam_fuente) 
-		: Etiqueta(texto, x, y, tam_fuente, Boton::color_principal), 
-		  Hoverable(&this->rect) {
+        : Etiqueta(texto, x, y, tam_fuente, Boton::color_principal), 
+          Hoverable(&this->rect) {
 
-	this->seleccionado = false;
+    this->seleccionado = false;
+    this->mouse_is_over = false;
 }
 
 void Boton::renderizar() {
-	bool is_mouse_over = this->isMouseOver();
+    bool is_mouse_over = this->isMouseOver();
 
-	if (this->seleccionado != is_mouse_over) {
-		// Actualizar color
-		if (is_mouse_over) {
-			this->fijarColor(Boton::color_seleccionado);
-		} else {
-			this->fijarColor(Boton::color_principal);
-		}
+    if (!this->seleccionado && (this->mouse_is_over != is_mouse_over)) {
+        // Actualizar color
+        if (is_mouse_over) {
+            this->fijarColor(Boton::color_mouse_over);
+        } else {
+            this->fijarColor(Boton::color_principal);
+        }
 
-		this->seleccionado = is_mouse_over;
-	}
+        this->mouse_is_over = is_mouse_over;
+    }
 
-	Etiqueta::renderizar();
+    Etiqueta::renderizar();
+}
+
+bool Boton::estaSeleccionado() {
+    return this->seleccionado;
+}
+
+bool Boton::estaSeleccionado(bool seleccionado) {
+    if (seleccionado != this->seleccionado) {
+        if (seleccionado) {
+            this->fijarColor(Boton::color_seleccionado);
+        } else {
+            if (this->mouse_is_over) {
+                this->fijarColor(Boton::color_mouse_over);
+            } else {
+                this->fijarColor(Boton::color_principal);
+            }
+        }
+
+        this->seleccionado = seleccionado;
+    }
+
+    return seleccionado;
 }
 
 /**
  * Encuentra el boton seleccionado en un arreglo de botones
  */
 int Boton::obtenerBotonSeleccionado(Boton *botones[], int num_botones) {
-	int boton_seleccionado = -1;
+    int boton_seleccionado = -1;
 
-	for (int i = 0; i < num_botones; i++) {
-		if (botones[i]->isMouseOver()) {
-			boton_seleccionado = i;
-			break;
-		}
-	}
+    for (int i = 0; i < num_botones; i++) {
+        if (botones[i]->isMouseOver()) {
+            boton_seleccionado = i;
+            break;
+        }
+    }
 
-	return boton_seleccionado;
+    return boton_seleccionado;
 }

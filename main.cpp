@@ -12,6 +12,7 @@
 #include "include/Escenario.h"
 #include "include/Editor.h"
 #include "include/Menu.h"
+#include "include/ConfigurarPartida.h"
 #include "include/utiles.h"
 
 using namespace std;
@@ -133,6 +134,7 @@ bool inicializar() {
 	registrarEscena(new Menu(), "menu");
 	registrarEscena(new Editor(), "editar");
 	registrarEscena(new Jugar(), "jugar");
+	registrarEscena(new ConfigurarPartida(), "nueva-partida");
 
 	return true;
 }
@@ -155,7 +157,7 @@ void cerrar() {
 	Menu::liberarMemoria();
 	Editor::liberarMemoria();
 	Base::liberarMemoria();
-	Jugar::liberar();
+	Jugar::liberarMemoria();
 	//Bala::liberarMemoria();
 
 	liberarEscenas();

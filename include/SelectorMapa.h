@@ -16,6 +16,9 @@ private:
 	vector<Boton *> botones;
 	Etiqueta *mensaje;
 
+	int btn_seleccionado;
+	int borde_inferior;
+
 public:
 	SelectorMapa();
 	~SelectorMapa();
@@ -23,6 +26,8 @@ public:
 	void actualizar();
 	MapaInfo *obtenerMapaSelecInfo();
 	void borrarBotones();
+
+	int obtenerBordeInferior();
 
 	void cargarMapasInfo();
 	MapaInfo *agregar(string nombre, string ruta);

@@ -11,6 +11,8 @@ SelectorMapa::SelectorMapa() {
 	
 	mensaje->fijarColor(COLOR_AZUL);
 	mensaje->fijarPosicion(SM_X_OFFSET, SM_Y_OFFSET);
+
+	btn_seleccionado = -1;
 }
 
 SelectorMapa::~SelectorMapa() {
@@ -22,7 +24,8 @@ void SelectorMapa::borrarBotones() {
 	for (int i = 0, tam = botones.size(); i < tam; i++) {
 		delete(botones[i]);
 	}
-
+	
+	btn_seleccionado = -1;
 	botones.clear();
 }
 
@@ -35,6 +38,7 @@ void SelectorMapa::actualizar() {
 	mensaje->renderizar();
 	
 	tam = botones.size();
+
 	for (i = 0; i < tam; i++) {
 		botones[i]->renderizar();
 	}
@@ -49,6 +53,12 @@ MapaInfo *SelectorMapa::obtenerMapaSelecInfo() {
 	index = Boton::obtenerBotonSeleccionado(&botones[0], botones.size());
 
 	if (index != -1) {
+		if (btn_seleccionado != index) {
+			if (btn_seleccionado != -1) botones[btn_seleccionado]->estaSeleccionado(false);
+			botones[index]->estaSeleccionado(true);
+			btn_seleccionado = index;
+		}
+
 		return &mapas[index];
 	} else {
 		return NULL;
@@ -78,16 +88,20 @@ void SelectorMapa::cargarMapasInfo() {
 
 	for (int i = 0; i < num_registros; i++) {
 		botones.push_back(new Boton((string)mapas[i].nombre, btn_x, btn_y));
-		botones.back()->fijarTamFuente(DEFAULT_FONT_SIZE * 0.85);
-
 		btn_y += btn_sep;
 	}
+
+	borde_inferior = btn_y;
 
 	if (num_registros > 0) {
 		mensaje->fijarTexto("Selecciona un mapa");
 	} else {
 		mensaje->fijarTexto("No se encontraron mapas");
 	}
+}
+
+int SelectorMapa::obtenerBordeInferior() {
+	return borde_inferior;
 }
 
 /**

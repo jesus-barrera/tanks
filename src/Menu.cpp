@@ -34,7 +34,7 @@ void Menu::manejarEvento(SDL_Event &evento) {
 	if (evento.type == SDL_MOUSEBUTTONDOWN) {
 		switch (Boton::obtenerBotonSeleccionado(Menu::botones, NUM_BOTONES)) {
 			case BOTON_INICIAR:
-				irAEscena("jugar");
+				irAEscena("nueva-partida");
 				break;
 			case BOTON_EDITAR:
 				irAEscena("editar");

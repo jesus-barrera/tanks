@@ -2,6 +2,10 @@
 #include "../include/Editor.h"
 #include "../include/Jugar.h"
 
+MapaInfo *Jugar::mapa_info;
+int Jugar::modo_juego;
+int Jugar::num_vidas;
+
 Tanque *Jugar::jugador;
 Tanque *Jugar::tanque_j1;
 Tanque *Jugar::tanque_j2;
@@ -43,7 +47,7 @@ void Jugar::inicializar() {
 	boton_salir->setViewport(&vista_estatus);
 }
 
-void Jugar::liberar() {
+void Jugar::liberarMemoria() {
 	delete(tanque_j1);
 	delete(tanque_j2);
 	delete(base_1);
@@ -52,7 +56,11 @@ void Jugar::liberar() {
 }
 
 void Jugar::entrar() {
-	Editor::cargarMapa(MAPAS_RUTA"campo_abierto.map", tanque_j1, base_1, tanque_j2, base_2);
+	if (mapa_info) {
+		Editor::cargarMapa(mapa_info->ruta, tanque_j1, base_1, tanque_j2, base_2);
+	} else {
+		Editor::cargarMapa(MAPAS_RUTA"campo_abierto.map", tanque_j1, base_1, tanque_j2, base_2);
+	}
 
 	base_1->estaDestruido(false);
 	base_2->estaDestruido(false);
@@ -95,7 +103,6 @@ void Jugar::manejarEvento(SDL_Event &evento) {
 			irAEscena("menu");
 		}
 	} else {
-		tanque_j2->manejarEvento(evento);
 		tanque_j1->manejarEvento(evento);
 	}
 }
