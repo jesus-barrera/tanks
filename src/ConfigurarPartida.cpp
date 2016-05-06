@@ -3,6 +3,7 @@
 #include "../include/Editor.h"
 #include "../include/Jugar.h"
 #include "../include/utiles.h"
+#include "../include/network.h"
 
 int ConfigurarPartida::options_vidas[NUM_OPT_VIDAS] = {1, 3, 5, 10};
 string ConfigurarPartida::etiquetas_botones[CONF_NUM_BTNS] = {"Listo", "Cancelar", "Por vidas", "Por base"};
@@ -32,7 +33,7 @@ ConfigurarPartida::ConfigurarPartida() {
     botones[CONF_BTN_CANCELAR]->fijarPosicion(x_offset, (y_offset += btn_sep));
     botones[CONF_BTN_CANCELAR]->setViewport(&vista_estatus);
 
-    et_info = new Etiqueta("Esperando jugador ...", VENTANA_PADDING, VENTANA_PADDING, DEFAULT_FONT_SIZE, COLOR_BLANCO);
+    et_mensaje = new Etiqueta("", VENTANA_PADDING, VENTANA_PADDING, DEFAULT_FONT_SIZE, COLOR_BLANCO);
     
     /**
      * Posicionar objetos de la vista de juego
@@ -50,18 +51,20 @@ ConfigurarPartida::ConfigurarPartida() {
 
     botones[CONF_BTN_JUEGO_B]->fijarPosicion(x_offset + 20,  (y_offset += btn_sep));
     
-    selector_mapa.fijarPosicion(x_offset, y_offset += btn_sep * 2);    
+    selector_mapa.fijarPosicion(x_offset, y_offset += btn_sep * 2);
 }
 
 /**
  * Liberar memoria reservada.
  */
 ConfigurarPartida::~ConfigurarPartida() {
-    delete(et_info);
+    delete(et_mensaje);
     delete(et_modo_juego);
 
     Boton::eliminarBotones(botones, CONF_NUM_BTNS);
     Boton::eliminarBotones(btns_vidas, NUM_OPT_VIDAS);
+
+    Net_terminar();
 }
 
 /**
@@ -98,9 +101,17 @@ void ConfigurarPartida::actualizar() {
         Boton::renderizarBotones(botones, CONF_NUM_BTNS);
     
         if (modo_juego == MODO_JUEGO_VIDAS) Boton::renderizarBotones(btns_vidas, NUM_OPT_VIDAS);
-    } else {
+    } else if (estado == CONF_ST_ESPERANDO_JUGADOR) {
+        if (Net_recibir(buffer, CONF_TAM_BUFFER)) {
+            paquete.analizar(buffer);
+
+            if (paquete.tipo == PQT_UNIRSE) {
+                et_mensaje->fijarTexto((string)paquete.nombre);
+            }
+        }
+
         SDL_RenderSetViewport(renderer_principal, &vista_juego);
-        et_info->renderizar();
+        et_mensaje->renderizar();
         
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         botones[CONF_BTN_CANCELAR]->renderizar();
@@ -117,6 +128,8 @@ void ConfigurarPartida::manejarEvento(SDL_Event &evento) {
 
 void ConfigurarPartida::esperarManejarEvento(SDL_Event &evento) {
     if (evento.type == SDL_MOUSEBUTTONDOWN && botones[CONF_BTN_CANCELAR]->isMouseOver()) {
+        Net_terminar();
+
         estado = CONF_ST_CONFIG_PARTIDA;
     }
 }
@@ -139,6 +152,12 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                         Jugar::num_vidas = options_vidas[opt_vidas];
 
                         estado = CONF_ST_ESPERANDO_JUGADOR;
+                        
+                        if (Net_iniciar()) {
+                            et_mensaje->fijarTexto("Esperando jugador ...");
+                        } else {
+                            et_mensaje->fijarTexto("Ocurrio un error al inicar conexion");
+                        }
                     }
                     break;
                 case CONF_BTN_CANCELAR:
@@ -150,7 +169,7 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                     botones[CONF_BTN_JUEGO_B]->estaSeleccionado(false);
                     break;
                 case CONF_BTN_JUEGO_B:
-                    modo_juego = MODO_JUEGO_VIDAS;
+                    modo_juego = MODO_JUEGO_BASE;
                     botones[CONF_BTN_JUEGO_B]->estaSeleccionado(true);
                     botones[CONF_BTN_JUEGO_A]->estaSeleccionado(false);
                     break;

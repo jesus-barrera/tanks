@@ -25,6 +25,8 @@
 #define VENTANA_ALTO  MAPA_ALTO
 #define VENTANA_PADDING 15
 
+#define MAXTAM_NOMBRE_USUARIO 20
+
 #define PI 3.14593
 
 using namespace std;
