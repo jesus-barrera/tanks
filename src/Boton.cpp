@@ -71,3 +71,38 @@ int Boton::obtenerBotonSeleccionado(Boton *botones[], int num_botones) {
 
     return boton_seleccionado;
 }
+
+/**
+ * Renderiza una lista de botones
+ */
+void Boton::renderizarBotones(Boton *botones[], int num_botones) {
+    SDL_Rect *viewport, *btn_viewport;
+
+    viewport = &vista_juego;
+    
+    for (int i = 0; i < num_botones; i++) {
+        btn_viewport = botones[i]->getViewport();
+        
+        if (btn_viewport != viewport) {
+            if (btn_viewport) {
+                SDL_RenderSetViewport(renderer_principal, btn_viewport);
+            } else {
+                SDL_RenderSetViewport(renderer_principal, &vista_juego);
+            }
+
+            viewport = btn_viewport;
+        }
+
+        botones[i]->renderizar();
+    }
+}
+
+/**
+ * Elimina una lista de botones instanciados con new
+ */
+void Boton::eliminarBotones(Boton *botones[], int num_botones) {
+    for (int i = 0; i < num_botones; i++) {
+        delete(botones[i]);
+        botones[i] = NULL;   
+    }
+}

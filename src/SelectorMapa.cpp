@@ -10,7 +10,6 @@ SelectorMapa::SelectorMapa() {
 	mensaje = new Etiqueta("");
 	
 	mensaje->fijarColor(COLOR_AZUL);
-	mensaje->fijarPosicion(SM_X_OFFSET, SM_Y_OFFSET);
 
 	btn_seleccionado = -1;
 }
@@ -77,8 +76,8 @@ void SelectorMapa::cargarMapasInfo() {
 	borrarBotones();
 
 	btn_sep = DEFAULT_FONT_SIZE + 10;
-	btn_x = SM_X_OFFSET + 20;
-	btn_y = SM_Y_OFFSET + btn_sep + 10;
+	btn_x = pos_x + 20;
+	btn_y = pos_y + btn_sep;
 	
 	// Cargar datos del archivo
 	registros = mapas_dao.cargarDatos(&num_registros);
@@ -91,8 +90,6 @@ void SelectorMapa::cargarMapasInfo() {
 		btn_y += btn_sep;
 	}
 
-	borde_inferior = btn_y;
-
 	if (num_registros > 0) {
 		mensaje->fijarTexto("Selecciona un mapa");
 	} else {
@@ -100,8 +97,11 @@ void SelectorMapa::cargarMapasInfo() {
 	}
 }
 
-int SelectorMapa::obtenerBordeInferior() {
-	return borde_inferior;
+void SelectorMapa::fijarPosicion(int x, int y) {
+	pos_x = x;
+	pos_y = y;
+
+	mensaje->fijarPosicion(pos_x, pos_y);
 }
 
 /**

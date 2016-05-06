@@ -12,7 +12,8 @@ public:
 	Hoverable(SDL_Rect *area, const SDL_Rect *viewport = NULL);
 
 	void setArea(SDL_Rect *area);
-	void setViewport(const SDL_Rect *viewport);
+    void setViewport(const SDL_Rect *viewport);
+	SDL_Rect *getViewport();
 
 	bool isMouseOver();
 };

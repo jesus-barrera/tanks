@@ -21,7 +21,9 @@ public:
     bool estaSeleccionado();
     bool estaSeleccionado(bool seleccionado);
 
-	static int obtenerBotonSeleccionado(Boton *botones[], int num_botones);
+    static int obtenerBotonSeleccionado(Boton *botones[], int num_botones);
+    static void renderizarBotones(Boton *botones[], int num_botones);
+	static void eliminarBotones(Boton *botones[], int num_botones);
 };
 
 #endif // BOTON_H

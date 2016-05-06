@@ -13,6 +13,11 @@ void Hoverable::setViewport(const SDL_Rect *viewport) {
 	this->viewport = viewport;
 }
 
+
+SDL_Rect *Hoverable::getViewport() {
+	return (SDL_Rect *)this->viewport;
+}
+
 bool Hoverable::isMouseOver() {
 	SDL_Point mouse_pos;
 	SDL_Rect area = *(this->area);

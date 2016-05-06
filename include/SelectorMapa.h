@@ -6,9 +6,6 @@
 #include "Boton.h"
 #include "MapaInfoDAO.h"
 
-#define SM_X_OFFSET 15
-#define SM_Y_OFFSET 10
-
 class SelectorMapa {
 private: 
 	MapaInfoDAO mapas_dao;
@@ -17,7 +14,8 @@ private:
 	Etiqueta *mensaje;
 
 	int btn_seleccionado;
-	int borde_inferior;
+	int pos_x;
+	int pos_y;
 
 public:
 	SelectorMapa();
@@ -27,7 +25,7 @@ public:
 	MapaInfo *obtenerMapaSelecInfo();
 	void borrarBotones();
 
-	int obtenerBordeInferior();
+	void fijarPosicion(int x, int y);
 
 	void cargarMapasInfo();
 	MapaInfo *agregar(string nombre, string ruta);

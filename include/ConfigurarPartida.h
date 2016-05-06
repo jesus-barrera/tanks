@@ -8,9 +8,24 @@
 
 #define NUM_OPT_VIDAS 4
 
+enum {
+    CONF_ST_ESPERANDO_JUGADOR,
+    CONF_ST_CONFIG_PARTIDA
+};
+
+enum {
+    CONF_BTN_LISTO,
+    CONF_BTN_CANCELAR,
+    CONF_BTN_JUEGO_A,
+    CONF_BTN_JUEGO_B,
+    CONF_NUM_BTNS
+};
+
 class ConfigurarPartida: public Escena {
 private:
     static int options_vidas[NUM_OPT_VIDAS];
+    static string etiquetas_botones[CONF_NUM_BTNS];
+    int estado;
 
     MapaInfo *mapa_info;
     int opt_vidas;
@@ -18,11 +33,9 @@ private:
 
     SelectorMapa selector_mapa;
 
-    Boton *btn_comenzar;
-    Boton *btn_cancelar;
-    Boton *btn_modo_a;
-    Boton *btn_modo_b;
+    Boton *botones[CONF_NUM_BTNS];
     Etiqueta *et_modo_juego;
+    Etiqueta *et_info;
     Boton *btns_vidas[NUM_OPT_VIDAS];
 
 public:
@@ -32,6 +45,9 @@ public:
     void entrar();
     void actualizar();
     void manejarEvento(SDL_Event &evento);
+
+    void esperarManejarEvento(SDL_Event &evento);
+    void configManejarEvento(SDL_Event &evento);
 };
 
 #endif
