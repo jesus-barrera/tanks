@@ -16,7 +16,9 @@ void Menu::entrar() {
 	Editor::cargarMapa(MAPAS_RUTA"campo_abierto.map", NULL, NULL, NULL, NULL);
 }
 
-void Menu::actualizar() {
+void Menu::actualizar() { }
+
+void Menu::renderizar() {
 	SDL_RenderSetViewport(renderer_principal, &vista_juego);
 
 	// Renderizar fondo y bloques

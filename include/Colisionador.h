@@ -21,7 +21,7 @@ public:
 	SDL_Rect *obtenerAreaColision();
 
 	void agregarColisionador(Colisionador *obj);
-	bool comprobarColision(SDL_Rect *rect = NULL);
+	SDL_Rect *comprobarColision(SDL_Rect *rect, SDL_Rect *colision_area);
 	bool tieneEtiqueta(string etiqueta);
 	
 	virtual void enColision(Colisionador *obj) = 0;

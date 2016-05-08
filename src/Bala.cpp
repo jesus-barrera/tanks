@@ -54,41 +54,94 @@ void Bala::actualizar() {
 
 bool Bala::mover() {
     bool choque=false;
-	SDL_Rect sig_rect = rect;
-	vector<SDL_Point> bloques;
-	vector<SDL_Point>::iterator it;
 
 	if (velocidad != 0) {
-		switch (direccion) {
-			case ARRIBA: sig_rect.y -= velocidad;
-				break;
-			case ABAJO: sig_rect.y += velocidad;
-				break;
-			case DERECHA: sig_rect.x += velocidad;
-				break;
-			case IZQUIERDA: sig_rect.x -= velocidad;
-				break;
-			default: ;
-		}
+        SDL_Rect sig_rect;
+        SDL_Rect colision_area;
+        SDL_Rect *colision;
+        vector<SDL_Point> bloques;
+        vector<SDL_Point>::iterator it;
 
-		bloques = Escenario::obtenerBloquesEnColision(sig_rect);
+        // Calcular desplazamiento
+        double r = angulo * PI/180;
+        double d = (velocidad * time_step);
 
-		if ((sig_rect.x >= 0 && sig_rect.x < (vista_juego.w - rect.w)) &&
-			(sig_rect.y >= 0 && sig_rect.y < (vista_juego.h - rect.h)) &&
-			!comprobarColision(&sig_rect) && bloques.size() == 0) {
-            choque=false;
-			rect = sig_rect;
-		} else {
-			fijarVelocidad(0);
-			choque=true;
-			disponible=true;
-			for (it = bloques.begin(); it != bloques.end(); ++it) {
-				Escenario::destruirBloque((*it));
-				choque=true;
-				disponible=true;
-			}
-		}
+        pos_x += sin(r) * d;
+        pos_y -= cos(r) * d;
+
+        /* Detección de colisiones */
+
+        // Colisiones con el borde de la pantalla
+        if (pos_x < 0) {
+            pos_x = 0;
+            choque = true;
+        } else if (pos_x > (vista_juego.w - rect.w)) {
+            pos_x = vista_juego.w - rect.w;
+            choque = true;
+        }
+
+        if (pos_y < 0) {
+            pos_y = 0;
+            choque = true;
+        } else if (pos_y > (vista_juego.h - rect.h)) {
+            pos_y = vista_juego.h - rect.h;
+            choque = true;
+        }
+
+        // Colisiones con objetos y bloques
+        sig_rect = rect;
+
+        sig_rect.x = (int)pos_x;
+        sig_rect.y = (int)pos_y;
+
+        bloques = Escenario::obtenerBloquesEnColision(sig_rect);
+
+        if ((colision = comprobarColision(&sig_rect, &colision_area)) || bloques.size() > 0) {
+            for (it = bloques.begin(); it != bloques.end(); ++it) {
+                if (Escenario::obtenerBloque(*it) != BLOQUE_AGUA_1 && 
+                    Escenario::obtenerBloque(*it) != BLOQUE_AGUA_2) {
+                    
+                    Escenario::destruirBloque((*it));
+
+                    colision_area.x = (*it).x * TAMANO_BLOQUE;
+                    colision_area.y = (*it).y * TAMANO_BLOQUE;
+
+                    colision_area.w = TAMANO_BLOQUE;
+                    colision_area.h = TAMANO_BLOQUE;
+
+                    colision = &colision_area;
+        
+                    choque = true;
+                }
+            }
+
+            if (colision) {    
+                choque = true;
+
+                // Truncar movimiento
+                switch (direccion) {
+                    case ARRIBA: pos_y = colision->y + colision->h;
+                        break;
+                    case ABAJO: pos_y = colision->y - rect.h;
+                        break;
+                    case DERECHA: pos_x = colision->x - rect.w;
+                        break;
+                    case IZQUIERDA: pos_x = colision->x + colision->w;
+                        break;
+                    default: ;
+                }
+            }
+        }
+
+        rect.x = (int)pos_x;
+        rect.y = (int)pos_y;
 	}
+
+    if (choque) {
+        disponible = true;
+        fijarVelocidad(0);
+    }
+
 	return choque;
 }
 
@@ -112,7 +165,7 @@ void Bala::enColision(Colisionador *objeto) {
 void Bala::Disparar(direccion_t direccion, int x, int y){
     fijarDireccion(direccion);
     fijarPosicion(x, y);
-    fijarVelocidad(5);
+    fijarVelocidad(300);
     disponible = false;
 }
 

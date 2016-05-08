@@ -72,7 +72,9 @@ void Jugar::actualizar() {
 	// Actualizar objetos
 	tanque_j1->actualizar();
 	tanque_j2->actualizar();
+}
 
+void Jugar::renderizar() {
 	SDL_RenderSetViewport(renderer_principal, &vista_juego);
 	
 	// Renderizar fondo y bloques

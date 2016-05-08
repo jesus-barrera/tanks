@@ -1,7 +1,7 @@
 #include "../include/globales.h"
 #include "../include/Objeto.h"
 
-Objeto::Objeto(int x, int y, direccion_t direccion, int velocidad, SDL_Texture *textura) {
+Objeto::Objeto(int x, int y, direccion_t direccion, float velocidad, SDL_Texture *textura) {
 	fijarPosicion(x, y);
 	fijarDireccion(direccion);
 	fijarVelocidad(velocidad);
@@ -20,7 +20,7 @@ direccion_t Objeto::obtenerDireccion() {
 	return this->direccion;
 }
 
-int Objeto::obtenerVelocidad() {
+float Objeto::obtenerVelocidad() {
 	return this->velocidad;
 }
 
@@ -37,6 +37,8 @@ int Objeto::obtenerAncho() {
 }
 
 void Objeto::fijarPosicion(int x, int y) {
+	this->pos_x = x;
+	this->pos_y = y;
 	this->rect.x = x;
 	this->rect.y = y;
 }
@@ -58,7 +60,7 @@ void Objeto::fijarDireccion(direccion_t direccion) {
 	this->direccion = direccion;
 }
 
-void Objeto::fijarVelocidad(int velocidad) {
+void Objeto::fijarVelocidad(float velocidad) {
 	this->velocidad = velocidad;
 }
 

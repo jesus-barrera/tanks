@@ -16,16 +16,16 @@ void Colisionador::agregarColisionador(Colisionador *obj) {
 	this->colisionadores.push_back(obj);
 }
 
-bool Colisionador::comprobarColision(SDL_Rect *this_area) {
+SDL_Rect *Colisionador::comprobarColision(SDL_Rect *this_area, SDL_Rect *colision_area) {
 	vector<Colisionador *>::iterator it;
 	SDL_Rect *obj_area;
-	bool en_colision;
+	SDL_Rect *result;
 
 	if (this_area == NULL) {
 		this_area = this->area;
 	}
 
-	en_colision = false;
+	result = NULL;
 
 	for (it = this->colisionadores.begin(); it != this->colisionadores.end(); ++it) {
 		obj_area = (*it)->obtenerAreaColision();
@@ -33,11 +33,12 @@ bool Colisionador::comprobarColision(SDL_Rect *this_area) {
 		if (SDL_HasIntersection(this_area, obj_area)) {
 			this->enColision(*it);
 
-			en_colision = true;
+			memcpy(colision_area, obj_area, sizeof(*obj_area));
+			result = colision_area;
 		}
 	}
 
-	return en_colision;
+	return result;
 }
 
 bool Colisionador::tieneEtiqueta(string etiqueta) {

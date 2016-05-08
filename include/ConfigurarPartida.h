@@ -51,6 +51,7 @@ public:
 
     void entrar();
     void actualizar();
+    void renderizar();
     void manejarEvento(SDL_Event &evento);
 
     void esperarManejarEvento(SDL_Event &evento);

@@ -119,10 +119,12 @@ void Editor::entrar() {
     base_2->fijarPosicion(0, 0);
 }
 
+void Editor::actualizar() { }
+
 /*
  * Llamada en cada ciclo del juego, renderiza la escena.
  */
-void Editor::actualizar() {
+void Editor::renderizar() {
     SDL_Rect bloque_rect;
     SDL_Texture *bloque;
 

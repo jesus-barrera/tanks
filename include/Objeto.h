@@ -14,16 +14,18 @@ protected:
 	SDL_Texture *textura;
 
 	// Valor discreto para la dirección
-	direccion_t direccion; 
+	direccion_t direccion;
+
+	float pos_x, pos_y;
 
 	// Velociad del objeto, pixeles/frame
-	int velocidad;
+	float velocidad;
 
 	// Angulo de dirección
 	double angulo;
 	
 public:
-	Objeto(int x = 0, int y = 0, direccion_t direccion = ARRIBA, int velocidad = 0, SDL_Texture *textura = NULL);
+	Objeto(int x = 0, int y = 0, direccion_t direccion = ARRIBA, float velocidad = 0, SDL_Texture *textura = NULL);
 
 	SDL_Rect obtenerRect();
 
@@ -31,7 +33,7 @@ public:
 
 	direccion_t obtenerDireccion();
 
-	int obtenerVelocidad();
+	float obtenerVelocidad();
 
 	SDL_Texture *obtenerTextura();
 
@@ -46,7 +48,7 @@ public:
 	void fijarDireccion(direccion_t direccion);
 
 	// Fija la velocidad del objeto
-	void fijarVelocidad(int velocidad);
+	void fijarVelocidad(float velocidad);
 
 	void fijarTextura(SDL_Texture *textura);
 

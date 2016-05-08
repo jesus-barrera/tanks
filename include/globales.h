@@ -27,7 +27,7 @@
 
 #define MAXTAM_NOMBRE_USUARIO 20
 
-#define PI 3.14593
+#define PI 3.14159265359
 
 using namespace std;
 
@@ -35,6 +35,7 @@ extern SDL_Renderer *renderer_principal;
 extern SDL_Rect vista_juego;
 extern SDL_Rect vista_estatus;
 extern Escena *escena;
+extern float time_step;
 extern bool salir;
 
 bool registrarEscena(Escena *escena, string nombre);

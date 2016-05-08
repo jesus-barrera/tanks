@@ -97,10 +97,10 @@ vector<SDL_Point> Escenario::obtenerBloquesEnColision(SDL_Rect &rect) {
 	vector<SDL_Point> bloques;
 
 	x1 = rect.x / TAMANO_BLOQUE;
-	x2 = ((rect.x + rect.w) / TAMANO_BLOQUE) % MAPA_COLUMNAS;
+	x2 = ((rect.x + rect.w - 1) / TAMANO_BLOQUE) % MAPA_COLUMNAS;
 
 	y1 = rect.y / TAMANO_BLOQUE;
-	y2 = ((rect.y + rect.h) / TAMANO_BLOQUE) % MAPA_FILAS;
+	y2 = ((rect.y + rect.h - 1) / TAMANO_BLOQUE) % MAPA_FILAS;
 
 	for (y = y1; y <= y2; y++) {
 		for (x = x1; x <= x2; x++) {

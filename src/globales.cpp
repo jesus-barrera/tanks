@@ -5,6 +5,7 @@ SDL_Renderer *renderer_principal;
 SDL_Rect vista_juego;
 SDL_Rect vista_estatus;
 Escena *escena;
+float time_step;
 bool salir;
 
 map<string, Escena *> escenas;

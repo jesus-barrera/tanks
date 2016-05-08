@@ -85,10 +85,9 @@ void ConfigurarPartida::entrar() {
     estado = CONF_ST_CONFIG_PARTIDA;
 }
 
-/**
- * Llamada en cada frame. Renderiza los objetos.
- */
-void ConfigurarPartida::actualizar() {
+void ConfigurarPartida::actualizar() { }
+
+void ConfigurarPartida::renderizar() {
     SDL_RenderSetViewport(renderer_principal, &vista_juego);
     
     Escenario::renderizar();

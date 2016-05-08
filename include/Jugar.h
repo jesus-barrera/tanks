@@ -35,6 +35,7 @@ public:
 	// Métodos de Escena
 	void entrar();
 	void actualizar();
+	void renderizar();
 	void manejarEvento(SDL_Event &evento);
 };
 

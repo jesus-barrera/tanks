@@ -14,6 +14,7 @@
 #include "include/Menu.h"
 #include "include/ConfigurarPartida.h"
 #include "include/utiles.h"
+#include "include/Temporizador.h"
 
 using namespace std;
 
@@ -27,13 +28,14 @@ void cerrar();
 void establecerVistas();
 
 SDL_Window *ventana_principal;
+Temporizador step_timer; 	
 
 int main(int argc, char* args[]) {
 	SDL_Event evento;
 
 	if (inicializar()) {
 		salir = false;
-		irAEscena("menu");
+		irAEscena("jugar");
 		
 		do {
 			while (SDL_PollEvent(&evento)) {
@@ -47,7 +49,13 @@ int main(int argc, char* args[]) {
 			SDL_SetRenderDrawColor(renderer_principal, 0x8d, 0x8d, 0x8d, 0xff);
 			SDL_RenderClear(renderer_principal);
 
+			time_step = step_timer.obtenerTiempo() / 1000.0;
+
 			escena->actualizar();
+
+			step_timer.iniciar();
+
+			escena->renderizar();
 
 			SDL_RenderPresent(renderer_principal);
 		} while (!salir);
