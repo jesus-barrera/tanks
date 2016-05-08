@@ -13,7 +13,7 @@ string etiquetas_botones[NUM_BOTONES] = {
 Boton *Menu::botones[NUM_BOTONES];
 
 void Menu::entrar() {
-	Editor::cargarMapa(MAPAS_RUTA"campo_abierto.map", NULL, NULL, NULL, NULL);
+	Editor::cargarMapa(MAPAS_RUTA"1462739187.map", NULL, NULL, NULL, NULL);
 }
 
 void Menu::actualizar() { }

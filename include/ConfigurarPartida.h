@@ -8,26 +8,26 @@
 #include "Paquete.h"
 
 #define NUM_OPT_VIDAS 4
-#define CONF_TAM_BUFFER 1500
+#define CONFIG_TAM_BUFFER 1500
 
 // Estados
 enum {
-    CONF_ST_ESPERANDO_JUGADOR,
-    CONF_ST_CONFIG_PARTIDA
+    CONFIG_ST_ESPERANDO_JUGADOR,
+    CONFIG_ST_CONFIGURAR
 };
 
 enum {
-    CONF_BTN_LISTO,
-    CONF_BTN_CANCELAR,
-    CONF_BTN_JUEGO_A,
-    CONF_BTN_JUEGO_B,
-    CONF_NUM_BTNS
+    CONFIG_BTN_LISTO,
+    CONFIG_BTN_CANCELAR,
+    CONFIG_BTN_JUEGO_A,
+    CONFIG_BTN_JUEGO_B,
+    CONFIG_NUM_BTNS
 };
 
 class ConfigurarPartida: public Escena {
 private:
     static int options_vidas[NUM_OPT_VIDAS];
-    static string etiquetas_botones[CONF_NUM_BTNS];
+    static string etiquetas_botones[CONFIG_NUM_BTNS];
     
     int estado;
 
@@ -37,12 +37,12 @@ private:
 
     SelectorMapa selector_mapa;
 
-    Boton *botones[CONF_NUM_BTNS];
+    Boton *botones[CONFIG_NUM_BTNS];
     Etiqueta *et_modo_juego;
     Etiqueta *et_mensaje;
     Boton *btns_vidas[NUM_OPT_VIDAS];
     
-    Uint8 buffer[CONF_TAM_BUFFER];
+    Uint8 buffer[CONFIG_TAM_BUFFER];
     Paquete paquete;
 
 public:

@@ -5,11 +5,14 @@
 #include <SDL.h>
 #include "tipos.h"
 
-#define ARCH_MAPAS_INFO "mapas/mapas_info.dat"
 #define DESP_REGISTROS (2 * sizeof(Uint32))
 
 #define MAXLEN_NOMBRE_MAPA 20
 #define MAXLEN_RUTA_MAPA 50
+
+#include <string>
+
+using namespace std;
 
 struct MapaInfo {
     Uint32 id;
@@ -20,21 +23,21 @@ struct MapaInfo {
 
 class MapaInfoDAO {
 private:
+    string nombre_archivo;
     SDL_RWops *archivo;
 
     int buscarRegistro(Uint32 id);
     void moverPuntero(int index);
     Uint32 obtenerTotalRegistros();
 
-public:
-    MapaInfoDAO();
-    ~MapaInfoDAO();
-
     void abrir();
     void cerrar();
 
+public:
+    bool fijarArchivo(const char *nombre_archivo);
+
     // Carga todos los registros
-    MapaInfo *cargarDatos(Uint32 *num_registros);
+    Uint32 cargarDatos(MapaInfo **registros);
 
     // Elimina un registro por id
     bool eliminar(Uint32 id);
@@ -48,7 +51,7 @@ public:
     // Actualiza los datos de un registro
     bool actualizar(MapaInfo *registro);
 
-    void liberarMem(MapaInfo *registros);
+    void liberarMem(MapaInfo **registros);
 };
 
 #endif

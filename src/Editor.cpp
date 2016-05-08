@@ -67,7 +67,15 @@ bool Editor::inicializar() {
 
     // Crear otros
     Editor::nombre_mapa   = new Etiqueta("", 15);
+    
+    #ifdef PUBLICAR_MAPA
     Editor::selector_mapa = new SelectorMapa();
+    #else
+    Editor::selector_mapa = new SelectorMapa(SelectorMapa::MAPAS_USUARIO);
+    #endif
+
+    Editor::selector_mapa->fijarPosicion(VENTANA_PADDING, VENTANA_PADDING);
+
     Editor::input_nombre  = new TextInput("Nombre del mapa: ", 15, VENTANA_ALTO - 35, MAXLEN_NOMBRE_MAPA);
 
     return true;
@@ -141,7 +149,7 @@ void Editor::renderizar() {
 
     if (estado == EDITOR_ST_SELEC_MAPA) {
         renderizarCapaGris();
-        selector_mapa->actualizar();
+        selector_mapa->renderizar();
 
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         cancelar_btn->renderizar();
@@ -367,19 +375,21 @@ void Editor::cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque
 
     archivo = SDL_RWFromFile(nombre_archivo, "rb");
 
-    cargarObjetoInfo(archivo, (t1) ? t1 : jugador_1);
-    cargarObjetoInfo(archivo, (b1) ? b1 : base_1);
-    cargarObjetoInfo(archivo, (t2) ? t2 : jugador_2);
-    cargarObjetoInfo(archivo, (b2) ? b2 : base_2);
+    if (archivo) {
+        cargarObjetoInfo(archivo, (t1) ? t1 : jugador_1);
+        cargarObjetoInfo(archivo, (b1) ? b1 : base_1);
+        cargarObjetoInfo(archivo, (t2) ? t2 : jugador_2);
+        cargarObjetoInfo(archivo, (b2) ? b2 : base_2);
 
-    for (i = 0; i < MAPA_FILAS; i++) {
-        for (j = 0; j < MAPA_COLUMNAS; j++) {
-            SDL_RWread(archivo, &bloque, sizeof(bloque), 1);
-            Escenario::insertarBloque({j, i}, bloque);
+        for (i = 0; i < MAPA_FILAS; i++) {
+            for (j = 0; j < MAPA_COLUMNAS; j++) {
+                SDL_RWread(archivo, &bloque, sizeof(bloque), 1);
+                Escenario::insertarBloque({j, i}, bloque);
+            }
         }
-    }
 
-    SDL_RWclose(archivo);
+        SDL_RWclose(archivo);
+    }
 }
 
 void Editor::botonGuardarPresionado() {
@@ -396,13 +406,21 @@ void Editor::botonGuardarPresionado() {
 void Editor::crearMapa(string nombre) {
     stringstream ssruta;
     string ruta;
+    SDL_bool en_juego;
 
     // Generar ruta del archivo
-    ssruta << MAPAS_USUARIO_RUTA << time(NULL) << ARCH_MAPA_TIPO;
+    #ifdef PUBLICAR_MAPA
+    ssruta << MAPAS_RUTA << time(NULL) << MAPA_TIPO;
+    en_juego = SDL_TRUE;
+    #else
+    ssruta << MAPAS_USUARIO_RUTA << time(NULL) << MAPA_TIPO;
+    en_juego = SDL_FALSE;
+    #endif
+
     ruta = ssruta.str();
 
     guardarMapa(ruta.c_str());
-    mapa_info = selector_mapa->agregar(nombre, ruta);
+    mapa_info = selector_mapa->agregar(nombre, ruta, en_juego);
     nombre_mapa->fijarTexto((string)mapa_info->nombre);
 }
 

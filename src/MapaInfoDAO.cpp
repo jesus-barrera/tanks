@@ -2,36 +2,43 @@
 #include <cstring>
 #include "../include/MapaInfoDAO.h"
 
-MapaInfoDAO::MapaInfoDAO() {
-    archivo = SDL_RWFromFile(ARCH_MAPAS_INFO, "rb");
-
-    if (archivo == NULL) {
-        Uint32 id_count;
-        Uint32 num_registros;
-
-        archivo = SDL_RWFromFile(ARCH_MAPAS_INFO, "wb");
-
-        // Inicializar
-        id_count = 0;
-        num_registros = 0;
-        SDL_RWwrite(archivo, &id_count, sizeof(Uint32), 1);
-        SDL_RWwrite(archivo, &num_registros, sizeof(Uint32), 1);
-    }
-
-    cerrar();
-}
-
-MapaInfoDAO::~MapaInfoDAO() {
-    cerrar();
-}
-
 void MapaInfoDAO::abrir() {
-    if (archivo == NULL) archivo = SDL_RWFromFile(ARCH_MAPAS_INFO, "r+b");
+    if (archivo == NULL) archivo = SDL_RWFromFile(nombre_archivo.c_str(), "r+b");
 }
 
 void MapaInfoDAO::cerrar() {
     if (archivo != NULL) SDL_RWclose(archivo);
     archivo = NULL;
+}
+
+bool MapaInfoDAO::fijarArchivo(const char *nombre_archivo) {
+    bool exito = true;
+
+    this->nombre_archivo.assign(nombre_archivo);
+
+    archivo = SDL_RWFromFile(nombre_archivo, "rb");
+
+    if (archivo == NULL) {
+        Uint32 id_count;
+        Uint32 num_registros;
+
+        archivo = SDL_RWFromFile(nombre_archivo, "wb");
+
+        if (archivo) {
+            // Inicializar
+            id_count = 0;
+            num_registros = 0;
+            SDL_RWwrite(archivo, &id_count, sizeof(Uint32), 1);
+            SDL_RWwrite(archivo, &num_registros, sizeof(Uint32), 1);
+        } else {
+            exito = false;
+        }
+
+    }
+
+    cerrar();
+
+    return exito;
 }
 
 int MapaInfoDAO::buscarRegistro(Uint32 id) {
@@ -68,21 +75,20 @@ Uint32 MapaInfoDAO::obtenerTotalRegistros() {
 }
 
 // Carga todos los registros
-MapaInfo *MapaInfoDAO::cargarDatos(Uint32 *num_registros) {
-    MapaInfo *registros;
-    
+Uint32 MapaInfoDAO::cargarDatos(MapaInfo **registros) {
+    Uint32 num_registros;
     abrir();
     
-    registros = NULL;
-    *num_registros = obtenerTotalRegistros();
+    *registros = NULL;
+    num_registros = obtenerTotalRegistros();
 
-    if (*num_registros > 0) {
-        registros = (MapaInfo *)malloc(sizeof(MapaInfo) * (*num_registros));
-        SDL_RWread(archivo, registros, sizeof(MapaInfo), *num_registros);
+    if (num_registros > 0) {
+        *registros = (MapaInfo *)malloc(sizeof(MapaInfo) * (num_registros));
+        SDL_RWread(archivo, *registros, sizeof(MapaInfo), num_registros);
     }
 
     cerrar();
-    return registros;
+    return num_registros;
 }
 
 // Elimina un registro por id
@@ -192,6 +198,8 @@ bool MapaInfoDAO::actualizar(MapaInfo *registro) {
     return exito;
 }
 
-void MapaInfoDAO::liberarMem(MapaInfo *registro) {
-    free(registro);
+void MapaInfoDAO::liberarMem(MapaInfo **registro) {
+    free(*registro);
+
+    *registro = NULL;
 }

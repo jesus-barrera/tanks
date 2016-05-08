@@ -35,7 +35,7 @@ int main(int argc, char* args[]) {
 
 	if (inicializar()) {
 		salir = false;
-		irAEscena("jugar");
+		irAEscena("menu");
 		
 		do {
 			while (SDL_PollEvent(&evento)) {
