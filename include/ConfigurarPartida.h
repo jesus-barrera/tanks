@@ -28,6 +28,7 @@ class ConfigurarPartida: public Escena {
 private:
     static int options_vidas[NUM_OPT_VIDAS];
     static string etiquetas_botones[CONF_NUM_BTNS];
+    
     int estado;
 
     MapaInfo *mapa_info;

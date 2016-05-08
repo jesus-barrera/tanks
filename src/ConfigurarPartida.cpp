@@ -152,7 +152,7 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                         Jugar::num_vidas = options_vidas[opt_vidas];
 
                         estado = CONF_ST_ESPERANDO_JUGADOR;
-                        
+
                         if (Net_iniciar()) {
                             et_mensaje->fijarTexto("Esperando jugador ...");
                         } else {

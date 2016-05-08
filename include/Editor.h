@@ -77,13 +77,13 @@ public:
 
 	// Servicio para cargar mapa
 	static void cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque *t2, Base *b2);
-	static void cargarObjetoInfo(ifstream &intput, Objeto *objeto);
+	static void cargarObjetoInfo(SDL_RWops *archivo, Objeto *objeto);
 	
 	void cargarMapa();
 	void botonGuardarPresionado();
 	void crearMapa(string nombre);
 	void guardarMapa(const char *nombre_archivo);
-	void guardarObjetoInfo(ofstream &output, Objeto *objeto);
+	void guardarObjetoInfo(SDL_RWops *archivo, Objeto *objeto);
 };
 
 #endif // EDITOR_H
