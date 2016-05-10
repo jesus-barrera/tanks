@@ -89,7 +89,53 @@ void ConfigurarPartida::entrar() {
     estado = CONFIG_ST_CONFIGURAR;
 }
 
-void ConfigurarPartida::actualizar() { }
+void ConfigurarPartida::actualizar() {
+    switch(estado) {
+        case CONFIG_ST_ESPERANDO_JUGADOR:
+        if (Net_recibir(buffer, CONFIG_TAM_BUFFER)) {
+            paquete.analizar(buffer);
+
+            if (paquete.tipo == PQT_UNIRSE) {
+                int num_bytes;
+                
+                et_mensaje->fijarTexto("Conectando con \"" + (string)paquete.nombre + "\" ...");
+               
+                /**
+                 * Crear y enviar paquete con la configuración de la partida
+                 */
+                num_bytes = paquete.nuevoPqtConfiguracion(
+                    buffer, 
+                    "Jugador 1", 
+                    ((modo_juego == MODO_JUEGO_BASE) ? 0 : options_vidas[opt_vidas]),
+                    ((mapa_info->en_juego) ? mapa_info->id : -1)
+                );
+
+                cout << "[Debug] Enviando configuración a \"" << paquete.nombre << "\"" << endl;
+                Net_enviar(buffer, num_bytes);
+
+                estado = CONFIG_ST_CONFIRMACION;
+            } else {
+                cout << "[Debug] Paquete descartado" << endl;
+            }
+        }
+        break;
+
+        case CONFIG_ST_CONFIRMACION:
+        /**
+         * Esperar por confirmación de la configuración
+         */
+        if (Net_recibir(buffer, CONFIG_TAM_BUFFER)) {
+            paquete.analizar(buffer);
+
+            if (paquete.tipo == PQT_CONFIRMACION) {
+                irAEscena("jugar");
+            } else {
+                cout << "[Debug] Paquete descartado" << endl;
+            }
+        }
+        break;
+    }
+}
 
 void ConfigurarPartida::renderizar() {
     SDL_RenderSetViewport(renderer_principal, &vista_juego);
@@ -105,15 +151,7 @@ void ConfigurarPartida::renderizar() {
     
         if (modo_juego == MODO_JUEGO_VIDAS) Boton::renderizarBotones(btns_vidas, NUM_OPT_VIDAS);
         
-    } else if (estado == CONFIG_ST_ESPERANDO_JUGADOR) {
-        if (Net_recibir(buffer, CONFIG_TAM_BUFFER)) {
-            paquete.analizar(buffer);
-
-            if (paquete.tipo == PQT_UNIRSE) {
-                et_mensaje->fijarTexto((string)paquete.nombre);
-            }
-        }
-
+    } else {
         SDL_RenderSetViewport(renderer_principal, &vista_juego);
         et_mensaje->renderizar();
         
@@ -125,7 +163,7 @@ void ConfigurarPartida::renderizar() {
 void ConfigurarPartida::manejarEvento(SDL_Event &evento) {
     if (estado == CONFIG_ST_CONFIGURAR) {
         configManejarEvento(evento);
-    } else if (estado == CONFIG_ST_ESPERANDO_JUGADOR) {
+    } else {
         esperarManejarEvento(evento);
     }
 }
@@ -145,15 +183,16 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
         if (mapa && mapa != mapa_info) {
             Editor::cargarMapa(mapa->ruta, NULL, NULL, NULL, NULL);
             mapa_info = mapa;
+
         } else {
             switch (Boton::obtenerBotonSeleccionado(botones, CONFIG_NUM_BTNS)) {
                 case CONFIG_BTN_LISTO:
                     if (mapa_info && (modo_juego == MODO_JUEGO_BASE || 
                         (modo_juego == MODO_JUEGO_VIDAS && opt_vidas != -1))) {
 
-                        Jugar::mapa_info = mapa_info;
+                        Jugar::mapa_info  = mapa_info;
                         Jugar::modo_juego = modo_juego;
-                        Jugar::num_vidas = options_vidas[opt_vidas];
+                        Jugar::num_vidas  = options_vidas[opt_vidas];
 
                         estado = CONFIG_ST_ESPERANDO_JUGADOR;
 
@@ -162,21 +201,25 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                         } else {
                             et_mensaje->fijarTexto("Ocurrio un error al inicar conexion");
                         }
-                    }
+                    }   
                     break;
+
                 case CONFIG_BTN_CANCELAR:
                     irAEscena("menu");
                     break;
+
                 case CONFIG_BTN_JUEGO_A:
                     modo_juego = MODO_JUEGO_VIDAS;
                     botones[CONFIG_BTN_JUEGO_A]->estaSeleccionado(true);
                     botones[CONFIG_BTN_JUEGO_B]->estaSeleccionado(false);
                     break;
+
                 case CONFIG_BTN_JUEGO_B:
                     modo_juego = MODO_JUEGO_BASE;
                     botones[CONFIG_BTN_JUEGO_B]->estaSeleccionado(true);
                     botones[CONFIG_BTN_JUEGO_A]->estaSeleccionado(false);
                     break;
+
                 default: { 
                     // Revisar si se eligió un numero de vidas                   
                     int opt = Boton::obtenerBotonSeleccionado(btns_vidas, NUM_OPT_VIDAS);

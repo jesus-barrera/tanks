@@ -41,9 +41,11 @@ int main(int argc, char* args[]) {
 			while (SDL_PollEvent(&evento)) {
 				if (evento.type == SDL_QUIT) {
 					salir = true;
+				} else if (evento.type == SDL_WINDOWEVENT_FOCUS_GAINED) {
+					SDL_ShowWindow(ventana_principal);
+				} else {
+					escena->manejarEvento(evento);
 				}
-
-				escena->manejarEvento(evento);
 			}
 
 			SDL_SetRenderDrawColor(renderer_principal, 0x8d, 0x8d, 0x8d, 0xff);

@@ -15,18 +15,27 @@ enum {
 	MODO_JUEGO_BASE
 };
 
+class Jugador {
+public:
+	string nombre;
+	Tanque *tanque;
+	Base *base;
+	int num_vidas;
+};
+
 class Jugar: public Escena {
 public:
 	// Configuracion del juego
 	static int modo_juego;
 	static int num_vidas;
 	static MapaInfo *mapa_info;
-	
+		
 	static Tanque *jugador;
 	static Tanque *tanque_j1;
 	static Tanque *tanque_j2;
-	static Base *base_1;
-	static Base *base_2;
+	static Base *base_j1;
+	static Base *base_j2;
+	
 	static Boton *boton_salir;
 
 	static void inicializar();

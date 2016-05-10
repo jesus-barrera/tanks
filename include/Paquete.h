@@ -25,6 +25,7 @@ private:
     void analizarPqtDestruirObjeto(Uint8 *bytes);
     void analizarPqtDestruirAbandonar(Uint8 *bytes);
     void limpiar();
+    Uint8 *escribir(Uint8 *buffer, void *datos, size_t num);
 
 public:
     Uint8 tipo;
@@ -47,6 +48,7 @@ public:
 
     Paquete();
     void analizar(Uint8 *buffer);
+    size_t nuevoPqtConfiguracion(Uint8 *buffer, const char *nombre, Uint8 tipo_juego, Sint8 mapa);
 };
 
 #endif

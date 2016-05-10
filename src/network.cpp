@@ -71,8 +71,24 @@ int Net_recibir(Uint8 *buffer, int bufflen) {
 }
 
 /**
- * 
+ * Envia el contenido del buffer
  */
 int Net_enviar(Uint8 *buffer, int bufflen) {
-    return false;
+    int res = poll(&remoto, 1, NET_POLL_TIMEOUT);
+
+    if (res > 0) {
+        if ((remoto.revents & POLLOUT) != 0) {
+            res = sendto(remoto.fd, buffer, bufflen, 0, (struct sockaddr *)&dir_host_remoto, addrlen_remoto);
+
+            if (res < 0) {
+                perror("[Debug] Error de escritura");
+            } else {
+                return res;
+            }
+        }
+    } else if (res < 0){
+        perror("[Debug] Error en poll");
+    }
+
+    return 0;
 }
