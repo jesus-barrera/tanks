@@ -4,15 +4,21 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include "include/globales.h"
-#include "include/Jugar.h"
+// Objetos
 #include "include/Bala.h"
 #include "include/Tanque.h"
 #include "include/Base.h"
 #include "include/Escenario.h"
+
+// Escenas
 #include "include/Editor.h"
+#include "include/Jugar.h"
 #include "include/Menu.h"
 #include "include/ConfigurarPartida.h"
+#include "include/Conexion.h"
+
+// Utileria
+#include "include/globales.h"
 #include "include/utiles.h"
 #include "include/Temporizador.h"
 
@@ -139,12 +145,14 @@ bool inicializar() {
 
 	Jugar::inicializar();
 	Editor::inicializar();
+	Conexion::inicializar();
 
 	// Registrar escenas
 	registrarEscena(new Menu(), "menu");
 	registrarEscena(new Editor(), "editar");
 	registrarEscena(new Jugar(), "jugar");
 	registrarEscena(new ConfigurarPartida(), "nueva-partida");
+	registrarEscena(new Conexion(), "conectar");
 
 	return true;
 }
@@ -168,6 +176,7 @@ void cerrar() {
 	Editor::liberarMemoria();
 	Base::liberarMemoria();
 	Jugar::liberarMemoria();
+	Conexion::liberarMemoria();
 	//Bala::liberarMemoria();
 
 	liberarEscenas();

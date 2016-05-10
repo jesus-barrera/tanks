@@ -38,6 +38,9 @@ void Menu::manejarEvento(SDL_Event &evento) {
 			case BOTON_INICIAR:
 				irAEscena("nueva-partida");
 				break;
+			case BOTON_CONECTAR:
+				irAEscena("conectar");
+				break;
 			case BOTON_EDITAR:
 				irAEscena("editar");
 				break;

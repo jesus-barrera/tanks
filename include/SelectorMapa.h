@@ -6,9 +6,6 @@
 #include "Boton.h"
 #include "MapaInfoDAO.h"
 
-#define USER_MAPS_INFO "mapas/user/maps_user.dat"
-#define GAME_MAPS_INFO "mapas/maps.dat"
-
 class SelectorMapa {
 private:
 	int seleccionables;

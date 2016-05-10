@@ -25,7 +25,8 @@
 #define VENTANA_ALTO  MAPA_ALTO
 #define VENTANA_PADDING 15
 
-#define MAXTAM_NOMBRE_USUARIO 20
+#define USER_MAPS_INFO "mapas/user/maps_user.dat"
+#define GAME_MAPS_INFO "mapas/maps.dat"
 
 #define PI 3.14159265359
 

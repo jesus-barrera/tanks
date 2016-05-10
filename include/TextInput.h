@@ -20,6 +20,7 @@ public:
 	void manejarEvento(SDL_Event &evento);
 	
 	string obtenerTexto();
+	void limpiarTexto();
 	bool vacio();
 };
 

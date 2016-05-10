@@ -34,6 +34,11 @@ string TextInput::obtenerTexto() {
 	return texto;
 }
 
+void TextInput::limpiarTexto() {
+	texto.clear();
+	input->fijarTexto("");
+}
+
 bool TextInput::vacio() {
 	return texto.empty();
 }

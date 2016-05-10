@@ -4,6 +4,8 @@
 #include <SDL.h>
 #include "globales.h"
 
+#define MAXTAM_MENSAJE 20
+
 enum {
     PQT_UNIRSE,
     PQT_CONFIGURACION,
@@ -30,7 +32,7 @@ private:
 public:
     Uint8 tipo;
     
-    char mensaje[MAXTAM_NOMBRE_USUARIO + 1];
+    char mensaje[MAXTAM_MENSAJE + 1];
     char *nombre;
     
     int pos_x;
@@ -44,11 +46,18 @@ public:
 
     Uint8 evento;
     Uint8 num_jugador;
+    Uint8 bandera;
     Uint8 tipo_objeto;
+    Uint16 tipo_juego;
+    Uint16 info_mapa;
 
     Paquete();
     void analizar(Uint8 *buffer);
+
     size_t nuevoPqtConfiguracion(Uint8 *buffer, const char *nombre, Uint8 tipo_juego, Sint8 mapa);
+    size_t nuevoPqtUnirse(Uint8 *buffer, const char *nombre);
+    size_t nuevoPqtConfirmacion(Uint8 *buffer, const char *msg);
+    size_t nuevoPqtEvento(Uint8 *buffer, int pos_x, int pos_y, Uint8 evento, float velocidad);
 };
 
 #endif

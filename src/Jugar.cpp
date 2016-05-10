@@ -46,6 +46,8 @@ void Jugar::inicializar() {
     // Crear elementos de UI
     boton_salir = new Boton("Abandonar", 15, VENTANA_ALTO - 35);
     boton_salir->setViewport(&vista_estatus);
+
+    jugador = tanque_j1;
 }
 
 void Jugar::liberarMemoria() {
