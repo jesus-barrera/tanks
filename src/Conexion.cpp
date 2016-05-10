@@ -31,6 +31,11 @@ void Conexion::actualizar() {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_CONFIGURACION) {
+                cout << "[Debug] Configuracion: ";
+                cout << "nombre=" << paquete.nombre << ", ";
+                cout << "tipo= " << (int)paquete.tipo_juego << ", ";
+                cout << "mapa= " << (int)paquete.info_mapa << endl;
+
                 if (paquete.tipo_juego > 0) {
                     Jugar::fijarModoJuego(Jugar::MODO_JUEGO_VIDAS);
                     Jugar::fijarNumVidas(paquete.tipo_juego);
