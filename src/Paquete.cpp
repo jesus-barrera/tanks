@@ -12,9 +12,10 @@ void Paquete::analizarPqtConfiguracion(Uint8 *bytes) {
     strcpy(mensaje, (char *)bytes);
     nombre = mensaje;
     bytes = bytes + (MAXTAM_MENSAJE + 1);
-    tipo_juego = *bytes;
+    memcpy(&tipo_juego, bytes, sizeof(tipo_juego));
     bytes = bytes + sizeof(tipo_juego);
-    info_mapa=*bytes;
+
+    memcpy(&info_mapa, bytes, sizeof(info_mapa));
 }
 
 void Paquete::analizarPqtConfirmacion(Uint8 *bytes) {

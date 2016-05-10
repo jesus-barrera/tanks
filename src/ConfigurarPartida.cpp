@@ -96,26 +96,9 @@ void ConfigurarPartida::actualizar() {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_UNIRSE) {
-                int num_bytes;
-                
-                et_mensaje->fijarTexto("Conectando con \"" + (string)paquete.nombre + "\" ...");
-               
-                /**
-                 * Crear y enviar paquete con la configuración de la partida
-                 */
-                num_bytes = paquete.nuevoPqtConfiguracion(
-                    buffer, 
-                    "Jugador 1", 
-                    ((modo_juego == MODO_JUEGO_BASE) ? 0 : options_vidas[opt_vidas]),
-                    ((mapa_info->en_juego) ? mapa_info->id : -1)
-                );
-
-                cout << "[Debug] Enviando configuración a \"" << paquete.nombre << "\"" << endl;
-                Net_enviar(buffer, num_bytes);
-
+                et_mensaje->fijarTexto("Conectando con \"" + (string)paquete.nombre + "\" ...");                
+                enviarConfiguracion();
                 estado = CONFIG_ST_CONFIRMACION;
-            } else {
-                cout << "[Debug] Paquete descartado" << endl;
             }
         }
         break;
@@ -149,7 +132,7 @@ void ConfigurarPartida::renderizar() {
         
         Boton::renderizarBotones(botones, CONFIG_NUM_BTNS);
     
-        if (modo_juego == MODO_JUEGO_VIDAS) Boton::renderizarBotones(btns_vidas, NUM_OPT_VIDAS);
+        if (modo_juego == Jugar::MODO_JUEGO_VIDAS) Boton::renderizarBotones(btns_vidas, NUM_OPT_VIDAS);
         
     } else {
         SDL_RenderSetViewport(renderer_principal, &vista_juego);
@@ -187,13 +170,16 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
         } else {
             switch (Boton::obtenerBotonSeleccionado(botones, CONFIG_NUM_BTNS)) {
                 case CONFIG_BTN_LISTO:
-                    if (mapa_info && (modo_juego == MODO_JUEGO_BASE || 
-                        (modo_juego == MODO_JUEGO_VIDAS && opt_vidas != -1))) {
+                    if (mapa_info && (modo_juego == Jugar::MODO_JUEGO_BASE || 
+                        (modo_juego == Jugar::MODO_JUEGO_VIDAS && opt_vidas != -1))) {
 
-                        Jugar::mapa_info  = mapa_info;
-                        Jugar::modo_juego = modo_juego;
-                        Jugar::num_vidas  = options_vidas[opt_vidas];
-
+                        Jugar::cargarMapaPorRuta(mapa_info->ruta);
+                        Jugar::fijarModoJuego(modo_juego);
+                        
+                        if (modo_juego == Jugar::MODO_JUEGO_VIDAS) {
+                            Jugar::fijarNumVidas(options_vidas[opt_vidas]);
+                        }
+                        
                         estado = CONFIG_ST_ESPERANDO_JUGADOR;
 
                         if (Net_iniciar()) {
@@ -209,13 +195,13 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                     break;
 
                 case CONFIG_BTN_JUEGO_A:
-                    modo_juego = MODO_JUEGO_VIDAS;
+                    modo_juego = Jugar::MODO_JUEGO_VIDAS;
                     botones[CONFIG_BTN_JUEGO_A]->estaSeleccionado(true);
                     botones[CONFIG_BTN_JUEGO_B]->estaSeleccionado(false);
                     break;
 
                 case CONFIG_BTN_JUEGO_B:
-                    modo_juego = MODO_JUEGO_BASE;
+                    modo_juego = Jugar::MODO_JUEGO_BASE;
                     botones[CONFIG_BTN_JUEGO_B]->estaSeleccionado(true);
                     botones[CONFIG_BTN_JUEGO_A]->estaSeleccionado(false);
                     break;
@@ -234,4 +220,21 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
             }
         }
     }
+}
+
+/**
+ * Crear y enviar paquete con la configuración de la partida
+ */
+void ConfigurarPartida::enviarConfiguracion() {
+    size_t num_bytes;
+
+    num_bytes = paquete.nuevoPqtConfiguracion(
+        buffer, 
+        "Jugador 1", 
+        ((modo_juego == Jugar::MODO_JUEGO_BASE) ? 0 : options_vidas[opt_vidas]),
+        ((mapa_info->en_juego) ? mapa_info->id : -1)
+    );
+
+    cout << "[Debug] Enviando configuración" << endl;
+    Net_enviar(buffer, num_bytes);
 }

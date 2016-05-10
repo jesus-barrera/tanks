@@ -1,8 +1,8 @@
 #include "../include/globales.h"
+#include "../include/MapaInfoDAO.h"
 #include "../include/Editor.h"
 #include "../include/Jugar.h"
 
-MapaInfo *Jugar::mapa_info;
 int Jugar::modo_juego;
 int Jugar::num_vidas;
 
@@ -59,10 +59,6 @@ void Jugar::liberarMemoria() {
 }
 
 void Jugar::entrar() {
-    if (mapa_info) {
-        Editor::cargarMapa(mapa_info->ruta, tanque_j1, base_j1, tanque_j2, base_j2);
-    }
-    
     base_j1->estaDestruido(false);
     base_j2->estaDestruido(false);
 }
@@ -106,4 +102,31 @@ void Jugar::manejarEvento(SDL_Event &evento) {
     } else {
         jugador->manejarEvento(evento);
     }
+}
+
+bool Jugar::cargarMapaPorId(Uint32 id) {
+    MapaInfoDAO mapas;
+    MapaInfo info;
+
+    mapas.fijarArchivo(GAME_MAPS_INFO);
+    
+    if (mapas.obtener(id, &info)) {
+        Editor::cargarMapa(info.ruta, tanque_j1, base_j1, tanque_j2, base_j2);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Jugar::cargarMapaPorRuta(const char *ruta) {
+    Editor::cargarMapa(ruta, tanque_j1, base_j1, tanque_j2, base_j2);
+    return true;
+}
+
+void Jugar::fijarModoJuego(int modo) {
+    modo_juego = modo;
+}
+
+void Jugar::fijarNumVidas(int vidas) {
+    num_vidas = vidas;
 }

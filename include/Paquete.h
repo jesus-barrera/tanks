@@ -48,8 +48,8 @@ public:
     Uint8 num_jugador;
     Uint8 bandera;
     Uint8 tipo_objeto;
-    Uint16 tipo_juego;
-    Uint16 info_mapa;
+    Uint8 tipo_juego;
+    Sint8 info_mapa;
 
     Paquete();
     void analizar(Uint8 *buffer);

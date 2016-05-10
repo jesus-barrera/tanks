@@ -43,7 +43,7 @@ public:
     bool eliminar(Uint32 id);
 
     // Recupera un registro por id
-    MapaInfo *obtener(Uint32 id);
+    MapaInfo *obtener(Uint32 id, MapaInfo *dst);
 
     // Guarda un nuevo registro
     MapaInfo *nuevo(const char *nombre, const char *ruta, SDL_bool en_juego = SDL_FALSE);

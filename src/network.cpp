@@ -99,6 +99,7 @@ int Net_resolverHost(string nombre_host) {
     int res;
     struct addrinfo hints, *results;
     memset(&hints, 0, sizeof(hints));
+    
     if((res = getaddrinfo(nombre_host.c_str(), NULL, &hints, &results)) != 0){
         perror("Error en el getaddrinfo...");
 

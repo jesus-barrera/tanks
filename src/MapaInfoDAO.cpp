@@ -127,7 +127,7 @@ bool MapaInfoDAO::eliminar(Uint32 id) {
 }
 
 // Recupera un registro por id
-MapaInfo *MapaInfoDAO::obtener(Uint32 id) {
+MapaInfo *MapaInfoDAO::obtener(Uint32 id, MapaInfo *dst) {
     int pos;
     MapaInfo *registro;
     
@@ -136,9 +136,10 @@ MapaInfo *MapaInfoDAO::obtener(Uint32 id) {
     registro = NULL;
 
     if ((pos = buscarRegistro(id)) >= 0) {
-        registro = (MapaInfo *)malloc(sizeof(MapaInfo));
         moverPuntero(pos);
-        SDL_RWread(archivo, registro, sizeof(MapaInfo), 1);
+        SDL_RWread(archivo, dst, sizeof(MapaInfo), 1);
+
+        registro = dst;
     }
 
     cerrar();

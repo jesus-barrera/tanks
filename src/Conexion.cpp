@@ -31,13 +31,27 @@ void Conexion::actualizar() {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_CONFIGURACION) {
-                Jugar::modo_juego = MODO_JUEGO_BASE;
-                Jugar::mapa_info = NULL;
-                irAEscena("jugar");
+                if (paquete.tipo_juego > 0) {
+                    Jugar::fijarModoJuego(Jugar::MODO_JUEGO_VIDAS);
+                    Jugar::fijarNumVidas(paquete.tipo_juego);
+                } else {
+                    Jugar::fijarModoJuego(Jugar::MODO_JUEGO_BASE);
+                }
                 
-                int tam_pqt = paquete.nuevoPqtConfirmacion(buffer, "OK");
+                if (paquete.info_mapa >= 0) {
+                    if (!Jugar::cargarMapaPorId(paquete.info_mapa)) {
+                        cout << "[Debug] Error al cargar el mapa" << endl;
+                        return;
+                    }
 
-                Net_enviar(buffer, tam_pqt);
+                    irAEscena("jugar");
+                    
+                    // Enviar confirmación
+                    int tam_pqt = paquete.nuevoPqtConfirmacion(buffer, "OK");
+                    Net_enviar(buffer, tam_pqt);
+                } else {
+                    cout << "[Debug] Recibir mapa" << endl;
+                }
             }
         }
     }
@@ -84,6 +98,8 @@ void Conexion::manejarEvento(SDL_Event &evento) {
                             ejemplo->fijarTexto("Esperando configuracion del juego... :)");
                             
                             estado = ST_ESPERAR_CONFIG;
+                        } else {
+                            ejemplo->fijarTexto("No se encontro jugador");
                         }
                     } else {
                         ejemplo->fijarTexto("Error al crear conexion");

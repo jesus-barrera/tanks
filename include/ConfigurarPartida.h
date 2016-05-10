@@ -57,6 +57,8 @@ public:
 
     void esperarManejarEvento(SDL_Event &evento);
     void configManejarEvento(SDL_Event &evento);
+    
+    void enviarConfiguracion();
 };
 
 #endif
