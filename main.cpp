@@ -9,6 +9,7 @@
 #include "include/Tanque.h"
 #include "include/Base.h"
 #include "include/Escenario.h"
+#include "include/Musica.h"
 
 // Escenas
 #include "include/Editor.h"
@@ -34,7 +35,7 @@ void cerrar();
 void establecerVistas();
 
 SDL_Window *ventana_principal;
-Temporizador step_timer; 	
+Temporizador step_timer;
 
 int main(int argc, char* args[]) {
 	SDL_Event evento;
@@ -42,7 +43,7 @@ int main(int argc, char* args[]) {
 	if (inicializar()) {
 		salir = false;
 		irAEscena("menu");
-		
+
 		do {
 			while (SDL_PollEvent(&evento)) {
 				if (evento.type == SDL_QUIT) {
@@ -75,7 +76,6 @@ int main(int argc, char* args[]) {
 }
 
 bool inicializar() {
-	bool success = true;
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		mostrarError("Error al inicializar SDL");
@@ -91,13 +91,13 @@ bool inicializar() {
 		mostrarError("Error al inicializar SDL ttf");
 		return false;
 	}
-
+    inicializarMusica();
 	ventana_principal = SDL_CreateWindow(
-											TITULO_JUEGO, 
-											SDL_WINDOWPOS_UNDEFINED, 
-											SDL_WINDOWPOS_UNDEFINED, 
-											VENTANA_ANCHO, 
-											VENTANA_ALTO, 
+											TITULO_JUEGO,
+											SDL_WINDOWPOS_UNDEFINED,
+											SDL_WINDOWPOS_UNDEFINED,
+											VENTANA_ANCHO,
+											VENTANA_ALTO,
 											SDL_WINDOW_SHOWN
 										);
 

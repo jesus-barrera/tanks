@@ -3,6 +3,7 @@
 #include "../include/Base.h"
 #include "../include/Tanque.h"
 #include "../include/Bala.h"
+#include "../include/Musica.h"
 
 SDL_Texture *Bala::mover_sprites[BALA_NUM_FRAMES_MOVER];
 
@@ -98,9 +99,9 @@ bool Bala::mover() {
 
         if ((colision = comprobarColision(&sig_rect, &colision_area)) || bloques.size() > 0) {
             for (it = bloques.begin(); it != bloques.end(); ++it) {
-                if (Escenario::obtenerBloque(*it) != BLOQUE_AGUA_1 && 
+                if (Escenario::obtenerBloque(*it) != BLOQUE_AGUA_1 &&
                     Escenario::obtenerBloque(*it) != BLOQUE_AGUA_2) {
-                    
+
                     Escenario::destruirBloque((*it));
 
                     colision_area.x = (*it).x * TAMANO_BLOQUE;
@@ -110,12 +111,12 @@ bool Bala::mover() {
                     colision_area.h = TAMANO_BLOQUE;
 
                     colision = &colision_area;
-        
+
                     choque = true;
                 }
             }
 
-            if (colision) {    
+            if (colision) {
                 choque = true;
 
                 // Truncar movimiento
@@ -163,6 +164,7 @@ void Bala::enColision(Colisionador *objeto) {
 }
 
 void Bala::Disparar(direccion_t direccion, int x, int y){
+    ReproducirSonido(Snd_Disparo, 100, 0, 0);
     fijarDireccion(direccion);
     fijarPosicion(x, y);
     fijarVelocidad(300);

@@ -6,6 +6,7 @@
 #include "../include/network.h"
 #include "../include/Paquete.h"
 #include "../include/Jugar.h"
+#include "../include/Musica.h"
 
 TextInput *Conexion::input_IP;
 Etiqueta *Conexion::input_NombreJugador;
@@ -46,10 +47,10 @@ void Conexion::actualizar() {
                 }
 
                 jugar->fijarModoNet(Jugar::MODO_CLIENTE);
-                
+
                 jugar->fijarNombreJugador(obtenerNombreEquipo());
                 jugar->fijarNombreOponente((string)paquete.nombre);
-                
+
                 if (paquete.info_mapa >= 0) {
                     if (!jugar->cargarMapaPorId(paquete.info_mapa)) {
                         cout << "[Debug] Error al cargar el mapa" << endl;
@@ -57,7 +58,7 @@ void Conexion::actualizar() {
                     }
 
                     irAEscena("jugar");
-                    
+
                     // Enviar confirmación
                     int tam_pqt = paquete.nuevoPqtConfirmacion(buffer, "OK");
                     Net_enviar(buffer, tam_pqt);
@@ -75,7 +76,7 @@ void Conexion::renderizar() {
 	renderizarCapaGris();
 
     input_IP->actualizar();
-    
+
     input_NombreJugador->renderizar();
     ejemplo->renderizar();
 
@@ -90,25 +91,21 @@ void Conexion::manejarEvento(SDL_Event &evento) {
 	if (evento.type == SDL_MOUSEBUTTONDOWN) {
 		switch (Boton::obtenerBotonSeleccionado(Conexion::botones,NUM_BTNS)) {
 			case BOTON_ACEPTAR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                 if(estado == ST_UNIRSE && !input_IP->vacio()){
                     char nombreEquipo[MAXTAM_EQUIPO];
                     int tam_pqt;
-
-                    cout<<"El texto es: "<<input_IP->obtenerTexto()<<endl;
                     strncpy(nombreEquipo, obtenerNombreEquipo().c_str(), 20);
 
-                    cout<<"EL nombre que se obtuvo fue: "<<nombreEquipo<<endl;
-                    cout<<"EL largo del nombre del equipo es: "<<strlen(nombreEquipo)<<endl;
-                    
                     tam_pqt = paquete.nuevoPqtUnirse(buffer, nombreEquipo);
 
                     if (Net_iniciar(3454)) {
-                        if (Net_resolverHost(input_IP->obtenerTexto())) {                    
-                            
+                        if (Net_resolverHost(input_IP->obtenerTexto())) {
+
                             Net_enviar(buffer, tam_pqt);
-                            
+
                             ejemplo->fijarTexto("Esperando configuracion del juego... :)");
-                            
+
                             estado = ST_ESPERAR_CONFIG;
                         } else {
                             ejemplo->fijarTexto("No se encontro jugador");
@@ -119,6 +116,7 @@ void Conexion::manejarEvento(SDL_Event &evento) {
                 }
 				break;
 			case BOTON_REGRESAR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                 //SDL_StopTextInput();
 				irAEscena("menu");
 				Net_terminar();

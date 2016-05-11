@@ -1,4 +1,5 @@
 #include "../include/Base.h"
+#include "../include/Musica.h"
 
 SDL_Texture *Base::sprite = NULL;
 SDL_Rect Base::clips[BASE_NUM_CLIPS];
@@ -25,7 +26,7 @@ void Base::liberarMemoria() {
 
 Base::Base(int tipo) {
 	this->rect.w = this->rect.h = TAMANO_BLOQUE * 2;
-	
+
 	this->fijarTextura(Base::sprite);
 	this->fijarAreaColision(&this->rect);
 	this->etiqueta = BASE_ETIQUETA;
@@ -43,6 +44,7 @@ void Base::estaDestruido(bool destruido) {
 	this->esta_destruido = destruido;
 
 	if (destruido) {
+        ReproducirSonido(Snd_Explosion, 100, 0, 0);
 		this->clip = Base::clips[BASE_DESTRUIDA_CLIP];
 	} else {
 		this->clip = Base::clips[BASE_NORMAL_CLIP];

@@ -48,7 +48,7 @@ bool Editor::inicializar() {
     base_2 = new Base(BASE_TIPO_AZUL);
 
     // Crear botones
-    btn_sep = EDITOR_TAM_BTN + 10; 
+    btn_sep = EDITOR_TAM_BTN + 10;
     btn_y = VENTANA_ALTO - (btn_sep * EDITOR_NUM_BTN + 10);
     btn_x = 15;
 
@@ -67,7 +67,7 @@ bool Editor::inicializar() {
 
     // Crear otros
     Editor::nombre_mapa   = new Etiqueta("", 15);
-    
+
     #ifdef PUBLICAR_MAPA
     Editor::selector_mapa = new SelectorMapa();
     #else
@@ -116,13 +116,13 @@ void Editor::entrar() {
     // Reposicionar objetos
     jugador_1->fijarDireccion(ARRIBA);
     jugador_1->fijarPosicion(0, 0);
-    
+
     jugador_2->fijarDireccion(ARRIBA);
     jugador_2->fijarPosicion(0, 0);
 
     base_1->fijarDireccion(ARRIBA);
     base_1->fijarPosicion(0, 0);
-    
+
     base_2->fijarDireccion(ARRIBA);
     base_2->fijarPosicion(0, 0);
 }
@@ -156,7 +156,7 @@ void Editor::renderizar() {
     } else if (estado == EDITOR_ST_LEER) {
         renderizarCapaGris();
         input_nombre->actualizar();
-        
+
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         cancelar_btn->renderizar();
         aceptar_btn->renderizar();
@@ -173,7 +173,7 @@ void Editor::renderizar() {
 
         // Renderizar bloque seleccionado
         bloque = Escenario::obtenerTexturaBloque(bloque_seleccionado);
-        
+
         bloque_rect.w = 50;
         bloque_rect.h = 50;
 
@@ -211,7 +211,7 @@ void Editor::editarManejarEvento(SDL_Event &evento) {
                 insertarObjeto();
                 objeto_seleccionado = NULL;
             }
-        } else {        
+        } else {
             if (boton == SDL_BUTTON_LEFT) {
                 dibujar(bloque_seleccionado);
             } else if (boton == SDL_BUTTON_RIGHT) {
@@ -224,8 +224,8 @@ void Editor::editarManejarEvento(SDL_Event &evento) {
             case EDITOR_BTN_LIMPIAR:
                 Editor::entrar();
                 break;
-            case EDITOR_BTN_CARGAR: 
-                cargarMapa(); 
+            case EDITOR_BTN_CARGAR:
+                cargarMapa();
                 break;
             case EDITOR_BTN_GUARDAR:
                 botonGuardarPresionado();
@@ -238,9 +238,9 @@ void Editor::editarManejarEvento(SDL_Event &evento) {
     } else if (evento.type == SDL_MOUSEMOTION) {
         if (objeto_seleccionado != NULL) {
             insertarObjeto();
-        } else {    
+        } else {
             int estado_mouse = SDL_GetMouseState(NULL, NULL);
-            
+
             if (estado_mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                 dibujar(bloque_seleccionado);
             } else if (estado_mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
@@ -285,13 +285,13 @@ void Editor::editarManejarEvento(SDL_Event &evento) {
             case SDLK_v:
                     objeto_seleccionado = base_2;
                 break;
-            default: 
+            default:
                 ;
         }
     }
 }
 
-/** 
+/**
  * Manejar evento mientras se selecciona un mapa
  */
 void Editor::selecMapaManejarEvento(SDL_Event &evento) {
@@ -309,7 +309,7 @@ void Editor::selecMapaManejarEvento(SDL_Event &evento) {
     }
 }
 
-/** 
+/**
  * Manejar evento mientras se escribe
  */
 void Editor::inputManejarEvento(SDL_Event &evento) {
@@ -333,7 +333,7 @@ void Editor::inputManejarEvento(SDL_Event &evento) {
  * Inserta el objeto seleccionado en la posición del mouse
  */
 void Editor::insertarObjeto() {
-    SDL_Point mouse_pos, bloque_pos;
+    SDL_Point mouse_pos;
 
     SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
 
@@ -428,7 +428,7 @@ void Editor::guardarMapa(const char *nombre_archivo) {
     int i, j;
     Uint8 bloque;
     SDL_RWops *archivo;
-    
+
     archivo = SDL_RWFromFile(nombre_archivo, "wb");
 
     guardarObjetoInfo(archivo, jugador_1);

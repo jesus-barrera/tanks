@@ -3,6 +3,7 @@
 #include "../include/globales.h"
 #include "../include/utiles.h"
 #include "../include/Paquete.h"
+#include "../include/Musica.h"
 
 #include "../include/Tanque.h"
 
@@ -174,10 +175,10 @@ void Tanque::mover() {
         sig_rect.y = (int)pos_y;
 
         bloques = Escenario::obtenerBloquesEnColision(sig_rect);
-         
+
         if (comprobarColision(&sig_rect, &colision_area) || bloques.size() > 0) {
             fijarVelocidad(0);
-            
+
             if (bloques.size() > 0) {
                 // Obtener area del primer bloque como referencia
                 colision_area.x = bloques[0].x * TAMANO_BLOQUE;
@@ -211,7 +212,7 @@ bool Tanque::manejarEvento(SDL_Event &evento, Uint8 *buffer, int *num_bytes) {
 
     bool mover = true;
     int num_evento = -1;
-    
+
     SDL_Keycode tecla;
 
     if (estado == TQ_ST_MOVER && evento.type == SDL_KEYDOWN && evento.key.repeat == 0) {
@@ -243,6 +244,8 @@ bool Tanque::manejarEvento(SDL_Event &evento, Uint8 *buffer, int *num_bytes) {
 
         if (mover) {
             tecla_actual = tecla;
+            //Reproducir el sonido del tanque infinitamente hasta que se detenga
+            ReproducirSonido(Snd_Movimiento_tanque, 100, tipo+1, -1);
             fijarVelocidad(100);
         }
 
@@ -257,10 +260,10 @@ bool Tanque::manejarEvento(SDL_Event &evento, Uint8 *buffer, int *num_bytes) {
         if (tecla == tecla_actual) {
             tecla_actual = -1;
             fijarVelocidad(0);
-
+            DetenerCanal(tipo+1);
             if (buffer) {
                 // Crear paquete de evento
-                *num_bytes = paquete.nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)direccion, velocidad);        
+                *num_bytes = paquete.nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)direccion, velocidad);
                 return true;
             }
         }
@@ -319,8 +322,8 @@ void Tanque::renderizar() {
             textura = Tanque::explosion_sprite;
 
             dst_rect = this->rect;
-            dst_rect.w = clip->w * 2; 
-            dst_rect.h = clip->h * 2; 
+            dst_rect.w = clip->w * 2;
+            dst_rect.h = clip->h * 2;
 
             if (frame_num > 2) {
                 dst_rect.x -= 16;
@@ -335,6 +338,7 @@ void Tanque::renderizar() {
 }
 
 void Tanque::destruir() {
+    ReproducirSonido(Snd_Explosion, 100, 0, 0);
     estado = TQ_ST_EXPLOTAR;
     fijarAreaColision(NULL);
     fijarVelocidad(0);

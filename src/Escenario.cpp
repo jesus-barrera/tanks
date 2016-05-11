@@ -1,13 +1,14 @@
 #include "../include/tipos.h"
 #include "../include/utiles.h"
 #include "../include/Escenario.h"
+#include "../include/Musica.h"
 
 SDL_Texture *Escenario::textura_suelo;
 SDL_Texture *Escenario::bloques[NUM_BLOQUES];
 int Escenario::mapa[MAPA_FILAS][MAPA_COLUMNAS];
 Temporizador Escenario::animar_temp;
 
-bool Escenario::inicializar() {	
+bool Escenario::inicializar() {
 	textura_suelo           = cargarTextura("media/textures/ground_1.png");
 	bloques[BLOQUE_BRICK]   = cargarTextura("media/textures/bloque_ladrillo.png");
 	bloques[BLOQUE_METAL]   = cargarTextura("media/textures/bloque_metal.png");
@@ -44,7 +45,7 @@ void Escenario::renderizarFondo() {
 
 		for (j = 0; j <= y_repeat; j++) {
 			rect.y = j * rect.h;
-			
+
 			SDL_RenderCopy(renderer_principal, textura_suelo, NULL, &rect);
 		}
 	}
@@ -65,7 +66,7 @@ void Escenario::renderizarMapa() {
 
 		for (x = 0; x < MAPA_COLUMNAS; x++) {
 			rect.x = x * rect.w;
-			
+
 			if (mapa[y][x]) {
 
 				if ((mapa[y][x] == BLOQUE_AGUA_1 || mapa[y][x] == BLOQUE_AGUA_2) && animar_agua) {
@@ -123,8 +124,11 @@ SDL_Point Escenario::obtenerBloqueEnPunto(int x, int y) {
 void Escenario::destruirBloque(SDL_Point bloque_pos) {
 	int bloque = mapa[bloque_pos.y][bloque_pos.x];
 
-	if (bloque == BLOQUE_BRICK || bloque == BLOQUE_ARBUSTO) {
+	if (bloque == BLOQUE_BRICK || bloque == BLOQUE_ARBUSTO){
+        ReproducirSonido(Snd_ColisionBloque, 100, 0, 0);
 		mapa[bloque_pos.y][bloque_pos.x] = NO_BLOQUE;
+	}else{
+        ReproducirSonido(Snd_ColisionMetal, 100, 0, 0);
 	}
 }
 
