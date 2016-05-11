@@ -65,6 +65,10 @@ void Paquete::analizarPqtMantenerConexion(Uint8 *bytes) {
     strcpy(mensaje, (char *)bytes);
 }
 
+void Paquete::analizarPqtTerminarPartida(Uint8 *bytes) {
+    bytes = leer(bytes, &ganador, sizeof(ganador));
+}
+
 Uint8 *Paquete::escribir(Uint8 *buffer, void *datos, size_t num) {
     memcpy(buffer, datos, num);
 
@@ -131,11 +135,14 @@ void Paquete::analizar(Uint8 *bytes) {
                                 if (this->tipo == PQT_MANTENER_CONEXION) {
                                     analizarPqtMantenerConexion(bytes);
                                 }else{
-                                
-                                /*
-                                *Si no se cumple ninguna de las anteriores
-                                *o es un mapa o no es ningun paquete valido.
-                                */
+                                    if (this->tipo == PQT_TERMINAR_PARTIDA) {
+                                        analizarPqtTerminarPartida(bytes);
+                                    } else {
+                                        /*
+                                        *Si no se cumple ninguna de las anteriores
+                                        *o es un mapa o no es ningun paquete valido.
+                                        */
+                                    }                                
                                 }
                             }
                         }
@@ -236,6 +243,19 @@ size_t Paquete::nuevoPqtMantenerConexion(Uint8 *buffer, const char *msg) {
     ptr= escribir(ptr, &tipo, sizeof(tipo));
     strcpy((char *)ptr, msg);
     ptr += MAXTAM_MENSAJE + 1;
+
+    return (size_t)(ptr - buffer);
+}
+
+size_t Paquete::nuevoPqtTerminarPartida(Uint8 *buffer, Uint8 ganador) {
+    Uint8 *ptr;
+    Uint8 tipo;
+
+    ptr = buffer;
+    tipo = PQT_TERMINAR_PARTIDA;
+
+    ptr = escribir(ptr, &tipo, sizeof(tipo));
+    ptr = escribir(ptr, &ganador, sizeof(ganador));
 
     return (size_t)(ptr - buffer);
 }

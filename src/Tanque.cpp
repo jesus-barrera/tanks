@@ -113,6 +113,7 @@ void Tanque::actualizar() {
             }
 
             break;
+
         case TQ_ST_EXPLOTAR:
             if (comprobarAnim()) {
                 if (++frame_num == TQ_NUM_FRAMES_EXPLOSION) {
@@ -124,11 +125,15 @@ void Tanque::actualizar() {
                 }
             }
             break;
+
         case TQ_ST_ESPERAR:
             if (reaparecer_temp.obtenerTiempo() >= TQ_REAPARECER_TIEMPO) {
-                estado = TQ_ST_MOVER;
+                fijarPosicion(init_pos.x, init_pos.y);
+                fijarDireccion(init_direccion);
                 fijarAreaColision(&rect);
                 frame_num = 0;
+
+                estado = TQ_ST_MOVER;
             }
             break;
         default: ;
@@ -315,6 +320,7 @@ void Tanque::renderizar() {
 
             Objeto::renderizar(&Tanque::mover_clips[frame_num]);
             break;
+
         case TQ_ST_EXPLOTAR: {
             SDL_Rect dst_rect;
             SDL_Rect *clip = &Tanque::explosion_clips[frame_num];
@@ -333,6 +339,7 @@ void Tanque::renderizar() {
             SDL_RenderCopy(renderer_principal, textura, clip, &dst_rect);
             break;
         }
+
         default: ;
     }
 }
@@ -342,6 +349,27 @@ void Tanque::destruir() {
     estado = TQ_ST_EXPLOTAR;
     fijarAreaColision(NULL);
     fijarVelocidad(0);
+    --num_vidas;
 
     frame_num = 0;
 }
+
+void Tanque::fijarNumVidas(int vidas) {
+    this->num_vidas = vidas;
+}
+
+int Tanque::obtenerNumVidas() {
+    return this->num_vidas;
+}
+
+void Tanque::capturarEstado() {
+    init_pos.x = rect.x;
+    init_pos.y = rect.y;
+    init_direccion = direccion;
+
+    fijarVelocidad(0);
+    fijarAreaColision(&rect);
+    frame_num = 0;
+    estado = TQ_ST_MOVER;
+}
+

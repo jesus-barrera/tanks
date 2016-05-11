@@ -51,6 +51,7 @@ Jugar::Jugar() {
     jugador_1.tanque->fijarControles(Tanque::control_config[0]);
     jugador_2.tanque->fijarControles(Tanque::control_config[0]);
 
+    // Crear elementos de UI
     mensaje = new Etiqueta("", VENTANA_PADDING, VENTANA_PADDING);
 
     nombre_jugador = new Etiqueta("", VENTANA_PADDING, VENTANA_PADDING);
@@ -59,10 +60,8 @@ Jugar::Jugar() {
     nombre_oponente = new Etiqueta("", VENTANA_PADDING, 100);
     vidas_oponente = new Etiqueta("", VENTANA_PADDING, 130, DEFAULT_FONT_SIZE, COLOR_GRIS);
 
-    // Crear elementos de UI
     boton_salir = new Boton("Abandonar", 15, VENTANA_ALTO - 35);
     boton_salir->setViewport(&vista_estatus);
-
 }
 
 Jugar::~Jugar() {
@@ -92,17 +91,22 @@ void Jugar::entrar() {
     jugador_2.base->estaDestruido(false);
 
     if (modo_juego == MODO_JUEGO_VIDAS) {
-        jugador_1.num_vidas = num_vidas;
-        jugador_2.num_vidas = num_vidas;
+        jugador_1.tanque->fijarNumVidas(num_vidas);
+        jugador_2.tanque->fijarNumVidas(num_vidas);
 
         vidas_jugador->fijarTexto(to_string(num_vidas));
         vidas_oponente->fijarTexto(to_string(num_vidas));
     }
 
-    estado = ST_JUGAR;
+    jugador_1.tanque->capturarEstado();
+    jugador_2.tanque->capturarEstado();
+
+    ganador = 0;
 
     enviado_temp.iniciar();
     recibido_temp.iniciar();
+
+    estado = ST_JUGAR;
 }
 
 void Jugar::actualizar() {
@@ -137,7 +141,17 @@ void Jugar::actualizar() {
             } else if (paquete.tipo == PQT_MANTENER_CONEXION) {
                 cout << "[Debug] Mantener conexion" << endl;
             } else {
-                cout << "[Debug] Paquete descartado" << endl;
+                if (modo_net == MODO_CLIENTE) {
+                    if (paquete.tipo == PQT_TERMINAR_PARTIDA) {
+                        if (paquete.ganador == 2) {
+                            mensaje->fijarTexto(GANADOR_MENSAJE);
+                        } else {
+                            mensaje->fijarTexto(PERDEDOR_MENSAJE);
+                        }
+
+                        estado = ST_FIN_PARTIDA;
+                    }
+                }
             }
         } else if (recibido_temp.obtenerTiempo() > TIEMPO_CONEXION_PERDIDA) {
             mensaje->fijarTexto("Se perdio la conexion!");
@@ -145,27 +159,23 @@ void Jugar::actualizar() {
             estado = ST_ERROR;
         }
 
-        // Si no hay eventos, mantener conexion
-        if (enviado_temp.obtenerTiempo() > TIEMPO_ESPERA) {
-            int num_bytes = paquete.nuevoPqtMantenerConexion(buffer, "STILL ALIVE");
-            Net_enviar(buffer, num_bytes);
+        // Si el usuario esta inactivo, enviar mensaje para mantener viva la conexión
+        if (enviado_temp.obtenerTiempo() > TIEMPO_ESPERA) mantenerConexion();
 
-            cout << "Mantener se envio" << endl;
-            enviado_temp.iniciar();
-        }
 
         // Actualizar objetos
         jugador_1.tanque->actualizar();
         jugador_2.tanque->actualizar();
+
+        // Actualizar contador
+        if (modo_juego == MODO_JUEGO_VIDAS)  {
+            actualizarContadorVidas(jugador, vidas_jugador);
+            actualizarContadorVidas(oponente, vidas_oponente);
+        }
+
+        // Determinar si hay un ganador
+        if (modo_net == MODO_SERVIDOR) comprobarGanador();
     }
-}
-
-void Jugar::modoServidorActualizar() {
-
-}
-
-void Jugar::modoClienteActualizar() {
-
 }
 
 void Jugar::renderizar() {
@@ -191,7 +201,8 @@ void Jugar::renderizar() {
         vidas_oponente->renderizar();
 
         boton_salir->renderizar();
-    } else if (estado == ST_ERROR) {
+
+    } else if (estado == ST_ERROR || estado == ST_FIN_PARTIDA) {
         renderizarCapaGris();
         mensaje->renderizar();
 
@@ -208,11 +219,53 @@ void Jugar::manejarEvento(SDL_Event &evento) {
             abandonarPartida();
         }
     } else if (estado == ST_JUGAR) {
-
         if (jugador->tanque->manejarEvento(evento, buffer, &num_bytes)) {
-            // Enviar evento
+            // Ocurrio un evento
             Net_enviar(buffer, num_bytes);
             enviado_temp.iniciar();
+        }
+    }
+}
+
+void Jugar::mantenerConexion() {
+    int num_bytes;
+
+    num_bytes = paquete.nuevoPqtMantenerConexion(buffer, "STILL ALIVE");
+
+    Net_enviar(buffer, num_bytes);
+
+    cout << "Mantener se envio" << endl;
+    enviado_temp.iniciar();
+}
+
+void Jugar::comprobarGanador() {
+    if (modo_net == MODO_SERVIDOR) {
+
+        if (modo_juego == MODO_JUEGO_VIDAS) {
+            if (jugador_2.tanque->obtenerNumVidas() == 0) {
+                ganador = 1;
+            } else if (jugador_1.tanque->obtenerNumVidas() == 0) {
+                ganador = 2;
+            }
+        } else if (modo_juego == MODO_JUEGO_BASE) {
+            if (jugador_2.base->estaDestruido()) {
+                ganador = 1;
+            } else if (jugador_1.base->estaDestruido()) {
+                ganador = 2;
+            }
+        }
+
+        if (ganador) {
+            int num_bytes = paquete.nuevoPqtTerminarPartida(buffer, ganador);
+            Net_enviar(buffer, num_bytes);
+
+            if (ganador == 1) {
+                mensaje->fijarTexto(GANADOR_MENSAJE);
+            } else {
+                mensaje->fijarTexto(PERDEDOR_MENSAJE);
+            }
+
+            estado = ST_FIN_PARTIDA;
         }
     }
 }
@@ -226,6 +279,18 @@ void Jugar::abandonarPartida() {
 
     Net_terminar();
     irAEscena("menu");
+}
+
+void Jugar::actualizarContadorVidas(Jugador *jugador, Etiqueta *contador) {
+    int num_vidas;
+
+    num_vidas = jugador->tanque->obtenerNumVidas();
+
+    if (num_vidas != jugador->num_vidas) {
+        jugador->num_vidas = num_vidas;
+
+        contador->fijarTexto(to_string(num_vidas));
+    }
 }
 
 bool Jugar::cargarMapaPorId(Uint32 id) {
