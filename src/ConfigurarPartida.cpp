@@ -3,6 +3,7 @@
 #include "../include/Editor.h"
 #include "../include/Jugar.h"
 #include "../include/utiles.h"
+#include "../include/Musica.h"9
 #include "../include/network.h"
 
 int ConfigurarPartida::options_vidas[NUM_OPT_VIDAS] = {1, 3, 5, 10};
@@ -15,7 +16,7 @@ ConfigurarPartida::ConfigurarPartida() {
     int x_offset;
     int y_offset;
     int btn_sep;
-    
+
     // Crear botones
     for (int i = 0; i < CONFIG_NUM_BTNS; i++) {
         botones[i] = new Boton(etiquetas_botones[i], 0, 0);
@@ -24,7 +25,7 @@ ConfigurarPartida::ConfigurarPartida() {
     /**
      * Posicionar botones del panel derecho
      */
-    btn_sep = DEFAULT_FONT_SIZE + 10; 
+    btn_sep = DEFAULT_FONT_SIZE + 10;
     x_offset = VENTANA_PADDING;
     y_offset = VENTANA_ALTO - (btn_sep * 2 + 10);
 
@@ -35,13 +36,13 @@ ConfigurarPartida::ConfigurarPartida() {
     botones[CONFIG_BTN_CANCELAR]->setViewport(&vista_estatus);
 
     et_mensaje = new Etiqueta("", VENTANA_PADDING, VENTANA_PADDING);
-    
+
     /**
      * Posicionar objetos de la vista de juego
      */
     y_offset = VENTANA_PADDING;
     et_modo_juego = new Etiqueta("Seleccionar el modo de juego", x_offset, y_offset, DEFAULT_FONT_SIZE, COLOR_AZUL);
-    
+
     y_offset += btn_sep;
     botones[CONFIG_BTN_JUEGO_A]->fijarPosicion(x_offset + 20,  y_offset);
 
@@ -51,7 +52,7 @@ ConfigurarPartida::ConfigurarPartida() {
     }
 
     botones[CONFIG_BTN_JUEGO_B]->fijarPosicion(x_offset + 20,  (y_offset += btn_sep));
-    
+
     selector_mapa.fijarPosicion(x_offset, y_offset += btn_sep * 2);
 
     opt_vidas = -1;
@@ -74,6 +75,8 @@ ConfigurarPartida::~ConfigurarPartida() {
  * Se llama antes de entrar a la escena. Reinicia los objetos.
  */
 void ConfigurarPartida::entrar() {
+    cambiarMusicaFondo(MusicaFondoCrearMapa);
+    ReproducirMusicaFondo();
     Escenario::limpiarMapa();
     selector_mapa.cargarMapasInfo();
 
@@ -101,7 +104,7 @@ void ConfigurarPartida::actualizar() {
 
                 ((Jugar *)obtenerEscena("jugar"))->fijarNombreOponente(nombre);
 
-                et_mensaje->fijarTexto("Conectando con \"" + nombre + "\" ...");               
+                et_mensaje->fijarTexto("Conectando con \"" + nombre + "\" ...");
                 enviarConfiguracion();
                 estado = CONFIG_ST_CONFIRMACION;
             }
@@ -127,22 +130,22 @@ void ConfigurarPartida::actualizar() {
 
 void ConfigurarPartida::renderizar() {
     SDL_RenderSetViewport(renderer_principal, &vista_juego);
-    
+
     Escenario::renderizar();
     renderizarCapaGris();
 
     if (estado == CONFIG_ST_CONFIGURAR) {
         selector_mapa.renderizar();
         et_modo_juego->renderizar();
-        
+
         Boton::renderizarBotones(botones, CONFIG_NUM_BTNS);
-    
+
         if (modo_juego == Jugar::MODO_JUEGO_VIDAS) Boton::renderizarBotones(btns_vidas, NUM_OPT_VIDAS);
-        
+
     } else {
         SDL_RenderSetViewport(renderer_principal, &vista_juego);
         et_mensaje->renderizar();
-        
+
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         botones[CONFIG_BTN_CANCELAR]->renderizar();
     }
@@ -175,7 +178,7 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
         } else {
             switch (Boton::obtenerBotonSeleccionado(botones, CONFIG_NUM_BTNS)) {
                 case CONFIG_BTN_LISTO:
-                    if (mapa_info && (modo_juego == Jugar::MODO_JUEGO_BASE || 
+                    if (mapa_info && (modo_juego == Jugar::MODO_JUEGO_BASE ||
                         (modo_juego == Jugar::MODO_JUEGO_VIDAS && opt_vidas != -1))) {
 
                         Jugar *jugar = (Jugar *)obtenerEscena("jugar");
@@ -184,11 +187,11 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                         jugar->fijarModoJuego(modo_juego);
                         jugar->fijarModoNet(Jugar::MODO_SERVIDOR);
                         jugar->fijarNombreJugador(obtenerNombreEquipo());
-                        
+
                         if (modo_juego == Jugar::MODO_JUEGO_VIDAS) {
                             jugar->fijarNumVidas(options_vidas[opt_vidas]);
                         }
-                        
+
                         estado = CONFIG_ST_ESPERANDO_JUGADOR;
 
                         if (Net_iniciar()) {
@@ -196,7 +199,7 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                         } else {
                             et_mensaje->fijarTexto("Ocurrio un error al inicar conexion");
                         }
-                    }   
+                    }
                     break;
 
                 case CONFIG_BTN_CANCELAR:
@@ -215,13 +218,13 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                     botones[CONFIG_BTN_JUEGO_A]->estaSeleccionado(false);
                     break;
 
-                default: { 
-                    // Revisar si se eligió un numero de vidas                   
+                default: {
+                    // Revisar si se eligió un numero de vidas
                     int opt = Boton::obtenerBotonSeleccionado(btns_vidas, NUM_OPT_VIDAS);
- 
+
                     if (opt != -1 && opt != opt_vidas) {
                         if (opt_vidas != -1) btns_vidas[opt_vidas]->estaSeleccionado(false);
-                    
+
                         btns_vidas[opt]->estaSeleccionado(true);
                         opt_vidas = opt;
                     }
@@ -238,8 +241,8 @@ void ConfigurarPartida::enviarConfiguracion() {
     size_t num_bytes;
 
     num_bytes = paquete.nuevoPqtConfiguracion(
-        buffer, 
-        obtenerNombreEquipo().c_str(), 
+        buffer,
+        obtenerNombreEquipo().c_str(),
         ((modo_juego == Jugar::MODO_JUEGO_BASE) ? 0 : options_vidas[opt_vidas]),
         ((mapa_info->en_juego) ? mapa_info->id : -1)
     );

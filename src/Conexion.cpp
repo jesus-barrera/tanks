@@ -22,7 +22,9 @@ Boton *Conexion::botones[NUM_BTNS];
 void Conexion::entrar() {
 	ejemplo->fijarTexto("Ejemplo: 255.255.255.255");
     input_IP->limpiarTexto();
-
+    cambiarMusicaFondo(MusicaFondoCrearPartida);
+    ReproducirMusicaFondo();
+    //cambiarMusicaFondo(MusicaFondoCrearPartida);
     estado = ST_UNIRSE;
 }
 

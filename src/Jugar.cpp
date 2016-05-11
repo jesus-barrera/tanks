@@ -2,6 +2,7 @@
 #include "../include/MapaInfoDAO.h"
 #include "../include/Editor.h"
 #include "../include/Jugar.h"
+#include "../include/Musica.h"
 #include "../include/network.h"
 
 void renderizarTanque(Tanque *tanque) {
@@ -28,7 +29,7 @@ Jugar::Jugar() {
 
     b1 = jugador_1.base;
     b2 = jugador_2.base;
-    
+
     for (int i = 0; i < MAX_BALAS; i++) {
         t1->bala[i].agregarColisionador(t2);
         t1->bala[i].agregarColisionador(b2);
@@ -40,7 +41,7 @@ Jugar::Jugar() {
 
         t1->agregarColisionador(t2);
         t2->agregarColisionador(t1);
-        
+
         t1->agregarColisionador(b1);
         t1->agregarColisionador(b2);
         t2->agregarColisionador(b1);
@@ -54,7 +55,7 @@ Jugar::Jugar() {
 
     nombre_jugador = new Etiqueta("", VENTANA_PADDING, VENTANA_PADDING);
     vidas_jugador = new Etiqueta("", VENTANA_PADDING, 45, DEFAULT_FONT_SIZE, COLOR_GRIS);
-    
+
     nombre_oponente = new Etiqueta("", VENTANA_PADDING, 100);
     vidas_oponente = new Etiqueta("", VENTANA_PADDING, 130, DEFAULT_FONT_SIZE, COLOR_GRIS);
 
@@ -77,6 +78,8 @@ Jugar::~Jugar() {
 }
 
 void Jugar::entrar() {
+    cambiarMusicaFondo(MusicaFondoJugar);
+    ReproducirMusicaFondo();
     if (modo_net == MODO_SERVIDOR) {
         jugador = &jugador_1;
         oponente = &jugador_2;
@@ -115,14 +118,14 @@ void Jugar::actualizar() {
                 mensaje->fijarTexto("Jugador \"" + nombre_oponente->obtenerTexto() + "\" abandono la partida");
                 estado = ST_ERROR;
 
-            } else if (paquete.tipo == PQT_EVENTO) {  
+            } else if (paquete.tipo == PQT_EVENTO) {
                 cout << "[Debug] Evento: ";
                 cout << "x: " << paquete.pos_x << ", ";
                 cout << "y: " << paquete.pos_y << ", ";
                 cout << "evento: " << (int)paquete.evento << ", ";
                 cout << "velocidad: " << paquete.velocidad << endl;
                 oponente->tanque->fijarPosicion(paquete.pos_x, paquete.pos_y);
-                
+
                 if (paquete.evento < 4) {
                     oponente->tanque->fijarDireccion((direccion_t)paquete.evento);
                 } else if (paquete.evento == 4) {
@@ -132,9 +135,9 @@ void Jugar::actualizar() {
                 oponente->tanque->fijarVelocidad(paquete.velocidad);
 
             } else if (paquete.tipo == PQT_MANTENER_CONEXION) {
-                cout << "[Debug] Mantener conexion" << endl; 
+                cout << "[Debug] Mantener conexion" << endl;
             } else {
-                cout << "[Debug] Paquete descartado" << endl; 
+                cout << "[Debug] Paquete descartado" << endl;
             }
         } else if (recibido_temp.obtenerTiempo() > TIEMPO_CONEXION_PERDIDA) {
             mensaje->fijarTexto("Se perdio la conexion!");
@@ -150,7 +153,7 @@ void Jugar::actualizar() {
             cout << "Mantener se envio" << endl;
             enviado_temp.iniciar();
         }
-    
+
         // Actualizar objetos
         jugador_1.tanque->actualizar();
         jugador_2.tanque->actualizar();
@@ -167,26 +170,26 @@ void Jugar::modoClienteActualizar() {
 
 void Jugar::renderizar() {
     SDL_RenderSetViewport(renderer_principal, &vista_juego);
-    
+
     // Renderizar fondo y bloques
     Escenario::renderizar();
 
-    
+
     if (estado == ST_JUGAR) {
         // Renderizar objetos
         renderizarTanque(jugador_1.tanque);
         renderizarTanque(jugador_2.tanque);
-        
+
         jugador_1.base->renderizar();
         jugador_2.base->renderizar();
 
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         nombre_jugador->renderizar();
         nombre_oponente->renderizar();
-        
+
         vidas_jugador->renderizar();
         vidas_oponente->renderizar();
-        
+
         boton_salir->renderizar();
     } else if (estado == ST_ERROR) {
         renderizarCapaGris();
@@ -199,13 +202,13 @@ void Jugar::renderizar() {
 
 void Jugar::manejarEvento(SDL_Event &evento) {
     int num_bytes;
-    
+
     if (evento.type == SDL_MOUSEBUTTONDOWN && evento.button.button == SDL_BUTTON_LEFT) {
         if (boton_salir->isMouseOver()) {
             abandonarPartida();
         }
     } else if (estado == ST_JUGAR) {
-        
+
         if (jugador->tanque->manejarEvento(evento, buffer, &num_bytes)) {
             // Enviar evento
             Net_enviar(buffer, num_bytes);
@@ -222,7 +225,7 @@ void Jugar::abandonarPartida() {
     Net_enviar(buffer, num_bytes);
 
     Net_terminar();
-    irAEscena("menu");   
+    irAEscena("menu");
 }
 
 bool Jugar::cargarMapaPorId(Uint32 id) {
@@ -230,7 +233,7 @@ bool Jugar::cargarMapaPorId(Uint32 id) {
     MapaInfo info;
 
     mapas.fijarArchivo(GAME_MAPS_INFO);
-    
+
     if (mapas.obtener(id, &info)) {
         Editor::cargarMapa(info.ruta, jugador_1.tanque, jugador_1.base, jugador_2.tanque, jugador_2.base);
         return true;

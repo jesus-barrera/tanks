@@ -13,10 +13,10 @@ Mix_Chunk *sonidos[TotalSonidos];
 
 string NombreMusicafondo[TotalFondos] = {
     RUTAFONDOS "The Legend of Zelda - NES - Overworld.mp3",
-    RUTAFONDOS "FondoJuego.mp3",
-    RUTAFONDOS "FondoCrearPartida.mp3",
-    RUTAFONDOS "All Time Low   Kids In The Dark (Official Music Video).mp3",
-    RUTAFONDOS "All Time Low   Something's Gotta Give (Official Music Video).mp3"
+    RUTAFONDOS "",
+    RUTAFONDOS "",
+    RUTAFONDOS "Theme for Harold var 3.mp3",
+    RUTAFONDOS "Pinball Spring.mp3"
 };
 
 string NombresSonidos[TotalSonidos] = {
@@ -45,10 +45,9 @@ int cambiarMusicaFondo(int numMusica){
 }
 
 void ReproducirMusicaFondo(){
+    Mix_VolumeMusic(40);
     if(Mix_PlayMusic(Mus_fondo, 0)==-1){
         cout<<"El error esta aqui"<<endl;
-    }else{
-        cout<<"No era ahi"<<endl;
     }
 }
 
@@ -68,7 +67,7 @@ void inicializarMusica(){
         cout<<"Error en el sonido"<<endl;
     }else{
         cout<<"Se abrio el canal de audio"<<endl;
-        Mix_OpenAudio(22050, AUDIO_S16, 2, 4096);
+        Mix_OpenAudio(44100, AUDIO_S16, 2, 4096);
     }
 
     for(i=0; i<TotalSonidos; i++){

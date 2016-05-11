@@ -4,6 +4,7 @@
 #include "../include/Escenario.h"
 #include "../include/tipos.h"
 #include "../include/utiles.h"
+#include "../include/Musica.h"
 #include "../include/Editor.h"
 
 // Inicializar atributos estáticos
@@ -104,6 +105,8 @@ void Editor::liberarMemoria() {
  * Limpia el mapa y reposiciona los objetos.
  */
 void Editor::entrar() {
+    cambiarMusicaFondo(MusicaFondoCrearMapa);
+    ReproducirMusicaFondo();
     Escenario::limpiarMapa();
     nombre_mapa->fijarTexto("");
     mapa_info = NULL;

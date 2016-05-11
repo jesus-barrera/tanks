@@ -2,6 +2,7 @@
 #include "../include/Editor.h"
 #include "../include/Escenario.h"
 #include "../include/Menu.h"
+#include "../include/Musica.h"
 
 string etiquetas_botones[NUM_BOTONES] = {
 	"Nueva partida",
@@ -13,6 +14,8 @@ string etiquetas_botones[NUM_BOTONES] = {
 Boton *Menu::botones[NUM_BOTONES];
 
 void Menu::entrar() {
+    cambiarMusicaFondo(MusicaFondoCrearMapa);
+    ReproducirMusicaFondo();
 	Editor::cargarMapa(MAPAS_RUTA"1462739187.map", NULL, NULL, NULL, NULL);
 }
 
@@ -25,7 +28,7 @@ void Menu::renderizar() {
 	Escenario::renderizar();
 
 	renderizarCapaGris();
-	
+
 	// Renderizar botones
 	for (int i = 0; i < NUM_BOTONES; i++) {
 		botones[i]->renderizar();
