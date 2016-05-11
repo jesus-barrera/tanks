@@ -2,6 +2,7 @@
 
 #include "../include/globales.h"
 #include "../include/utiles.h"
+#include "../include/Paquete.h"
 
 #include "../include/Tanque.h"
 
@@ -205,8 +206,12 @@ void Tanque::mover() {
     }
 }
 
-void Tanque::manejarEvento(SDL_Event &evento) {
+bool Tanque::manejarEvento(SDL_Event &evento, Uint8 *buffer, int *num_bytes) {
+    static Paquete paquete;
+
     bool mover = true;
+    int num_evento = -1;
+    
     SDL_Keycode tecla;
 
     if (estado == TQ_ST_MOVER && evento.type == SDL_KEYDOWN && evento.key.repeat == 0) {
@@ -214,42 +219,24 @@ void Tanque::manejarEvento(SDL_Event &evento) {
 
         if (tecla == controles[MOVER_ARRIBA]) {
             fijarDireccion(ARRIBA);
+            num_evento = ARRIBA;
 
         } else if (tecla == controles[MOVER_ABAJO]) {
             fijarDireccion(ABAJO);
+            num_evento = ABAJO;
 
         } else if (tecla == controles[MOVER_IZQUIERDA]) {
             fijarDireccion(IZQUIERDA);
+            num_evento = IZQUIERDA;
 
         } else if (tecla == controles[MOVER_DERECHA]) {
             fijarDireccion(DERECHA);
+            num_evento = DERECHA;
 
         } else if (tecla == controles[DISPARAR]) {
-            int x, y;
-            double r, h;
-            r = angulo * PI/180;
-
-            h = (double)rect.h / 2;
-
-            x = rect.x + (rect.w / 2 - bala[0].obtenerAncho() / 2);
-            y = rect.y + (rect.h / 2 - bala[0].obtenerAlto() / 2);
-
-            x += sin(r) * h;
-            y -= cos(r) * h;
-
-            if(bala[0].disponible){
-                bala[0].Disparar(direccion, x, y);
-            }else{
-                if(bala[1].disponible){
-                    bala[1].Disparar(direccion, x, y);
-                }else{
-                    if(bala[2].disponible){
-                        bala[2].Disparar(direccion, x, y);
-                    }
-                }
-            }
-
+            disparar();
             mover=false;
+            num_evento = 4;
         } else {
             mover = false;
         }
@@ -258,12 +245,52 @@ void Tanque::manejarEvento(SDL_Event &evento) {
             tecla_actual = tecla;
             fijarVelocidad(100);
         }
+
+        if (buffer && num_evento != -1) {
+            // Crear paquete de evento
+            *num_bytes = paquete.nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)num_evento, velocidad);
+            return true;
+        }
     } else if (evento.type == SDL_KEYUP && evento.key.repeat == 0) {
         tecla = evento.key.keysym.sym;
 
         if (tecla == tecla_actual) {
             tecla_actual = -1;
             fijarVelocidad(0);
+
+            if (buffer) {
+                // Crear paquete de evento
+                *num_bytes = paquete.nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)direccion, velocidad);        
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+void Tanque::disparar() {
+    int x, y;
+    double r, h;
+    r = angulo * PI/180;
+
+    h = (double)rect.h / 2;
+
+    x = rect.x + (rect.w / 2 - bala[0].obtenerAncho() / 2);
+    y = rect.y + (rect.h / 2 - bala[0].obtenerAlto() / 2);
+
+    x += sin(r) * h;
+    y -= cos(r) * h;
+
+    if(bala[0].disponible){
+        bala[0].Disparar(direccion, x, y);
+    }else{
+        if(bala[1].disponible){
+            bala[1].Disparar(direccion, x, y);
+        }else{
+            if(bala[2].disponible){
+                bala[2].Disparar(direccion, x, y);
+            }
         }
     }
 }

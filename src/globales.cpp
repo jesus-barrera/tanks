@@ -26,8 +26,12 @@ void irAEscena(string nombre) {
 	}
 }
 
-void terminarJuego() {
-	salir = true;
+Escena *obtenerEscena(string nombre) {
+	if (escenas.count(nombre)) {
+		return escenas[nombre];
+	} else {
+		return NULL;
+	}
 }
 
 void liberarEscenas() {
@@ -38,4 +42,8 @@ void liberarEscenas() {
 	} 
 
 	escenas.clear();
+}
+
+void terminarJuego() {
+	salir = true;
 }

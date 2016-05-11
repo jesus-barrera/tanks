@@ -30,6 +30,7 @@ ConfigurarPartida::ConfigurarPartida() {
 
     botones[CONFIG_BTN_LISTO]->fijarPosicion(x_offset,  y_offset);
     botones[CONFIG_BTN_LISTO]->setViewport(&vista_estatus);
+
     botones[CONFIG_BTN_CANCELAR]->fijarPosicion(x_offset, (y_offset += btn_sep));
     botones[CONFIG_BTN_CANCELAR]->setViewport(&vista_estatus);
 
@@ -90,13 +91,17 @@ void ConfigurarPartida::entrar() {
 }
 
 void ConfigurarPartida::actualizar() {
-    switch(estado) {
+    switch (estado) {
         case CONFIG_ST_ESPERANDO_JUGADOR:
         if (Net_recibir(buffer, CONFIG_TAM_BUFFER)) {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_UNIRSE) {
-                et_mensaje->fijarTexto("Conectando con \"" + (string)paquete.nombre + "\" ...");                
+                string nombre = (string)paquete.nombre;
+
+                ((Jugar *)obtenerEscena("jugar"))->fijarNombreOponente(nombre);
+
+                et_mensaje->fijarTexto("Conectando con \"" + nombre + "\" ...");               
                 enviarConfiguracion();
                 estado = CONFIG_ST_CONFIRMACION;
             }
@@ -173,11 +178,15 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                     if (mapa_info && (modo_juego == Jugar::MODO_JUEGO_BASE || 
                         (modo_juego == Jugar::MODO_JUEGO_VIDAS && opt_vidas != -1))) {
 
-                        Jugar::cargarMapaPorRuta(mapa_info->ruta);
-                        Jugar::fijarModoJuego(modo_juego);
+                        Jugar *jugar = (Jugar *)obtenerEscena("jugar");
+
+                        jugar->cargarMapaPorRuta(mapa_info->ruta);
+                        jugar->fijarModoJuego(modo_juego);
+                        jugar->fijarModoNet(Jugar::MODO_SERVIDOR);
+                        jugar->fijarNombreJugador(obtenerNombreEquipo());
                         
                         if (modo_juego == Jugar::MODO_JUEGO_VIDAS) {
-                            Jugar::fijarNumVidas(options_vidas[opt_vidas]);
+                            jugar->fijarNumVidas(options_vidas[opt_vidas]);
                         }
                         
                         estado = CONFIG_ST_ESPERANDO_JUGADOR;
@@ -230,7 +239,7 @@ void ConfigurarPartida::enviarConfiguracion() {
 
     num_bytes = paquete.nuevoPqtConfiguracion(
         buffer, 
-        "Jugador 1", 
+        obtenerNombreEquipo().c_str(), 
         ((modo_juego == Jugar::MODO_JUEGO_BASE) ? 0 : options_vidas[opt_vidas]),
         ((mapa_info->en_juego) ? mapa_info->id : -1)
     );

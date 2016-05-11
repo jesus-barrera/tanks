@@ -7,12 +7,14 @@
 #include "Tanque.h"
 #include "Base.h"
 #include "Boton.h"
+#include "Paquete.h"
+#include "Temporizador.h"
+
 
 struct MapaInfo;
 
 class Jugador {
 public:
-    string nombre;
     Tanque *tanque;
     Base *base;
     int num_vidas;
@@ -20,19 +22,43 @@ public:
 
 class Jugar: public Escena {
 private:
+    static const int TIEMPO_ESPERA = 3000;
+    static const int TIEMPO_CONEXION_PERDIDA = 5000;
+    static const int TAM_BUFFER = 1500;
+    
+    enum {
+        ST_JUGAR,
+        ST_ERROR,
+        ST_FIN_PARTIDA
+    };
+    
+    int estado;
+
     // Configuracion del juego
-    static int modo_juego;
-    static int num_vidas;
-        
+    int modo_net;
+    int modo_juego;
+    int num_vidas;
+
     // Objetos
-    static Tanque *jugador;
-    static Tanque *tanque_j1;
-    static Tanque *tanque_j2;
-    static Base *base_j1;
-    static Base *base_j2;
+    Jugador *jugador;
+    Jugador *oponente;
+
+    Jugador jugador_1;
+    Jugador jugador_2;
 
     // Objetos GUI
-    static Boton *boton_salir;
+    Boton *boton_salir;
+    Etiqueta *nombre_jugador;
+    Etiqueta *nombre_oponente;
+    Etiqueta *vidas_jugador;
+    Etiqueta *vidas_oponente;
+    Etiqueta *mensaje;
+
+    Paquete paquete;
+    Uint8 buffer[TAM_BUFFER];
+    Temporizador enviado_temp;
+    Temporizador recibido_temp;
+
 public:
     // Modos de juego
     enum {
@@ -40,21 +66,39 @@ public:
         MODO_JUEGO_BASE
     };
 
-    static void inicializar();
-    static void liberarMemoria();
+    // Rol en la red
+    enum {
+        MODO_SERVIDOR,
+        MODO_CLIENTE
+    };
+
+    Jugar();
+    ~Jugar();
     
     // Métodos de Escena
     void entrar();
+
     void actualizar();
+    // Definir metodos para cada modo
+    void modoServidorActualizar();
+    void modoClienteActualizar();
+
     void renderizar();
     void manejarEvento(SDL_Event &evento);
 
-    // Métodos para cargar el mapa
-    static bool cargarMapaPorId(Uint32 id);
-    static bool cargarMapaPorRuta(const char *ruta);
 
-    static void fijarModoJuego(int modo);
-    static void fijarNumVidas(int vidas);
+    void abandonarPartida();
+
+    // Métodos para cargar el mapa
+    bool cargarMapaPorId(Uint32 id);
+    bool cargarMapaPorRuta(const char *ruta);
+
+    void fijarModoJuego(int modo);
+    void fijarNumVidas(int vidas);
+    void fijarModoNet(int modo);
+
+    void fijarNombreJugador(string nombre);
+    void fijarNombreOponente(string nombre);
 };
 
 #endif

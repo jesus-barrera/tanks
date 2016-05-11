@@ -77,6 +77,7 @@ private:
 
 	// bool esAnimationFrame()
 	bool comprobarAnim();
+
 public:
 	// Configuraciones del control
 	static int control_config[2][NUM_ACCIONES];
@@ -104,7 +105,9 @@ public:
 	void mover();
 	
 	// Manejar evento
-	void manejarEvento(SDL_Event& evento);
+	bool manejarEvento(SDL_Event& evento, Uint8 *buffer = NULL, int *num_bytes = NULL);
+
+	void disparar();
 	
 	// Manejar evento de colisión
 	void enColision(Colisionador *objeto);

@@ -143,7 +143,6 @@ bool inicializar() {
 		return false;
 	}
 
-	Jugar::inicializar();
 	Editor::inicializar();
 	Conexion::inicializar();
 
@@ -175,7 +174,6 @@ void cerrar() {
 	Menu::liberarMemoria();
 	Editor::liberarMemoria();
 	Base::liberarMemoria();
-	Jugar::liberarMemoria();
 	Conexion::liberarMemoria();
 	//Bala::liberarMemoria();
 

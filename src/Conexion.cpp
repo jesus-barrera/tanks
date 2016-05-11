@@ -31,20 +31,27 @@ void Conexion::actualizar() {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_CONFIGURACION) {
+                Jugar *jugar = (Jugar *)obtenerEscena("jugar");
+
                 cout << "[Debug] Configuracion: ";
                 cout << "nombre=" << paquete.nombre << ", ";
                 cout << "tipo= " << (int)paquete.tipo_juego << ", ";
                 cout << "mapa= " << (int)paquete.info_mapa << endl;
 
                 if (paquete.tipo_juego > 0) {
-                    Jugar::fijarModoJuego(Jugar::MODO_JUEGO_VIDAS);
-                    Jugar::fijarNumVidas(paquete.tipo_juego);
+                    jugar->fijarModoJuego(Jugar::MODO_JUEGO_VIDAS);
+                    jugar->fijarNumVidas(paquete.tipo_juego);
                 } else {
-                    Jugar::fijarModoJuego(Jugar::MODO_JUEGO_BASE);
+                    jugar->fijarModoJuego(Jugar::MODO_JUEGO_BASE);
                 }
+
+                jugar->fijarModoNet(Jugar::MODO_CLIENTE);
+                
+                jugar->fijarNombreJugador(obtenerNombreEquipo());
+                jugar->fijarNombreOponente((string)paquete.nombre);
                 
                 if (paquete.info_mapa >= 0) {
-                    if (!Jugar::cargarMapaPorId(paquete.info_mapa)) {
+                    if (!jugar->cargarMapaPorId(paquete.info_mapa)) {
                         cout << "[Debug] Error al cargar el mapa" << endl;
                         return;
                     }

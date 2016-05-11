@@ -24,16 +24,14 @@ void Paquete::analizarPqtConfirmacion(Uint8 *bytes) {
 }
 
 void Paquete::analizarPqtEvento(Uint8 *bytes) {
-    Uint16 temp1;
-    temp1=*bytes;
-    pos_x= temp1;
-    bytes = bytes + sizeof(temp1);
-    temp1 = *bytes;
-    pos_x = temp1;
-    bytes = bytes + sizeof(temp1);
-    evento = *bytes;
-    bytes = bytes + sizeof(evento);
-    velocidad = *bytes;
+    bytes = leer(bytes, &pos_x, sizeof(pos_x));
+    bytes = leer(bytes, &pos_y, sizeof(pos_y));
+
+    pos_x = ntohl(pos_x);
+    pos_y = ntohl(pos_y);
+
+    bytes = leer(bytes, &evento, sizeof(evento));
+    bytes = leer(bytes, &velocidad, sizeof(velocidad));
 }
 
 void Paquete::analizarPqtDestruirBloque(Uint8 *bytes) {
@@ -61,13 +59,22 @@ void Paquete::analizarPqtDestruirObjeto(Uint8 *bytes) {
 
 void Paquete::analizarPqtDestruirAbandonar(Uint8 *bytes) {
     strcpy(mensaje, (char *)bytes);
-    nombre = mensaje;
+}
+
+void Paquete::analizarPqtMantenerConexion(Uint8 *bytes) {
+    strcpy(mensaje, (char *)bytes);
 }
 
 Uint8 *Paquete::escribir(Uint8 *buffer, void *datos, size_t num) {
     memcpy(buffer, datos, num);
 
     return buffer + num;
+}
+
+Uint8 *Paquete::leer(Uint8 *src, void *dst, size_t num) {
+    memcpy(dst, src, num);
+
+    return src + num;
 }
 
 /*
@@ -121,10 +128,15 @@ void Paquete::analizar(Uint8 *bytes) {
                             if(this->tipo == PQT_ABANDONAR){
                                 analizarPqtDestruirAbandonar(bytes);
                             }else{
+                                if (this->tipo == PQT_MANTENER_CONEXION) {
+                                    analizarPqtMantenerConexion(bytes);
+                                }else{
+                                
                                 /*
                                 *Si no se cumple ninguna de las anteriores
                                 *o es un mapa o no es ningun paquete valido.
                                 */
+                                }
                             }
                         }
                     }
@@ -200,3 +212,30 @@ size_t Paquete::nuevoPqtEvento(Uint8 *buffer, int pos_x, int pos_y, Uint8 evento
     return (size_t)(ptr - buffer);
 }
 
+size_t Paquete::nuevoPqtAbandonar(Uint8 *buffer, const char *msg) {
+    Uint8 *ptr;
+    Uint8 tipo;
+
+    ptr = buffer;
+    tipo = PQT_ABANDONAR;
+
+    ptr= escribir(ptr, &tipo, sizeof(tipo));
+    strcpy((char *)ptr, msg);
+    ptr += MAXTAM_MENSAJE + 1;
+
+    return (size_t)(ptr - buffer);
+}
+
+size_t Paquete::nuevoPqtMantenerConexion(Uint8 *buffer, const char *msg) {
+    Uint8 *ptr;
+    Uint8 tipo;
+
+    ptr = buffer;
+    tipo = PQT_MANTENER_CONEXION;
+
+    ptr= escribir(ptr, &tipo, sizeof(tipo));
+    strcpy((char *)ptr, msg);
+    ptr += MAXTAM_MENSAJE + 1;
+
+    return (size_t)(ptr - buffer);
+}
