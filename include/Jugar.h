@@ -10,6 +10,8 @@
 #include "Paquete.h"
 #include "Temporizador.h"
 
+#define PERDEDOR_MENSAJE "Perdiste!"
+#define GANADOR_MENSAJE "Ganaste!"
 
 struct MapaInfo;
 
@@ -39,6 +41,8 @@ private:
     int modo_juego;
     int num_vidas;
 
+    Uint8 ganador;
+
     // Objetos
     Jugador *jugador;
     Jugador *oponente;
@@ -59,6 +63,12 @@ private:
     Temporizador enviado_temp;
     Temporizador recibido_temp;
 
+    void mantenerConexion();
+    void comprobarGanador();
+    void abandonarPartida();
+    void actualizarContadorVidas(Jugador *jugador, Etiqueta *contador);
+
+
 public:
     // Modos de juego
     enum {
@@ -77,17 +87,9 @@ public:
     
     // Métodos de Escena
     void entrar();
-
     void actualizar();
-    // Definir metodos para cada modo
-    void modoServidorActualizar();
-    void modoClienteActualizar();
-
     void renderizar();
     void manejarEvento(SDL_Event &evento);
-
-
-    void abandonarPartida();
 
     // Métodos para cargar el mapa
     bool cargarMapaPorId(Uint32 id);

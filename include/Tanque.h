@@ -48,6 +48,10 @@ private:
 	int tipo;
 	int estado;
 
+	int num_vidas;
+	SDL_Point init_pos;
+	direccion_t init_direccion;
+
 	// textura para la animación de movimiento
 	static SDL_Texture *mover_sprite;
 
@@ -117,6 +121,10 @@ public:
 
 	// Destruir el tanque
 	void destruir();
+
+	void fijarNumVidas(int vidas);
+	int obtenerNumVidas();
+	void capturarEstado();
 };
 
 
