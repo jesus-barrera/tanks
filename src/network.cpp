@@ -23,7 +23,7 @@ bool Net_iniciar(Uint16 puerto) {
     int socket_fd;
 
     // Crear socket
-    if ((socket_fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+    if ((socket_fd = socket(AF_INET6, SOCK_DGRAM, 0)) == -1) {
         perror("[Network] Error al crear socket");
         return false;
     }
@@ -62,7 +62,7 @@ void Net_terminar() {
  */
 int Net_recibir(Uint8 *buffer, int bufflen, bool recordar_host) {
     socklen_t addrlen;
-    struct sockaddr_in src_addr;
+    struct sockaddr_in6 src_addr;
     
     int res = poll(&remoto, 1, NET_POLL_TIMEOUT);
 
@@ -72,13 +72,12 @@ int Net_recibir(Uint8 *buffer, int bufflen, bool recordar_host) {
             
             res = recvfrom(remoto.fd, buffer, bufflen, 0, (struct sockaddr *)&src_addr, &addrlen);
 
-
             if (res <= 0) {
                 perror("[Network] Error de lectura");
             } else {
                 if (recordar_host) {
-                    memcpy(&dir_host_remoto, &src_addr, addrlen);
                     addrlen_remoto = addrlen;
+                    memcpy(&dir_host_remoto, &src_addr, addrlen);
                 }
 
                 return res;
