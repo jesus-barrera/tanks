@@ -79,8 +79,8 @@ ConfigurarPartida::~ConfigurarPartida() {
  * Se llama antes de entrar a la escena. Reinicia los objetos.
  */
 void ConfigurarPartida::entrar() {
-    cambiarMusicaFondo(MusicaFondoCrearMapa);
-    ReproducirMusicaFondo();
+//    cambiarMusicaFondo(MusicaFondoCrearMapa);
+//    ReproducirMusicaFondo();
 
     Escenario::limpiarMapa();
     selector_mapa.cargarMapasInfo();
@@ -127,7 +127,7 @@ void ConfigurarPartida::actualizar() {
 
             if (paquete.tipo == PQT_CONFIRMACION) {
                 cout << "[Network] Recibido: \"" << paquete.mensaje << "\"" << endl;
-                
+
                 if (!mapa_info->en_juego) {
                     enviarMapa();
                 }
@@ -284,9 +284,9 @@ void ConfigurarPartida::enviarMapa() {
 
     if (archivo) {
         tam_archivo = SDL_RWsize(archivo);
-        
+
         SDL_RWread(archivo, buffer, 1, tam_archivo);
-        
+
         cout << "[Net] Enviando mapa" << endl;
         Net_enviar(buffer, tam_archivo);
 

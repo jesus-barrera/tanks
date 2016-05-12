@@ -23,8 +23,8 @@ Boton *Conexion::botones[NUM_BTNS];
 void Conexion::entrar() {
 	ejemplo->fijarTexto("Ejemplo: 255.255.255.255");
     input_IP->limpiarTexto();
-    cambiarMusicaFondo(MusicaFondoCrearMapa);
-    ReproducirMusicaFondo();
+//    cambiarMusicaFondo(MusicaFondoCrearMapa);
+//    ReproducirMusicaFondo();
     estado = ST_UNIRSE;
 }
 
@@ -82,7 +82,7 @@ void Conexion::actualizar() {
         int num_bytes;
 
         num_bytes = Net_recibir(buffer, 1000);
-        
+
         if (num_bytes) {
             guardarMapaCompartido(buffer, num_bytes);
             ((Jugar *)obtenerEscena("jugar"))->cargarMapaPorRuta(RUTA_MAPA_COMPARTIDO);
@@ -98,9 +98,10 @@ void Conexion::renderizar() {
 	renderizarCapaGris();
 
     input_IP->actualizar();
-
     input_NombreJugador->renderizar();
     ejemplo->renderizar();
+
+    SDL_RenderSetViewport(renderer_principal, &vista_estatus);
 
 	// Renderizar botones
     for (int i = 0; i < NUM_BTNS; i++) {
@@ -159,7 +160,7 @@ bool Conexion::inicializar() {
 
     for (int i = 0; i < NUM_BTNS; i++) {
 		Conexion::botones[i] = new Boton(Conexion_btns[i], btn_x, VENTANA_ALTO - (50*(i+1)));
-		Conexion::botones[i]->setViewport(&vista_juego);
+		Conexion::botones[i]->setViewport(&vista_estatus);
 		btn_y += 50;
 	}
 		//Editor::selector_mapa = new SelectorMapa();

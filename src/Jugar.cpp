@@ -77,8 +77,8 @@ Jugar::~Jugar() {
 }
 
 void Jugar::entrar() {
-    cambiarMusicaFondo(MusicaFondoJugar);
-    ReproducirMusicaFondo();
+//    cambiarMusicaFondo(MusicaFondoJugar);
+//    ReproducirMusicaFondo();
 
     if (modo_net == MODO_SERVIDOR) {
         jugador = &jugador_1;

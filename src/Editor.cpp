@@ -105,8 +105,8 @@ void Editor::liberarMemoria() {
  * Limpia el mapa y reposiciona los objetos.
  */
 void Editor::entrar() {
-    cambiarMusicaFondo(MusicaFondoCrearMapa);
-    ReproducirMusicaFondo();
+//    cambiarMusicaFondo(MusicaFondoCrearMapa);
+//    ReproducirMusicaFondo();
     Escenario::limpiarMapa();
     nombre_mapa->fijarTexto("");
     mapa_info = NULL;
