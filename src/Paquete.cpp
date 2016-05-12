@@ -27,34 +27,32 @@ void Paquete::analizarPqtEvento(Uint8 *bytes) {
     bytes = leer(bytes, &pos_x, sizeof(pos_x));
     bytes = leer(bytes, &pos_y, sizeof(pos_y));
 
-    pos_x = ntohl(pos_x);
-    pos_y = ntohl(pos_y);
+    pos_x = ntohs(pos_x);
+    pos_y = ntohs(pos_y);
 
     bytes = leer(bytes, &evento, sizeof(evento));
     bytes = leer(bytes, &velocidad, sizeof(velocidad));
 }
 
 void Paquete::analizarPqtDestruirBloque(Uint8 *bytes) {
-    Uint16 temp1;
-    temp1=*bytes;
-    pos_x= temp1;
-    bytes = bytes + sizeof(temp1);
-    temp1 = *bytes;
-    pos_y = temp1;
-    bytes = bytes + sizeof(temp1);
-    temp1 = *bytes;
-    pos_x2 = temp1;
-    bytes = bytes + sizeof(temp1);
-    temp1 = *bytes;
-    pos_y2 = temp1;
+    bytes = leer(bytes, &pos_x, sizeof(pos_x));
+    pos_x = ntohs(pos_x);
+    
+    bytes = leer(bytes, &pos_y, sizeof(pos_y));
+    pos_y = ntohs(pos_y);
+
+    
+    bytes = leer(bytes, &pos_x2, sizeof(pos_x2));
+    pos_x2 = ntohs(pos_x2);
+    
+    bytes = leer(bytes, &pos_y2, sizeof(pos_y2));
+    pos_y2 = ntohs(pos_y2);
+
 }
 
 void Paquete::analizarPqtDestruirObjeto(Uint8 *bytes) {
-    num_jugador = *bytes;
-    bytes = bytes + sizeof(num_jugador);
-    tipo_objeto = *bytes;
-    bytes = bytes + sizeof(tipo_objeto);
-    bandera = *bytes;
+    bytes = leer(bytes, &num_jugador, sizeof(num_jugador));
+    bytes = leer(bytes, &tipo_objeto, sizeof(tipo_objeto));
 }
 
 void Paquete::analizarPqtDestruirAbandonar(Uint8 *bytes) {
@@ -199,7 +197,7 @@ size_t Paquete::nuevoPqtConfirmacion(Uint8 *buffer, const char *msg) {
     return (size_t)(ptr - buffer);
 }
 
-size_t Paquete::nuevoPqtEvento(Uint8 *buffer, int pos_x, int pos_y, Uint8 evento, float velocidad) {
+size_t Paquete::nuevoPqtEvento(Uint8 *buffer, Sint16 pos_x, Sint16 pos_y, Uint8 evento, float velocidad) {
     Uint8 *ptr;
     Uint8 tipo;
 
@@ -208,13 +206,50 @@ size_t Paquete::nuevoPqtEvento(Uint8 *buffer, int pos_x, int pos_y, Uint8 evento
 
     ptr = escribir(ptr, &tipo, sizeof(tipo));
 
-    pos_x = htonl(pos_x);
-    pos_y = htonl(pos_y);
+    pos_x = htons(pos_x);
+    pos_y = htons(pos_y);
 
     ptr = escribir(ptr, &pos_x, sizeof(pos_x));
     ptr = escribir(ptr, &pos_y, sizeof(pos_y));
     ptr = escribir(ptr, &evento, sizeof(evento));
     ptr = escribir(ptr, &velocidad, sizeof(velocidad));
+
+    return (size_t)(ptr - buffer);
+}
+
+size_t Paquete::nuevoPqtDestruirBloque(Uint8 *buffer, Sint16 pos_x, Sint16 pos_y, Sint16 pos_x2, Sint16 pos_y2) {
+    Uint8 *ptr;
+    Uint8 tipo;
+
+    ptr = buffer;
+    tipo = PQT_DESTRUIR_BLOQUE;
+
+    ptr = escribir(ptr, &tipo, sizeof(tipo));
+ 
+    pos_x = htons(pos_x);
+    pos_y = htons(pos_y);
+    pos_x2 = htons(pos_x2);
+    pos_y2 = htons(pos_y2);
+
+    ptr = escribir(ptr, &pos_x, sizeof(pos_x));
+    ptr = escribir(ptr, &pos_y, sizeof(pos_y));
+    ptr = escribir(ptr, &pos_x2, sizeof(pos_x2));
+    ptr = escribir(ptr, &pos_y2, sizeof(pos_y2));
+
+    return (size_t)(ptr - buffer);
+}
+
+size_t Paquete::nuevoPqtDestruirObjeto(Uint8 *buffer, Uint8 num_jugador, Uint8 tipo_objeto) {
+    Uint8 *ptr;
+    Uint8 tipo;
+
+    ptr = buffer;
+    tipo = PQT_DESTRUIR_OBJETO;
+
+    ptr = escribir(ptr, &tipo, sizeof(tipo));
+    
+    ptr = escribir(ptr, &num_jugador, sizeof(num_jugador));
+    ptr = escribir(ptr, &tipo_objeto, sizeof(tipo_objeto));
 
     return (size_t)(ptr - buffer);
 }

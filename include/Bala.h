@@ -14,36 +14,36 @@
 #define BALA_RUTA_MEDIOS "media/tank"
 #define BALA_ETIQUETA "bala"
 
+#define MAX_BLOQUES_EN_COLISION 2
+
 class Bala: public Colisionador, public Objeto {
 public:
-	// texturas para la animación de movimiento
 	static SDL_Texture *mover_sprites[BALA_NUM_FRAMES_MOVER];
-	// Número de frame
 	int frame_num;
 	bool disponible=true;
+	bool destruccion_activa;
 	Temporizador animar_temp;
-	// Actualiza el sprite actual
+
 	void actualizarSprite();
 	void sigFrame();
+
 public:
-	// Inicializa el tanque
 	Bala();
-	// Carga imagenes y sonidos necesarios
 	static bool inicializar();
-	// Libera la memoria reservada al cargarse los medios
 	static void liberarMemoria();
-	// Llamado en cada frame
+
 	void actualizar();
-	// Mueve el tanque en la dirección sobre la que apunta
 	bool mover();
-	// Cambia el frame actual
 	void animar();
-	// Manejar evento
 	void manejarEvento(SDL_Event& evento);
-	// Manejar evento de colisión con objeto
+
 	void enColision(Colisionador *objeto);
 	void Disparar(direccion_t direccion, int x, int y);
 	void renderizar();
+	void habilitarDestruccion(bool destruir);
+
+	void enviarDestruirBloque(SDL_Point bloques[]);
+	void enviarDestruirObjeto(int num_jugador, int tipo_objeto);
 };
 
 #endif // BALA_H_INCLUDED

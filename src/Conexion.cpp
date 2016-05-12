@@ -76,7 +76,6 @@ void Conexion::actualizar() {
                 estado = ST_UNIRSE;
                 Net_terminar();
             }
-            cout<<"Entro"<<endl;
         }
     } else if (estado == ST_ESPERAR_MAPA) {
         int num_bytes;

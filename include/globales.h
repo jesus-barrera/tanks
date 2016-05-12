@@ -28,6 +28,9 @@
 #define USER_MAPS_INFO "mapas/user/maps_user.dat"
 #define GAME_MAPS_INFO "mapas/maps.dat"
 
+#define JUGADOR_1 1
+#define JUGADOR_2 2
+
 #define PI 3.14159265359
 
 using namespace std;

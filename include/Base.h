@@ -14,11 +14,6 @@ enum {
 	BASE_NUM_CLIPS
 };
 
-enum {
-	BASE_TIPO_ROJO,
-	BASE_TIPO_AZUL
-};
-
 class Base: public Colisionador, public Objeto {
 private:
 	static SDL_Texture *sprite;
@@ -27,13 +22,13 @@ private:
 	bool esta_destruido;
 	SDL_Rect clip;
 
+public:
 	int tipo;
 
-public:
 	static bool inicializar();
 	static void liberarMemoria();
 
-	Base(int tipo = BASE_TIPO_ROJO);
+	Base(int tipo = JUGADOR_1);
 
 	bool estaDestruido();
 	void estaDestruido(bool destruido);

@@ -4,8 +4,12 @@
 #include "../include/utiles.h"
 #include "../include/Paquete.h"
 #include "../include/Musica.h"
+#include "../include/network.h"
+#include "../include/Paquete.h"
 
 #include "../include/Tanque.h"
+
+static Uint8 buffer[1000];
 
 // Definir atributos estáticos
 SDL_Texture *Tanque::mover_sprite;
@@ -211,9 +215,7 @@ void Tanque::mover() {
     }
 }
 
-bool Tanque::manejarEvento(SDL_Event &evento, Uint8 *buffer, int *num_bytes) {
-    static Paquete paquete;
-
+bool Tanque::manejarEvento(SDL_Event &evento) {
     bool mover;
     int num_evento;
     SDL_Keycode tecla;
@@ -270,8 +272,9 @@ bool Tanque::manejarEvento(SDL_Event &evento, Uint8 *buffer, int *num_bytes) {
     }
 
     if (buffer && num_evento != -1) {
-        *num_bytes = paquete.nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)num_evento, velocidad);
-        
+        int num_bytes = Paquete::nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)num_evento, velocidad);
+        Net_enviar(buffer, num_bytes);
+
         return true;
     } else {
         return false;
@@ -313,7 +316,7 @@ void Tanque::renderizar() {
         case TQ_ST_MOVER:
             textura = Tanque::mover_sprite;
 
-            if (this->tipo == TQ_TIPO_ROJO) {
+            if (this->tipo == JUGADOR_1) {
                 SDL_SetTextureColorMod(textura, 255, 255, 255);
             } else {
                 SDL_SetTextureColorMod(textura, 0, 200, 255);
@@ -343,6 +346,10 @@ void Tanque::renderizar() {
 
         default: ;
     }
+
+    for (int i = 0; i < MAX_BALAS; i++) {
+        bala[i].renderizar();
+    }
 }
 
 void Tanque::destruir() {
@@ -370,6 +377,7 @@ void Tanque::capturarEstado() {
     init_pos.y = rect.y;
     init_direccion = direccion;
 
+    // Reiniciar valores
     for (int i = 0; i < MAX_BALAS; i++) {
         bala[i].disponible = true;
         bala[i].fijarVelocidad(0);
@@ -379,5 +387,11 @@ void Tanque::capturarEstado() {
     fijarAreaColision(&rect);
     frame_num = 0;
     estado = TQ_ST_MOVER;
+}
+
+void Tanque::habilitarBalasDestruccion(bool destruir) {
+    for (int i = 0; i < MAX_BALAS; i++) {
+        bala[i].habilitarDestruccion(destruir);
+    }
 }
 

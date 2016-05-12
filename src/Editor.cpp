@@ -42,11 +42,11 @@ bool Editor::inicializar() {
     int btn_sep;
 
     // Crear objetos
-    jugador_1 = new Tanque(TQ_TIPO_ROJO);
-    jugador_2 = new Tanque(TQ_TIPO_AZUL);
+    jugador_1 = new Tanque(JUGADOR_1);
+    jugador_2 = new Tanque(JUGADOR_2);
 
-    base_1 = new Base(BASE_TIPO_ROJO);
-    base_2 = new Base(BASE_TIPO_AZUL);
+    base_1 = new Base(JUGADOR_1);
+    base_2 = new Base(JUGADOR_2);
 
     // Crear botones
     btn_sep = EDITOR_TAM_BTN + 10;
@@ -61,8 +61,10 @@ bool Editor::inicializar() {
     }
 
     btn_y = VENTANA_ALTO - (btn_sep * 2 + 10);
+    
     aceptar_btn = new Boton("Aceptar", btn_x,  btn_y, EDITOR_TAM_BTN);
     aceptar_btn->setViewport(&vista_estatus);
+
     cancelar_btn = new Boton("Cancelar", btn_x, btn_y +  btn_sep, EDITOR_TAM_BTN);
     cancelar_btn->setViewport(&vista_estatus);
 

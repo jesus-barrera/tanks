@@ -27,6 +27,11 @@ enum {
     EVENTO_DISPARO
 };
 
+enum {
+    TIPO_OBJ_TANQUE,
+    TIPO_OBJ_BASE
+};
+
 class Paquete {
 private:    
     void analizarPqtUnirse(Uint8 *bytes);
@@ -39,8 +44,9 @@ private:
     void analizarPqtMantenerConexion(Uint8 *bytes);
     void analizarPqtTerminarPartida(Uint8 *bytes);
     void limpiar();
-    Uint8 *escribir(Uint8 *buffer, void *datos, size_t num);
-    Uint8 *leer(Uint8 *src, void *dst, size_t num);
+    
+    static Uint8 *escribir(Uint8 *buffer, void *datos, size_t num);
+    static Uint8 *leer(Uint8 *src, void *dst, size_t num);
 
 public:
     Uint8 tipo;
@@ -48,12 +54,12 @@ public:
     char mensaje[MAXTAM_MENSAJE + 1];
     char *nombre;
     
-    int pos_x;
-    int pos_y;
+    Sint16 pos_x;
+    Sint16 pos_y;
 
     // Soporte para varios bloques en PQT_DESTRUIR_BLOQUE
-    int pos_x2;
-    int pos_y2;
+    Sint16 pos_x2;
+    Sint16 pos_y2;
 
     float velocidad;
 
@@ -68,13 +74,15 @@ public:
     Paquete();
     void analizar(Uint8 *buffer);
 
-    size_t nuevoPqtConfiguracion(Uint8 *buffer, const char *nombre, Uint8 tipo_juego, Sint8 mapa);
-    size_t nuevoPqtUnirse(Uint8 *buffer, const char *nombre);
-    size_t nuevoPqtConfirmacion(Uint8 *buffer, const char *msg);
-    size_t nuevoPqtEvento(Uint8 *buffer, int pos_x, int pos_y, Uint8 evento, float velocidad);
-    size_t nuevoPqtAbandonar(Uint8 *buffer, const char *msg);
-    size_t nuevoPqtMantenerConexion(Uint8 *buffer, const char *msg);
-    size_t nuevoPqtTerminarPartida(Uint8 *buffer, Uint8 ganador);
+    static size_t nuevoPqtConfiguracion(Uint8 *buffer, const char *nombre, Uint8 tipo_juego, Sint8 mapa);
+    static size_t nuevoPqtUnirse(Uint8 *buffer, const char *nombre);
+    static size_t nuevoPqtConfirmacion(Uint8 *buffer, const char *msg);
+    static size_t nuevoPqtEvento(Uint8 *buffer, Sint16 pos_x, Sint16 pos_y, Uint8 evento, float velocidad);
+    static size_t nuevoPqtDestruirBloque(Uint8 *bytes, Sint16 pos_x, Sint16 pos_y, Sint16 pos_x2, Sint16 pos_y2);
+    static size_t nuevoPqtDestruirObjeto(Uint8 *bytes, Uint8 num_jugador, Uint8 tipo_objeto);
+    static size_t nuevoPqtAbandonar(Uint8 *buffer, const char *msg);
+    static size_t nuevoPqtMantenerConexion(Uint8 *buffer, const char *msg);
+    static size_t nuevoPqtTerminarPartida(Uint8 *buffer, Uint8 ganador);
 };
 
 #endif
