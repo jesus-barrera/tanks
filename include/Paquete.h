@@ -19,6 +19,14 @@ enum {
     TOTAL_PAQUETES
 };
 
+enum {
+    EVENTO_ARRIBA,
+    EVENTO_DERECHA,
+    EVENTO_ABAJO,
+    EVENTO_IZQUIERDA,
+    EVENTO_DISPARO
+};
+
 class Paquete {
 private:    
     void analizarPqtUnirse(Uint8 *bytes);

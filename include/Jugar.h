@@ -25,7 +25,7 @@ public:
 class Jugar: public Escena {
 private:
     static const int TIEMPO_ESPERA = 3000;
-    static const int TIEMPO_CONEXION_PERDIDA = 5000;
+    static const int TIEMPO_CONEXION_PERDIDA = 7000;
     static const int TAM_BUFFER = 1500;
     
     enum {

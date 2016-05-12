@@ -22,7 +22,7 @@
 
 #define MAX_BALAS 3
 
-// Botones
+// Controles
 enum {
 	MOVER_ARRIBA,
 	MOVER_ABAJO,
@@ -83,12 +83,11 @@ private:
 
 public:
 	int tipo;
+
 	// Configuraciones del control
 	static int control_config[2][NUM_ACCIONES];
 
     Bala bala[MAX_BALAS];
-
-    int balasdisparadas;
 
 	// Inicializa el tanque
 	Tanque(int tipo = TQ_TIPO_ROJO);
@@ -111,7 +110,7 @@ public:
 	// Manejar evento
 	bool manejarEvento(SDL_Event& evento, Uint8 *buffer = NULL, int *num_bytes = NULL);
 
-	void disparar();
+	bool disparar();
 
 	// Manejar evento de colisión
 	void enColision(Colisionador *objeto);
@@ -124,6 +123,7 @@ public:
 
 	void fijarNumVidas(int vidas);
 	int obtenerNumVidas();
+	
 	void capturarEstado();
 };
 

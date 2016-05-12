@@ -17,6 +17,8 @@ ConfigurarPartida::ConfigurarPartida() {
     int y_offset;
     int btn_sep;
 
+    nombre_host = obtenerNombreEquipo();
+
     // Crear botones
     for (int i = 0; i < CONFIG_NUM_BTNS; i++) {
         botones[i] = new Boton(etiquetas_botones[i], 0, 0);
@@ -36,6 +38,7 @@ ConfigurarPartida::ConfigurarPartida() {
     botones[CONFIG_BTN_CANCELAR]->setViewport(&vista_estatus);
 
     et_mensaje = new Etiqueta("", VENTANA_PADDING, VENTANA_PADDING);
+    et_nombre_host = new Etiqueta(nombre_host, VENTANA_PADDING, VENTANA_PADDING);
 
     /**
      * Posicionar objetos de la vista de juego
@@ -64,6 +67,7 @@ ConfigurarPartida::ConfigurarPartida() {
 ConfigurarPartida::~ConfigurarPartida() {
     delete(et_mensaje);
     delete(et_modo_juego);
+    delete(et_nombre_host);
 
     Boton::eliminarBotones(botones, CONFIG_NUM_BTNS);
     Boton::eliminarBotones(btns_vidas, NUM_OPT_VIDAS);
@@ -77,6 +81,7 @@ ConfigurarPartida::~ConfigurarPartida() {
 void ConfigurarPartida::entrar() {
     cambiarMusicaFondo(MusicaFondoCrearMapa);
     ReproducirMusicaFondo();
+
     Escenario::limpiarMapa();
     selector_mapa.cargarMapasInfo();
 
@@ -86,9 +91,9 @@ void ConfigurarPartida::entrar() {
     // Reiniciar configuracion del juego
     if (opt_vidas != -1) btns_vidas[opt_vidas]->estaSeleccionado(false);
 
-    opt_vidas = -1;
+    opt_vidas  = -1;
     modo_juego = -1;
-    mapa_info = NULL;
+    mapa_info  = NULL;
 
     estado = CONFIG_ST_CONFIGURAR;
 }
@@ -106,6 +111,8 @@ void ConfigurarPartida::actualizar() {
 
                 et_mensaje->fijarTexto("Conectando con \"" + nombre + "\" ...");
                 enviarConfiguracion();
+
+                temp.iniciar();
                 estado = CONFIG_ST_CONFIRMACION;
             }
         }
@@ -119,10 +126,20 @@ void ConfigurarPartida::actualizar() {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_CONFIRMACION) {
+                cout << "[Network] Recibido: \"" << paquete.mensaje << "\"" << endl;
+                
+                if (!mapa_info->en_juego) {
+                    enviarMapa();
+                }
+
                 irAEscena("jugar");
             } else {
-                cout << "[Debug] Paquete descartado" << endl;
+                cout << "[Network] Paquete descartado" << endl;
             }
+
+        } else if (temp.obtenerTiempo() > MAX_CONFIRM_TIEMPO) {
+            et_mensaje->fijarTexto("No se pudo crear la partida");
+            estado = CONFIG_ST_ERROR;
         }
         break;
     }
@@ -142,6 +159,8 @@ void ConfigurarPartida::renderizar() {
 
         if (modo_juego == Jugar::MODO_JUEGO_VIDAS) Boton::renderizarBotones(btns_vidas, NUM_OPT_VIDAS);
 
+        SDL_RenderSetViewport(renderer_principal, &vista_estatus);
+        et_nombre_host->renderizar();
     } else {
         SDL_RenderSetViewport(renderer_principal, &vista_juego);
         et_mensaje->renderizar();
@@ -187,7 +206,7 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                         jugar->cargarMapaPorRuta(mapa_info->ruta);
                         jugar->fijarModoJuego(modo_juego);
                         jugar->fijarModoNet(Jugar::MODO_SERVIDOR);
-                        jugar->fijarNombreJugador(obtenerNombreEquipo());
+                        jugar->fijarNombreJugador(nombre_host);
 
                         if (modo_juego == Jugar::MODO_JUEGO_VIDAS) {
                             jugar->fijarNumVidas(options_vidas[opt_vidas]);
@@ -209,7 +228,7 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                     break;
 
                 case CONFIG_BTN_JUEGO_A:
-                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
+                    ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                     modo_juego = Jugar::MODO_JUEGO_VIDAS;
                     botones[CONFIG_BTN_JUEGO_A]->estaSeleccionado(true);
                     botones[CONFIG_BTN_JUEGO_B]->estaSeleccionado(false);
@@ -246,11 +265,33 @@ void ConfigurarPartida::enviarConfiguracion() {
 
     num_bytes = paquete.nuevoPqtConfiguracion(
         buffer,
-        obtenerNombreEquipo().c_str(),
+        nombre_host.c_str(),
         ((modo_juego == Jugar::MODO_JUEGO_BASE) ? 0 : options_vidas[opt_vidas]),
         ((mapa_info->en_juego) ? mapa_info->id : -1)
     );
 
-    cout << "[Debug] Enviando configuración" << endl;
+    cout << "[Net] Enviando configuración" << endl;
     Net_enviar(buffer, num_bytes);
+}
+
+
+/**
+ * Envia el mapa seleccionado al oponente
+ */
+void ConfigurarPartida::enviarMapa() {
+    Uint64 tam_archivo;
+    SDL_RWops *archivo = SDL_RWFromFile(mapa_info->ruta, "rb");
+
+    if (archivo) {
+        tam_archivo = SDL_RWsize(archivo);
+        
+        SDL_RWread(archivo, buffer, 1, tam_archivo);
+        
+        cout << "[Net] Enviando mapa" << endl;
+        Net_enviar(buffer, tam_archivo);
+
+        SDL_RWclose(archivo);
+    } else {
+        cout << "[Config] Error al abrir archivo" << endl;
+    }
 }

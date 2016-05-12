@@ -7,6 +7,8 @@
 #include "Temporizador.h"
 #include "Paquete.h"
 
+#define RUTA_MAPA_COMPARTIDO "mapas/user/compartido.map"
+
 enum {
 	BOTON_ACEPTAR,
 	BOTON_REGRESAR,
@@ -17,7 +19,8 @@ class Conexion: public Escena {
 private:
     enum {
         ST_UNIRSE,
-        ST_ESPERAR_CONFIG
+        ST_ESPERAR_CONFIG,
+        ST_ESPERAR_MAPA
     };
 
     static const int TIEMPO_CONEXION_PERDIDA = 5000;
@@ -42,6 +45,8 @@ public:
     void actualizar();
     void renderizar();
     void manejarEvento(SDL_Event &evento);
+
+    void guardarMapaCompartido(Uint8 *buffer, int num_bytes);
 };
 
 #endif // CONEXION_H_INCLUDED

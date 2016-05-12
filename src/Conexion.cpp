@@ -59,15 +59,16 @@ void Conexion::actualizar() {
                         return;
                     }
 
-
                     irAEscena("jugar");
 
-                    // Enviar confirmación
-                    int tam_pqt = paquete.nuevoPqtConfirmacion(buffer, "OK");
-                    Net_enviar(buffer, tam_pqt);
                 } else {
-                    cout << "[Debug] Recibir mapa" << endl;
+                    estado = ST_ESPERAR_MAPA;
+                    cout << "[Net] Recibir mapa" << endl;
                 }
+
+                // Enviar confirmación
+                int tam_pqt = paquete.nuevoPqtConfirmacion(buffer, "OK");
+                Net_enviar(buffer, tam_pqt);
             }
         }else{
             if (recibido_temp.obtenerTiempo() > TIEMPO_CONEXION_PERDIDA) {
@@ -76,6 +77,17 @@ void Conexion::actualizar() {
                 Net_terminar();
             }
             cout<<"Entro"<<endl;
+        }
+    } else if (estado == ST_ESPERAR_MAPA) {
+        int num_bytes;
+
+        num_bytes = Net_recibir(buffer, 1000);
+        
+        if (num_bytes) {
+            guardarMapaCompartido(buffer, num_bytes);
+            ((Jugar *)obtenerEscena("jugar"))->cargarMapaPorRuta(RUTA_MAPA_COMPARTIDO);
+
+            irAEscena("jugar");
         }
     }
 }
@@ -164,4 +176,11 @@ void Conexion::liberarMemoria() {
 		delete(botones[i]);
 	}
 	Net_terminar();
+}
+
+void Conexion::guardarMapaCompartido(Uint8 *buffer, int num_bytes) {
+    SDL_RWops *archivo = SDL_RWFromFile(RUTA_MAPA_COMPARTIDO, "wb");
+
+    SDL_RWwrite(archivo, buffer, num_bytes, 1);
+    SDL_RWclose(archivo);
 }

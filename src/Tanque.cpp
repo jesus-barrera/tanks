@@ -128,6 +128,7 @@ void Tanque::actualizar() {
 
         case TQ_ST_ESPERAR:
             if (reaparecer_temp.obtenerTiempo() >= TQ_REAPARECER_TIEMPO) {
+                // Restaurar valores
                 fijarPosicion(init_pos.x, init_pos.y);
                 fijarDireccion(init_direccion);
                 fijarAreaColision(&rect);
@@ -139,9 +140,7 @@ void Tanque::actualizar() {
         default: ;
     }
 
-    bala[0].actualizar();
-    bala[1].actualizar();
-    bala[2].actualizar();
+    for (int i = 0; i < MAX_BALAS; i++) bala[i].actualizar();
 }
 
 void Tanque::mover() {
@@ -215,69 +214,72 @@ void Tanque::mover() {
 bool Tanque::manejarEvento(SDL_Event &evento, Uint8 *buffer, int *num_bytes) {
     static Paquete paquete;
 
-    bool mover = true;
-    int num_evento = -1;
-
+    bool mover;
+    int num_evento;
     SDL_Keycode tecla;
+
+    num_evento = -1;
 
     if (estado == TQ_ST_MOVER && evento.type == SDL_KEYDOWN && evento.key.repeat == 0) {
         tecla = evento.key.keysym.sym;
+        mover = true;
 
         if (tecla == controles[MOVER_ARRIBA]) {
             fijarDireccion(ARRIBA);
-            num_evento = ARRIBA;
 
         } else if (tecla == controles[MOVER_ABAJO]) {
             fijarDireccion(ABAJO);
-            num_evento = ABAJO;
 
         } else if (tecla == controles[MOVER_IZQUIERDA]) {
             fijarDireccion(IZQUIERDA);
-            num_evento = IZQUIERDA;
 
         } else if (tecla == controles[MOVER_DERECHA]) {
             fijarDireccion(DERECHA);
-            num_evento = DERECHA;
 
         } else if (tecla == controles[DISPARAR]) {
-            disparar();
-            mover=false;
-            num_evento = 4;
+            mover = false;
+
+            if (disparar()) {
+                num_evento = EVENTO_DISPARO;
+            }
+
         } else {
             mover = false;
         }
 
         if (mover) {
+            num_evento = (int)direccion;
             tecla_actual = tecla;
+            fijarVelocidad(100);
+            
             //Reproducir el sonido del tanque infinitamente hasta que se detenga
             ReproducirSonido(Snd_Movimiento_tanque, 100, tipo+1, -1);
-            fijarVelocidad(100);
         }
 
-        if (buffer && num_evento != -1) {
-            // Crear paquete de evento
-            *num_bytes = paquete.nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)num_evento, velocidad);
-            return true;
-        }
     } else if (evento.type == SDL_KEYUP && evento.key.repeat == 0) {
         tecla = evento.key.keysym.sym;
 
         if (tecla == tecla_actual) {
             tecla_actual = -1;
             fijarVelocidad(0);
+
             DetenerCanal(tipo+1);
-            if (buffer) {
-                // Crear paquete de evento
-                *num_bytes = paquete.nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)direccion, velocidad);
-                return true;
-            }
+            
+            num_evento = (int)direccion;
         }
     }
 
-    return false;
+    if (buffer && num_evento != -1) {
+        *num_bytes = paquete.nuevoPqtEvento(buffer, rect.x, rect.y, (Uint8)num_evento, velocidad);
+        
+        return true;
+    } else {
+        return false;
+    }
 }
 
-void Tanque::disparar() {
+bool Tanque::disparar() {
+    bool disparo;
     int x, y;
     double r, h;
     r = angulo * PI/180;
@@ -290,17 +292,16 @@ void Tanque::disparar() {
     x += sin(r) * h;
     y -= cos(r) * h;
 
-    if(bala[0].disponible){
-        bala[0].Disparar(direccion, x, y);
-    }else{
-        if(bala[1].disponible){
-            bala[1].Disparar(direccion, x, y);
-        }else{
-            if(bala[2].disponible){
-                bala[2].Disparar(direccion, x, y);
-            }
+    disparo = false;
+
+    for (int i = 0; i < MAX_BALAS && !disparo; i++) {
+        if (bala[i].disponible) {
+            bala[i].Disparar(direccion, x, y);
+            disparo = true;
         }
     }
+
+    return disparo;
 }
 
 void Tanque::enColision(Colisionador *objeto) {
@@ -346,12 +347,13 @@ void Tanque::renderizar() {
 
 void Tanque::destruir() {
     ReproducirSonido(Snd_Explosion, 100, 0, 0);
-    estado = TQ_ST_EXPLOTAR;
+    
     fijarAreaColision(NULL);
     fijarVelocidad(0);
     --num_vidas;
-
     frame_num = 0;
+    
+    estado = TQ_ST_EXPLOTAR;
 }
 
 void Tanque::fijarNumVidas(int vidas) {
@@ -363,10 +365,16 @@ int Tanque::obtenerNumVidas() {
 }
 
 void Tanque::capturarEstado() {
+    // Capturar posicion para reaparecer después de destruirse
     init_pos.x = rect.x;
     init_pos.y = rect.y;
     init_direccion = direccion;
 
+    for (int i = 0; i < MAX_BALAS; i++) {
+        bala[i].disponible = true;
+        bala[i].fijarVelocidad(0);
+    }
+    
     fijarVelocidad(0);
     fijarAreaColision(&rect);
     frame_num = 0;

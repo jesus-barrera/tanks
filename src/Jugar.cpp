@@ -7,9 +7,7 @@
 
 void renderizarTanque(Tanque *tanque) {
     tanque->renderizar();
-    tanque->bala[0].renderizar();
-    tanque->bala[1].renderizar();
-    tanque->bala[2].renderizar();
+    for (int i = 0; i < MAX_BALAS; i++) tanque->bala[i].renderizar();
 }
 
 Jugar::Jugar() {
@@ -51,14 +49,16 @@ Jugar::Jugar() {
     jugador_1.tanque->fijarControles(Tanque::control_config[0]);
     jugador_2.tanque->fijarControles(Tanque::control_config[0]);
 
-    // Crear elementos de UI
-    mensaje = new Etiqueta("", VENTANA_PADDING, VENTANA_PADDING);
+    /**
+     * Crear elementos de UI
+     */
+    mensaje = new Etiqueta("", 15, 15);
 
-    nombre_jugador = new Etiqueta("", VENTANA_PADDING, VENTANA_PADDING);
-    vidas_jugador = new Etiqueta("", VENTANA_PADDING, 45, DEFAULT_FONT_SIZE, COLOR_GRIS);
+    nombre_jugador = new Etiqueta("", 15, 15);
+    vidas_jugador = new Etiqueta("", 15, 45, DEFAULT_FONT_SIZE, COLOR_GRIS);
 
-    nombre_oponente = new Etiqueta("", VENTANA_PADDING, 100);
-    vidas_oponente = new Etiqueta("", VENTANA_PADDING, 130, DEFAULT_FONT_SIZE, COLOR_GRIS);
+    nombre_oponente = new Etiqueta("", 15, 100);
+    vidas_oponente = new Etiqueta("", 15, 130, DEFAULT_FONT_SIZE, COLOR_GRIS);
 
     boton_salir = new Boton("Abandonar", 15, VENTANA_ALTO - 35);
     boton_salir->setViewport(&vista_estatus);
@@ -79,6 +79,7 @@ Jugar::~Jugar() {
 void Jugar::entrar() {
     cambiarMusicaFondo(MusicaFondoJugar);
     ReproducirMusicaFondo();
+
     if (modo_net == MODO_SERVIDOR) {
         jugador = &jugador_1;
         oponente = &jugador_2;
@@ -116,6 +117,7 @@ void Jugar::actualizar() {
 
             paquete.analizar(buffer);
 
+            // Paquetes comunes jugador 1 y 2
             if (paquete.tipo == PQT_ABANDONAR) {
                 Net_terminar();
 
@@ -140,7 +142,9 @@ void Jugar::actualizar() {
 
             } else if (paquete.tipo == PQT_MANTENER_CONEXION) {
                 cout << "[Debug] Mantener conexion" << endl;
+
             } else {
+                // Paquetes del jugador 2
                 if (modo_net == MODO_CLIENTE) {
                     if (paquete.tipo == PQT_TERMINAR_PARTIDA) {
                         if (paquete.ganador == 2) {
@@ -161,7 +165,6 @@ void Jugar::actualizar() {
 
         // Si el usuario esta inactivo, enviar mensaje para mantener viva la conexión
         if (enviado_temp.obtenerTiempo() > TIEMPO_ESPERA) mantenerConexion();
-
 
         // Actualizar objetos
         jugador_1.tanque->actualizar();
@@ -184,7 +187,6 @@ void Jugar::renderizar() {
     // Renderizar fondo y bloques
     Escenario::renderizar();
 
-
     if (estado == ST_JUGAR) {
         // Renderizar objetos
         renderizarTanque(jugador_1.tanque);
@@ -197,8 +199,10 @@ void Jugar::renderizar() {
         nombre_jugador->renderizar();
         nombre_oponente->renderizar();
 
-        vidas_jugador->renderizar();
-        vidas_oponente->renderizar();
+        if (modo_juego == MODO_JUEGO_VIDAS) {
+            vidas_jugador->renderizar();
+            vidas_oponente->renderizar();
+        }
 
         boton_salir->renderizar();
 
@@ -222,7 +226,7 @@ void Jugar::manejarEvento(SDL_Event &evento) {
         }
     } else if (estado == ST_JUGAR) {
         if (jugador->tanque->manejarEvento(evento, buffer, &num_bytes)) {
-            // Ocurrio un evento
+            // Ocurrio un evento, enviar
             Net_enviar(buffer, num_bytes);
             enviado_temp.iniciar();
         }
@@ -236,7 +240,7 @@ void Jugar::mantenerConexion() {
 
     Net_enviar(buffer, num_bytes);
 
-    cout << "Mantener se envio" << endl;
+    cout << "[Debug] Mantener conexion enviado" << endl;
     enviado_temp.iniciar();
 }
 

@@ -39,7 +39,7 @@ SDL_Texture *cargarTextura(string nombre_archivo, Uint8 r, Uint8 g, Uint8 b) {
 }
 
 void renderizarCapaGris() {
-    SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0xAA);
+    SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0x88);
     SDL_RenderFillRect(renderer_principal, &vista_juego);
 }
 
