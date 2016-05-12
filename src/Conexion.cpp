@@ -6,6 +6,7 @@
 #include "../include/network.h"
 #include "../include/Paquete.h"
 #include "../include/Jugar.h"
+#include "../include/Temporizador.h"
 #include "../include/Musica.h"
 
 TextInput *Conexion::input_IP;
@@ -22,9 +23,8 @@ Boton *Conexion::botones[NUM_BTNS];
 void Conexion::entrar() {
 	ejemplo->fijarTexto("Ejemplo: 255.255.255.255");
     input_IP->limpiarTexto();
-    cambiarMusicaFondo(MusicaFondoCrearPartida);
+    cambiarMusicaFondo(MusicaFondoCrearMapa);
     ReproducirMusicaFondo();
-    //cambiarMusicaFondo(MusicaFondoCrearPartida);
     estado = ST_UNIRSE;
 }
 
@@ -59,6 +59,7 @@ void Conexion::actualizar() {
                         return;
                     }
 
+
                     irAEscena("jugar");
 
                     // Enviar confirmación
@@ -68,6 +69,13 @@ void Conexion::actualizar() {
                     cout << "[Debug] Recibir mapa" << endl;
                 }
             }
+        }else{
+            if (recibido_temp.obtenerTiempo() > TIEMPO_CONEXION_PERDIDA) {
+                ejemplo->fijarTexto("Se perdio la conexion!");
+                estado = ST_UNIRSE;
+                Net_terminar();
+            }
+            cout<<"Entro"<<endl;
         }
     }
 }
@@ -109,17 +117,19 @@ void Conexion::manejarEvento(SDL_Event &evento) {
                             ejemplo->fijarTexto("Esperando configuracion del juego... :)");
 
                             estado = ST_ESPERAR_CONFIG;
+                            recibido_temp.iniciar();
                         } else {
-                            ejemplo->fijarTexto("No se encontro jugador");
+                            Net_terminar();
+                            ejemplo->fijarTexto("No se encontro jugador, Intente de nuevo");
                         }
                     } else {
+                        Net_terminar();
                         ejemplo->fijarTexto("Error al crear conexion");
                     }
                 }
 				break;
 			case BOTON_REGRESAR:
                 ReproducirSonido(Snd_Click_boton, 100, 0, 0);
-                //SDL_StopTextInput();
 				irAEscena("menu");
 				Net_terminar();
 				break;

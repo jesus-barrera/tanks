@@ -39,15 +39,19 @@ void Menu::manejarEvento(SDL_Event &evento) {
 	if (evento.type == SDL_MOUSEBUTTONDOWN) {
 		switch (Boton::obtenerBotonSeleccionado(Menu::botones, NUM_BOTONES)) {
 			case BOTON_INICIAR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
 				irAEscena("nueva-partida");
 				break;
 			case BOTON_CONECTAR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
 				irAEscena("conectar");
 				break;
 			case BOTON_EDITAR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
 				irAEscena("editar");
 				break;
 			case BOTON_SALIR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
 				terminarJuego();
 				break;
 			default:

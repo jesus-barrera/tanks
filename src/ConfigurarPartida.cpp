@@ -3,7 +3,7 @@
 #include "../include/Editor.h"
 #include "../include/Jugar.h"
 #include "../include/utiles.h"
-#include "../include/Musica.h"9
+#include "../include/Musica.h"
 #include "../include/network.h"
 
 int ConfigurarPartida::options_vidas[NUM_OPT_VIDAS] = {1, 3, 5, 10};
@@ -178,6 +178,7 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
         } else {
             switch (Boton::obtenerBotonSeleccionado(botones, CONFIG_NUM_BTNS)) {
                 case CONFIG_BTN_LISTO:
+                    ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                     if (mapa_info && (modo_juego == Jugar::MODO_JUEGO_BASE ||
                         (modo_juego == Jugar::MODO_JUEGO_VIDAS && opt_vidas != -1))) {
 
@@ -203,16 +204,19 @@ void ConfigurarPartida::configManejarEvento(SDL_Event &evento) {
                     break;
 
                 case CONFIG_BTN_CANCELAR:
+                    ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                     irAEscena("menu");
                     break;
 
                 case CONFIG_BTN_JUEGO_A:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                     modo_juego = Jugar::MODO_JUEGO_VIDAS;
                     botones[CONFIG_BTN_JUEGO_A]->estaSeleccionado(true);
                     botones[CONFIG_BTN_JUEGO_B]->estaSeleccionado(false);
                     break;
 
                 case CONFIG_BTN_JUEGO_B:
+                    ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                     modo_juego = Jugar::MODO_JUEGO_BASE;
                     botones[CONFIG_BTN_JUEGO_B]->estaSeleccionado(true);
                     botones[CONFIG_BTN_JUEGO_A]->estaSeleccionado(false);

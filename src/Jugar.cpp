@@ -203,6 +203,8 @@ void Jugar::renderizar() {
         boton_salir->renderizar();
 
     } else if (estado == ST_ERROR || estado == ST_FIN_PARTIDA) {
+        DetenerCanal(jugador_1.tanque->tipo+1);
+        DetenerCanal(jugador_2.tanque->tipo+1);
         renderizarCapaGris();
         mensaje->renderizar();
 

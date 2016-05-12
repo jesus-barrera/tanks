@@ -225,15 +225,19 @@ void Editor::editarManejarEvento(SDL_Event &evento) {
         // Revisar si se presionó algun botón
         switch (Boton::obtenerBotonSeleccionado(Editor::botones, EDITOR_NUM_BTN)) {
             case EDITOR_BTN_LIMPIAR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                 Editor::entrar();
                 break;
             case EDITOR_BTN_CARGAR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                 cargarMapa();
                 break;
             case EDITOR_BTN_GUARDAR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                 botonGuardarPresionado();
                 break;
             case EDITOR_BTN_SALIR:
+                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
                 irAEscena("menu");
                 ;
                 break;

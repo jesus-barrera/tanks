@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "Escena.h"
 #include "Boton.h"
+#include "Temporizador.h"
 #include "Paquete.h"
 
 enum {
@@ -18,13 +19,16 @@ private:
         ST_UNIRSE,
         ST_ESPERAR_CONFIG
     };
-    
+
+    static const int TIEMPO_CONEXION_PERDIDA = 5000;
+
     static TextInput *input_IP;
     static Etiqueta *input_NombreJugador;
     static Etiqueta *ejemplo;
     //static Boton *conexion_cancelar_btn;
 	//static Boton *conexion_aceptar_btn;
 	static Boton* botones[NUM_BTNS];
+    Temporizador recibido_temp;
 
 public:
     int estado;

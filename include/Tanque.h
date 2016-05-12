@@ -45,7 +45,6 @@ enum {
 
 class Tanque: public Colisionador, public Objeto {
 private:
-	int tipo;
 	int estado;
 
 	int num_vidas;
@@ -57,7 +56,7 @@ private:
 
 	// Clips para la animación de movimiento
 	static SDL_Rect mover_clips[TQ_NUM_FRAMES_MOVER];
-	
+
 	// textura para la animación de explosión
 	static SDL_Texture *explosion_sprite;
 
@@ -83,6 +82,7 @@ private:
 	bool comprobarAnim();
 
 public:
+	int tipo;
 	// Configuraciones del control
 	static int control_config[2][NUM_ACCIONES];
 
@@ -98,21 +98,21 @@ public:
 
 	// Carga recursos necesarios
 	static bool inicializar();
-	
+
 	// Libera los recursos
 	static void liberarMemoria();
-	
+
 	// Llamado en cada ciclo de juego
 	void actualizar();
-	
+
 	// Mueve el tanque segun su velocidad y dirección
 	void mover();
-	
+
 	// Manejar evento
 	bool manejarEvento(SDL_Event& evento, Uint8 *buffer = NULL, int *num_bytes = NULL);
 
 	void disparar();
-	
+
 	// Manejar evento de colisión
 	void enColision(Colisionador *objeto);
 
