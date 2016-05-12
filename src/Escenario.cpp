@@ -122,13 +122,17 @@ SDL_Point Escenario::obtenerBloqueEnPunto(int x, int y) {
 }
 
 void Escenario::destruirBloque(SDL_Point bloque_pos) {
-	int bloque = mapa[bloque_pos.y][bloque_pos.x];
+	if (bloque_pos.x >= 0 && bloque_pos.x < MAPA_COLUMNAS &&
+		bloque_pos.y >= 0 && bloque_pos.y < MAPA_FILAS) {
+		
+		int bloque = mapa[bloque_pos.y][bloque_pos.x];
 
-	if (bloque == BLOQUE_BRICK || bloque == BLOQUE_ARBUSTO){
-        ReproducirSonido(Snd_ColisionBloque, 100, 0, 0);
-		mapa[bloque_pos.y][bloque_pos.x] = NO_BLOQUE;
-	}else{
-        ReproducirSonido(Snd_ColisionMetal, 100, 0, 0);
+		if (bloque == BLOQUE_BRICK || bloque == BLOQUE_ARBUSTO){
+	        ReproducirSonido(Snd_ColisionBloque, 100, 0, 0);
+			mapa[bloque_pos.y][bloque_pos.x] = NO_BLOQUE;
+		}else{
+	        ReproducirSonido(Snd_ColisionMetal, 100, 0, 0);
+		}
 	}
 }
 

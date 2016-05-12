@@ -4,8 +4,12 @@
 #include "../include/Tanque.h"
 #include "../include/Bala.h"
 #include "../include/Musica.h"
+#include "../include/network.h"
+#include "../include/Paquete.h"
 
 SDL_Texture *Bala::mover_sprites[BALA_NUM_FRAMES_MOVER];
+
+static Uint8 buffer[1000];
 
 Bala::Bala() {
 	this->rect.h = this->rect.w = TAMANO_BLOQUE * 0.5;
@@ -15,6 +19,7 @@ Bala::Bala() {
 
 	frame_num = 0;
 	actualizarSprite();
+    destruccion_activa = true;
 	animar_temp.iniciar();
 }
 
@@ -60,8 +65,8 @@ bool Bala::mover() {
         SDL_Rect sig_rect;
         SDL_Rect colision_area;
         SDL_Rect *colision;
+        
         vector<SDL_Point> bloques;
-        vector<SDL_Point>::iterator it;
 
         // Calcular desplazamiento
         double r = angulo * PI/180;
@@ -97,15 +102,25 @@ bool Bala::mover() {
 
         bloques = Escenario::obtenerBloquesEnColision(sig_rect);
 
+
         if ((colision = comprobarColision(&sig_rect, &colision_area)) || bloques.size() > 0) {
-            for (it = bloques.begin(); it != bloques.end(); ++it) {
-                if (Escenario::obtenerBloque(*it) != BLOQUE_AGUA_1 &&
-                    Escenario::obtenerBloque(*it) != BLOQUE_AGUA_2) {
+            int num_colisiones_bloque;
+            SDL_Point bloques_en_colision[MAX_BLOQUES_EN_COLISION];
 
-                    Escenario::destruirBloque((*it));
+            num_colisiones_bloque = 0;
+            
+            for (unsigned int i = 0, j = bloques.size(); i < j; ++i) {
+                if (Escenario::obtenerBloque(bloques[i]) != BLOQUE_AGUA_1 &&
+                    Escenario::obtenerBloque(bloques[i]) != BLOQUE_AGUA_2) {
 
-                    colision_area.x = (*it).x * TAMANO_BLOQUE;
-                    colision_area.y = (*it).y * TAMANO_BLOQUE;
+                    if (destruccion_activa && num_colisiones_bloque < MAX_BLOQUES_EN_COLISION) {
+                        Escenario::destruirBloque(bloques[i]);
+                        bloques_en_colision[num_colisiones_bloque] = bloques[i];
+                        num_colisiones_bloque ++;
+                    }
+
+                    colision_area.x = bloques[i].x * TAMANO_BLOQUE;
+                    colision_area.y = bloques[i].y * TAMANO_BLOQUE;
 
                     colision_area.w = TAMANO_BLOQUE;
                     colision_area.h = TAMANO_BLOQUE;
@@ -132,6 +147,16 @@ bool Bala::mover() {
                     default: ;
                 }
             }
+
+            if (num_colisiones_bloque > 0) {
+                while (num_colisiones_bloque < MAX_BLOQUES_EN_COLISION) {
+                    bloques_en_colision[num_colisiones_bloque].x = -1;
+                    bloques_en_colision[num_colisiones_bloque].y = -1;
+                    num_colisiones_bloque ++;
+                }
+
+                enviarDestruirBloque(bloques_en_colision);
+            }
         }
 
         rect.x = (int)pos_x;
@@ -156,11 +181,19 @@ void Bala::animar() {
 }
 
 void Bala::enColision(Colisionador *objeto) {
-	if (objeto->tieneEtiqueta(BASE_ETIQUETA)) {
-		((Base *) objeto)->estaDestruido(true);
-	} else if (objeto->tieneEtiqueta(TQ_ETIQUETA)) {
-		((Tanque *) objeto)->destruir();
-	}
+    if (destruccion_activa) {
+    	if (objeto->tieneEtiqueta(BASE_ETIQUETA)) {
+            Base *base = ((Base *) objeto);
+            
+            enviarDestruirObjeto(base->tipo, TIPO_OBJ_BASE);
+    		base->estaDestruido(true);
+    	} else if (objeto->tieneEtiqueta(TQ_ETIQUETA)) {
+    		Tanque *tanque = ((Tanque *) objeto);
+            
+            enviarDestruirObjeto(tanque->tipo, TIPO_OBJ_TANQUE);
+            tanque->destruir();
+    	}
+    }
 }
 
 void Bala::Disparar(direccion_t direccion, int x, int y){
@@ -175,4 +208,26 @@ void Bala::renderizar(){
     if(velocidad>0){
         Objeto::renderizar();
     }
+}
+
+void Bala::habilitarDestruccion(bool destruccion) {
+    destruccion_activa = destruccion;
+}
+
+void Bala::enviarDestruirBloque(SDL_Point bloques[]) {
+    int pqt_tam;
+
+    pqt_tam = Paquete::nuevoPqtDestruirBloque(buffer, bloques[0].x, bloques[0].y, bloques[1].x, bloques[1].y);
+
+    cout << "[Network] enviar destruir bloque" << endl;
+    Net_enviar(buffer, pqt_tam);
+}
+
+void Bala::enviarDestruirObjeto(int num_jugador, int tipo_objeto) {
+    int pqt_tam;
+
+    pqt_tam = Paquete::nuevoPqtDestruirObjeto(buffer, num_jugador, tipo_objeto);
+
+    cout << "[Network] enviar destruir objeto" << endl;
+    Net_enviar(buffer, pqt_tam);  
 }

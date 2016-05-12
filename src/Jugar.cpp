@@ -5,21 +5,16 @@
 #include "../include/Musica.h"
 #include "../include/network.h"
 
-void renderizarTanque(Tanque *tanque) {
-    tanque->renderizar();
-    for (int i = 0; i < MAX_BALAS; i++) tanque->bala[i].renderizar();
-}
-
 Jugar::Jugar() {
     Tanque *t1, *t2;
     Base *b1, *b2;
 
     // Crear objetos
-    jugador_1.tanque = new Tanque(TQ_TIPO_ROJO);
-    jugador_2.tanque = new Tanque(TQ_TIPO_AZUL);
+    jugador_1.tanque = new Tanque(JUGADOR_1);
+    jugador_2.tanque = new Tanque(JUGADOR_2);
 
-    jugador_1.base = new Base(BASE_TIPO_ROJO);
-    jugador_2.base = new Base(BASE_TIPO_AZUL);
+    jugador_1.base = new Base(JUGADOR_1);
+    jugador_2.base = new Base(JUGADOR_2);
 
     // Definir colisiones entre los objetos
     t1 = jugador_1.tanque;
@@ -81,11 +76,17 @@ void Jugar::entrar() {
     ReproducirMusicaFondo();
 
     if (modo_net == MODO_SERVIDOR) {
-        jugador = &jugador_1;
+        jugador  = &jugador_1;
         oponente = &jugador_2;
+        
+        jugador_1.tanque->habilitarBalasDestruccion(true);
+        jugador_2.tanque->habilitarBalasDestruccion(true);
     } else {
-        jugador = &jugador_2;
+        jugador  = &jugador_2;
         oponente = &jugador_1;
+        
+        jugador_1.tanque->habilitarBalasDestruccion(false);
+        jugador_2.tanque->habilitarBalasDestruccion(false);
     }
 
     jugador_1.base->estaDestruido(false);
@@ -117,7 +118,6 @@ void Jugar::actualizar() {
 
             paquete.analizar(buffer);
 
-            // Paquetes comunes jugador 1 y 2
             if (paquete.tipo == PQT_ABANDONAR) {
                 Net_terminar();
 
@@ -125,35 +125,59 @@ void Jugar::actualizar() {
                 estado = ST_ERROR;
 
             } else if (paquete.tipo == PQT_EVENTO) {
-                cout << "[Debug] Evento: ";
-                cout << "x: " << paquete.pos_x << ", ";
-                cout << "y: " << paquete.pos_y << ", ";
-                cout << "evento: " << (int)paquete.evento << ", ";
-                cout << "velocidad: " << paquete.velocidad << endl;
                 oponente->tanque->fijarPosicion(paquete.pos_x, paquete.pos_y);
 
-                if (paquete.evento < 4) {
+                if (paquete.evento < EVENTO_DISPARO) {
                     oponente->tanque->fijarDireccion((direccion_t)paquete.evento);
-                } else if (paquete.evento == 4) {
+                } else if (paquete.evento == EVENTO_DISPARO) {
                     oponente->tanque->disparar();
                 }
 
                 oponente->tanque->fijarVelocidad(paquete.velocidad);
 
             } else if (paquete.tipo == PQT_MANTENER_CONEXION) {
-                cout << "[Debug] Mantener conexion" << endl;
-
+                /**
+                 * El otro jugador sigue conectado
+                 */
             } else {
-                // Paquetes del jugador 2
                 if (modo_net == MODO_CLIENTE) {
                     if (paquete.tipo == PQT_TERMINAR_PARTIDA) {
-                        if (paquete.ganador == 2) {
+                        if (paquete.ganador == JUGADOR_2) {
                             mensaje->fijarTexto(GANADOR_MENSAJE);
                         } else {
                             mensaje->fijarTexto(PERDEDOR_MENSAJE);
                         }
 
                         estado = ST_FIN_PARTIDA;
+
+                    } else  if (paquete.tipo == PQT_DESTRUIR_BLOQUE) {
+                        SDL_Point bloque;
+                        
+                        bloque.x = paquete.pos_x;
+                        bloque.y = paquete.pos_y;
+                        Escenario::destruirBloque(bloque);
+
+                        if (paquete.pos_x2 != -1) {
+                            bloque.x = paquete.pos_x2;
+                            bloque.y = paquete.pos_y2;
+                            Escenario::destruirBloque(bloque);                    
+                        }
+
+                    } else if (paquete.tipo == PQT_DESTRUIR_OBJETO) {
+                        if (paquete.tipo_objeto == TIPO_OBJ_TANQUE) {
+                            if (paquete.num_jugador == JUGADOR_1) {
+                                jugador_1.tanque->destruir();
+                            } else if (paquete.num_jugador == JUGADOR_2) {
+                                jugador_2.tanque->destruir();
+                            }
+                        } else  if (paquete.tipo_objeto == TIPO_OBJ_BASE) {
+                            if (paquete.num_jugador == JUGADOR_1) {
+                                jugador_1.base->estaDestruido(true);
+                            } else if (paquete.num_jugador == JUGADOR_2) {
+                                jugador_2.base->estaDestruido(true);
+                            }
+                        }
+
                     }
                 }
             }
@@ -189,8 +213,8 @@ void Jugar::renderizar() {
 
     if (estado == ST_JUGAR) {
         // Renderizar objetos
-        renderizarTanque(jugador_1.tanque);
-        renderizarTanque(jugador_2.tanque);
+        jugador_1.tanque->renderizar();
+        jugador_2.tanque->renderizar();
 
         jugador_1.base->renderizar();
         jugador_2.base->renderizar();
@@ -225,9 +249,7 @@ void Jugar::manejarEvento(SDL_Event &evento) {
             abandonarPartida();
         }
     } else if (estado == ST_JUGAR) {
-        if (jugador->tanque->manejarEvento(evento, buffer, &num_bytes)) {
-            // Ocurrio un evento, enviar
-            Net_enviar(buffer, num_bytes);
+        if (jugador->tanque->manejarEvento(evento)) {
             enviado_temp.iniciar();
         }
     }
@@ -240,24 +262,22 @@ void Jugar::mantenerConexion() {
 
     Net_enviar(buffer, num_bytes);
 
-    cout << "[Debug] Mantener conexion enviado" << endl;
     enviado_temp.iniciar();
 }
 
 void Jugar::comprobarGanador() {
     if (modo_net == MODO_SERVIDOR) {
-
         if (modo_juego == MODO_JUEGO_VIDAS) {
             if (jugador_2.tanque->obtenerNumVidas() == 0) {
-                ganador = 1;
+                ganador = JUGADOR_1;
             } else if (jugador_1.tanque->obtenerNumVidas() == 0) {
-                ganador = 2;
+                ganador = JUGADOR_2;
             }
         } else if (modo_juego == MODO_JUEGO_BASE) {
             if (jugador_2.base->estaDestruido()) {
-                ganador = 1;
+                ganador = JUGADOR_1;
             } else if (jugador_1.base->estaDestruido()) {
-                ganador = 2;
+                ganador = JUGADOR_2;
             }
         }
 
@@ -279,11 +299,10 @@ void Jugar::comprobarGanador() {
 void Jugar::abandonarPartida() {
     int num_bytes;
 
-    // Despedir oponente
     num_bytes = paquete.nuevoPqtAbandonar(buffer, "BYE");
     Net_enviar(buffer, num_bytes);
-
     Net_terminar();
+
     irAEscena("menu");
 }
 

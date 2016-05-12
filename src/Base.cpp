@@ -52,9 +52,9 @@ void Base::estaDestruido(bool destruido) {
 }
 
 void Base::renderizar() {
-	if (this->tipo == BASE_TIPO_ROJO) {
+	if (this->tipo == JUGADOR_1) {
 		SDL_SetTextureColorMod(this->textura, 255, 100, 0);
-	} else if (this->tipo == BASE_TIPO_AZUL) {
+	} else if (this->tipo == JUGADOR_2) {
 		SDL_SetTextureColorMod(this->textura, 0, 70, 255);
 	}
 

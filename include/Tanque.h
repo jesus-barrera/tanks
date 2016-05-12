@@ -33,11 +33,6 @@ enum {
 };
 
 enum {
-	TQ_TIPO_ROJO,
-	TQ_TIPO_AZUL
-};
-
-enum {
 	TQ_ST_MOVER,
 	TQ_ST_EXPLOTAR,
 	TQ_ST_ESPERAR
@@ -90,7 +85,7 @@ public:
     Bala bala[MAX_BALAS];
 
 	// Inicializa el tanque
-	Tanque(int tipo = TQ_TIPO_ROJO);
+	Tanque(int tipo = JUGADOR_1);
 
 	// Establece los controles para el tanque
 	void fijarControles(int controles[]);
@@ -108,7 +103,7 @@ public:
 	void mover();
 
 	// Manejar evento
-	bool manejarEvento(SDL_Event& evento, Uint8 *buffer = NULL, int *num_bytes = NULL);
+	bool manejarEvento(SDL_Event& evento);
 
 	bool disparar();
 
@@ -122,9 +117,12 @@ public:
 	void destruir();
 
 	void fijarNumVidas(int vidas);
+	
 	int obtenerNumVidas();
 	
 	void capturarEstado();
+
+	void habilitarBalasDestruccion(bool destruir);
 };
 
 

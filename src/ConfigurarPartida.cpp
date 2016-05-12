@@ -101,15 +101,15 @@ void ConfigurarPartida::entrar() {
 void ConfigurarPartida::actualizar() {
     switch (estado) {
         case CONFIG_ST_ESPERANDO_JUGADOR:
-        if (Net_recibir(buffer, CONFIG_TAM_BUFFER)) {
+        if (Net_recibir(buffer, CONFIG_TAM_BUFFER, true)) {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_UNIRSE) {
                 string nombre = (string)paquete.nombre;
 
                 ((Jugar *)obtenerEscena("jugar"))->fijarNombreOponente(nombre);
-
                 et_mensaje->fijarTexto("Conectando con \"" + nombre + "\" ...");
+
                 enviarConfiguracion();
 
                 temp.iniciar();
@@ -126,7 +126,7 @@ void ConfigurarPartida::actualizar() {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_CONFIRMACION) {
-                cout << "[Network] Recibido: \"" << paquete.mensaje << "\"" << endl;
+                cout << "[Protocolo] Recibido: \"" << paquete.mensaje << "\"" << endl;
                 
                 if (!mapa_info->en_juego) {
                     enviarMapa();
@@ -134,11 +134,13 @@ void ConfigurarPartida::actualizar() {
 
                 irAEscena("jugar");
             } else {
-                cout << "[Network] Paquete descartado" << endl;
+                cout << "[Protocolo] Paquete descartado" << endl;
             }
 
         } else if (temp.obtenerTiempo() > MAX_CONFIRM_TIEMPO) {
             et_mensaje->fijarTexto("No se pudo crear la partida");
+
+            cout << "[Protocolo] Tiempo de confirmacion expirado" << endl;
             estado = CONFIG_ST_ERROR;
         }
         break;
@@ -161,6 +163,7 @@ void ConfigurarPartida::renderizar() {
 
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         et_nombre_host->renderizar();
+
     } else {
         SDL_RenderSetViewport(renderer_principal, &vista_juego);
         et_mensaje->renderizar();
@@ -270,7 +273,7 @@ void ConfigurarPartida::enviarConfiguracion() {
         ((mapa_info->en_juego) ? mapa_info->id : -1)
     );
 
-    cout << "[Net] Enviando configuración" << endl;
+    cout << "[Protocolo] Enviando configuración" << endl;
     Net_enviar(buffer, num_bytes);
 }
 
@@ -287,11 +290,9 @@ void ConfigurarPartida::enviarMapa() {
         
         SDL_RWread(archivo, buffer, 1, tam_archivo);
         
-        cout << "[Net] Enviando mapa" << endl;
+        cout << "[Protocolo] Enviando mapa" << endl;
         Net_enviar(buffer, tam_archivo);
 
         SDL_RWclose(archivo);
-    } else {
-        cout << "[Config] Error al abrir archivo" << endl;
     }
 }
