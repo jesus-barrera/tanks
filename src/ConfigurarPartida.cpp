@@ -126,13 +126,7 @@ void ConfigurarPartida::actualizar() {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_CONFIRMACION) {
-<<<<<<< HEAD
-                cout << "[Network] Recibido: \"" << paquete.mensaje << "\"" << endl;
-
-=======
                 cout << "[Protocolo] Recibido: \"" << paquete.mensaje << "\"" << endl;
-                
->>>>>>> 4e2abaae923d2d29fe86ac7f3493ede8e1aee23f
                 if (!mapa_info->en_juego) {
                     enviarMapa();
                 }
@@ -167,8 +161,8 @@ void ConfigurarPartida::renderizar() {
         if (modo_juego == Jugar::MODO_JUEGO_VIDAS) Boton::renderizarBotones(btns_vidas, NUM_OPT_VIDAS);
 
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
-        et_nombre_host->renderizar();
 
+        et_nombre_host->renderizar();
     } else {
         SDL_RenderSetViewport(renderer_principal, &vista_juego);
         et_mensaje->renderizar();
@@ -294,13 +288,7 @@ void ConfigurarPartida::enviarMapa() {
         tam_archivo = SDL_RWsize(archivo);
 
         SDL_RWread(archivo, buffer, 1, tam_archivo);
-<<<<<<< HEAD
-
-        cout << "[Net] Enviando mapa" << endl;
-=======
-        
         cout << "[Protocolo] Enviando mapa" << endl;
->>>>>>> 4e2abaae923d2d29fe86ac7f3493ede8e1aee23f
         Net_enviar(buffer, tam_archivo);
 
         SDL_RWclose(archivo);
