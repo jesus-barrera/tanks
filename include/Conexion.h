@@ -35,7 +35,7 @@ private:
 
 public:
     int estado;
-    Uint8 buffer[1000];
+    Uint8 buffer[1500];
     Paquete paquete;
 	static bool inicializar();
 	static void liberarMemoria();

@@ -46,7 +46,7 @@ int cambiarMusicaFondo(int numMusica){
 
 void ReproducirMusicaFondo(){
     Mix_VolumeMusic(30);
-    if(Mix_PlayMusic(Mus_fondo, 0)==-1){
+    if(Mix_PlayMusic(Mus_fondo, -1)==-1){
         cout<<"El error esta aqui"<<endl;
     }
 }

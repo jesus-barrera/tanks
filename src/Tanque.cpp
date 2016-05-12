@@ -33,6 +33,15 @@ Tanque::Tanque(int tipo) {
     animar_temp.iniciar();
 }
 
+void Tanque::fijarVelocidad(float velocidad){
+    if(velocidad != 0 and this->velocidad == 0){
+        ReproducirSonido(Snd_Movimiento_tanque, 100, tipo+1, -1);
+    }else{
+        DetenerCanal(tipo+1);
+    }
+    this->velocidad = velocidad;
+}
+
 // Establece los controles para el tanque
 void Tanque::fijarControles(int controles[]) {
     this->controles = controles;
@@ -253,9 +262,6 @@ bool Tanque::manejarEvento(SDL_Event &evento) {
             num_evento = (int)direccion;
             tecla_actual = tecla;
             fijarVelocidad(100);
-            
-            //Reproducir el sonido del tanque infinitamente hasta que se detenga
-            ReproducirSonido(Snd_Movimiento_tanque, 100, tipo+1, -1);
         }
 
     } else if (evento.type == SDL_KEYUP && evento.key.repeat == 0) {
@@ -265,8 +271,6 @@ bool Tanque::manejarEvento(SDL_Event &evento) {
             tecla_actual = -1;
             fijarVelocidad(0);
 
-            DetenerCanal(tipo+1);
-            
             num_evento = (int)direccion;
         }
     }
@@ -354,12 +358,12 @@ void Tanque::renderizar() {
 
 void Tanque::destruir() {
     ReproducirSonido(Snd_Explosion, 100, 0, 0);
-    
+
     fijarAreaColision(NULL);
     fijarVelocidad(0);
     --num_vidas;
     frame_num = 0;
-    
+
     estado = TQ_ST_EXPLOTAR;
 }
 
@@ -382,7 +386,7 @@ void Tanque::capturarEstado() {
         bala[i].disponible = true;
         bala[i].fijarVelocidad(0);
     }
-    
+
     fijarVelocidad(0);
     fijarAreaColision(&rect);
     frame_num = 0;

@@ -72,19 +72,19 @@ Jugar::~Jugar() {
 }
 
 void Jugar::entrar() {
-//    cambiarMusicaFondo(MusicaFondoJugar);
-//    ReproducirMusicaFondo();
+    cambiarMusicaFondo(MusicaFondoJugar);
+    ReproducirMusicaFondo();
 
     if (modo_net == MODO_SERVIDOR) {
         jugador  = &jugador_1;
         oponente = &jugador_2;
-        
+
         jugador_1.tanque->habilitarBalasDestruccion(true);
         jugador_2.tanque->habilitarBalasDestruccion(true);
     } else {
         jugador  = &jugador_2;
         oponente = &jugador_1;
-        
+
         jugador_1.tanque->habilitarBalasDestruccion(false);
         jugador_2.tanque->habilitarBalasDestruccion(false);
     }
@@ -152,7 +152,7 @@ void Jugar::actualizar() {
 
                     } else  if (paquete.tipo == PQT_DESTRUIR_BLOQUE) {
                         SDL_Point bloque;
-                        
+
                         bloque.x = paquete.pos_x;
                         bloque.y = paquete.pos_y;
                         Escenario::destruirBloque(bloque);
@@ -160,7 +160,7 @@ void Jugar::actualizar() {
                         if (paquete.pos_x2 != -1) {
                             bloque.x = paquete.pos_x2;
                             bloque.y = paquete.pos_y2;
-                            Escenario::destruirBloque(bloque);                    
+                            Escenario::destruirBloque(bloque);
                         }
 
                     } else if (paquete.tipo == PQT_DESTRUIR_OBJETO) {

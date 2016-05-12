@@ -22,7 +22,7 @@ Boton *Conexion::botones[NUM_BTNS];
 
 void Conexion::entrar() {
 	ejemplo->fijarTexto("Ejemplo: 255.255.255.255");
-    input_IP->limpiarTexto();
+    SDL_StartTextInput();
 //    cambiarMusicaFondo(MusicaFondoCrearMapa);
 //    ReproducirMusicaFondo();
     estado = ST_UNIRSE;
@@ -30,7 +30,7 @@ void Conexion::entrar() {
 
 void Conexion::actualizar() {
     if (estado == ST_ESPERAR_CONFIG) {
-        if (Net_recibir(buffer, 1000)) {
+        if (Net_recibir(buffer, 1500)) {
             paquete.analizar(buffer);
 
             if (paquete.tipo == PQT_CONFIGURACION) {
@@ -80,7 +80,7 @@ void Conexion::actualizar() {
     } else if (estado == ST_ESPERAR_MAPA) {
         int num_bytes;
 
-        num_bytes = Net_recibir(buffer, 1000);
+        num_bytes = Net_recibir(buffer, 1500);
 
         if (num_bytes) {
             guardarMapaCompartido(buffer, num_bytes);
@@ -143,6 +143,7 @@ void Conexion::manejarEvento(SDL_Event &evento) {
 			case BOTON_REGRESAR:
                 ReproducirSonido(Snd_Click_boton, 100, 0, 0);
 				irAEscena("menu");
+				SDL_StopTextInput();
 				Net_terminar();
 				break;
 			default:

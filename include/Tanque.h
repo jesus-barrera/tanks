@@ -117,9 +117,11 @@ public:
 	void destruir();
 
 	void fijarNumVidas(int vidas);
-	
+
 	int obtenerNumVidas();
-	
+
+	void fijarVelocidad(float velocidad);
+
 	void capturarEstado();
 
 	void habilitarBalasDestruccion(bool destruir);
