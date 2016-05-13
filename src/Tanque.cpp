@@ -34,11 +34,12 @@ Tanque::Tanque(int tipo) {
 }
 
 void Tanque::fijarVelocidad(float velocidad){
-    if(velocidad != 0 and this->velocidad == 0){
-        ReproducirSonido(Snd_Movimiento_tanque, 100, tipo+1, -1);
-    }else{
+    if(velocidad == 0){
         DetenerCanal(tipo+1);
+    } else {
+        ReproducirSonido(Snd_Movimiento_tanque, 100, tipo+1, -1);
     }
+
     this->velocidad = velocidad;
 }
 
@@ -63,7 +64,7 @@ bool Tanque::inicializar() {
     explosion_clips[1].x = 16;
     explosion_clips[1].y = 0;
     explosion_clips[1].w = 16;
-    explosion_clips[1].h = 16;
+    explosion_clips[1].h = 16;  
 
     explosion_clips[2].x = 32;
     explosion_clips[2].y = 0;
