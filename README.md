@@ -4,7 +4,10 @@ Juego 2D de tanques desarrollado en SDL.
 ### Características
 * Multijugador en red
 * Editor de mapas
-* Dos modos de juego
+* Compartir mapas creados por el usuario
+* Dos modos de juego: 
+    - Por vidas: el primero en quedarse sin vidas pierde
+    - Por base: el primero en destruir la base enemiga gana
 
 ### Requerimientos
 Para poder compilar el proyecto necesitas las siguientes versiones de SDL
@@ -14,5 +17,6 @@ Para poder compilar el proyecto necesitas las siguientes versiones de SDL
 
 ### Compilar
 En Linux:
-´´´g++ main.cpp src/* -std=c++11 -lSDL2 -lSDL2_image -lSDL2_ttf -I/usr/include/SDL2 -o tanques´´´
-
+```
+g++ main.cpp src/* -std=c++11 -lSDL2 -lSDL2_image -lSDL2_ttf -I/usr/include/SDL2 -o tanques
+```
