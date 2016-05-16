@@ -8,6 +8,7 @@
     #include <poll.h>
     #include <netinet/in.h>
     #include <netdb.h>
+    #include <fcntl.h>
 #endif
 
 #include <cerrno>
@@ -28,6 +29,7 @@
         }
     }
 #else
+    #define SOCKET_ERROR -1
     typedef int SOCKET; 
 #endif
 
@@ -76,7 +78,7 @@ bool Net_iniciar(Uint16 puerto) {
         flags = fcntl(socket_fd, F_GETFL);
         flags = flags | O_NONBLOCK;
 
-        fcntl(sockcket, F_SETFL, flags);
+        fcntl(socket_fd, F_SETFL, flags);
     #endif
 
     return true;
