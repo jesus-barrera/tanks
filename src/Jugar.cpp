@@ -306,7 +306,15 @@ void Jugar::abandonarPartida() {
     Net_enviar(buffer, num_bytes);
     Net_terminar();
 
-    irAEscena("menu");
+    if (estado == ST_FIN_PARTIDA) {
+        if (modo_net == MODO_SERVIDOR) {
+            irAEscena("nueva-partida");
+        } else {
+            irAEscena("conectar");
+        }
+    } else {
+        irAEscena("menu");
+    }
 }
 
 void Jugar::actualizarContadorVidas(Jugador *jugador, Etiqueta *contador) {
