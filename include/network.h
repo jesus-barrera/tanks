@@ -24,6 +24,4 @@ int Net_resolverHost(string nombre_host);
 
 string obtenerNombreEquipo();
 
-string obtenerNombreUsuario();
-
 #endif //_NETWORK_H_INCLUDE_

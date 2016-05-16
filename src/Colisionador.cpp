@@ -1,3 +1,4 @@
+#include <cstring>
 #include "../include/Colisionador.h"
 
 Colisionador::Colisionador() {

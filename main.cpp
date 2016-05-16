@@ -143,7 +143,7 @@ bool inicializar() {
 
 	Editor::inicializar();
 	Conexion::inicializar();
-
+	
 	// Registrar escenas
 	registrarEscena(new Menu(), "menu");
 	registrarEscena(new Editor(), "editar");

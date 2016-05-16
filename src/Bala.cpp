@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "../include/utiles.h"
 #include "../include/Escenario.h"
 #include "../include/Base.h"
