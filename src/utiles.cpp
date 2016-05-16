@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <map>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -79,6 +80,14 @@ void cerrarFuentes() {
     }
 
     fuentes.clear();
+}
+
+string inttostr(int num) {
+    char buffer[100];
+
+    sprintf(buffer, "%d", num);
+
+    return string(buffer);
 }
 
 void mostrarError(string mensaje) {

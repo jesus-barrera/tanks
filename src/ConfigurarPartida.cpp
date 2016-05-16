@@ -51,7 +51,7 @@ ConfigurarPartida::ConfigurarPartida() {
 
     // Posicionar opciones de vidas en la misma linea
     for (int i = 0, x_offset = 175; i < NUM_OPT_VIDAS; i++, x_offset += 25) {
-        btns_vidas[i] = new Boton(to_string(options_vidas[i]), x_offset, y_offset);
+        btns_vidas[i] = new Boton(inttostr(options_vidas[i]), x_offset, y_offset);
     }
 
     botones[CONFIG_BTN_JUEGO_B]->fijarPosicion(x_offset + 20,  (y_offset += btn_sep));

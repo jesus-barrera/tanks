@@ -96,8 +96,8 @@ void Jugar::entrar() {
         jugador_1.tanque->fijarNumVidas(num_vidas);
         jugador_2.tanque->fijarNumVidas(num_vidas);
 
-        vidas_jugador->fijarTexto(to_string(num_vidas));
-        vidas_oponente->fijarTexto(to_string(num_vidas));
+        vidas_jugador->fijarTexto(inttostr(num_vidas));
+        vidas_oponente->fijarTexto(inttostr(num_vidas));
     }
 
     jugador_1.tanque->capturarEstado();
@@ -325,7 +325,7 @@ void Jugar::actualizarContadorVidas(Jugador *jugador, Etiqueta *contador) {
     if (num_vidas != jugador->num_vidas) {
         jugador->num_vidas = num_vidas;
 
-        contador->fijarTexto(to_string(num_vidas));
+        contador->fijarTexto(inttostr(num_vidas));
     }
 }
 
