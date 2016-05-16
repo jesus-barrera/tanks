@@ -70,6 +70,7 @@ public:
     Uint8 tipo_juego;
     Sint8 info_mapa;
     Uint8 ganador;
+    Uint8 id_bala;
 
     Paquete();
     void analizar(Uint8 *buffer);
@@ -78,8 +79,8 @@ public:
     static size_t nuevoPqtUnirse(Uint8 *buffer, const char *nombre);
     static size_t nuevoPqtConfirmacion(Uint8 *buffer, const char *msg);
     static size_t nuevoPqtEvento(Uint8 *buffer, Sint16 pos_x, Sint16 pos_y, Uint8 evento, float velocidad);
-    static size_t nuevoPqtDestruirBloque(Uint8 *bytes, Sint16 pos_x, Sint16 pos_y, Sint16 pos_x2, Sint16 pos_y2);
-    static size_t nuevoPqtDestruirObjeto(Uint8 *bytes, Uint8 num_jugador, Uint8 tipo_objeto);
+    static size_t nuevoPqtDestruirBloque(Uint8 *bytes, Sint16 pos_x, Sint16 pos_y, Sint16 pos_x2, Sint16 pos_y2, Uint8 id_bala);
+    static size_t nuevoPqtDestruirObjeto(Uint8 *bytes, Uint8 num_jugador, Uint8 tipo_objeto, Uint8 id_bala);
     static size_t nuevoPqtAbandonar(Uint8 *buffer, const char *msg);
     static size_t nuevoPqtMantenerConexion(Uint8 *buffer, const char *msg);
     static size_t nuevoPqtTerminarPartida(Uint8 *buffer, Uint8 ganador);

@@ -48,11 +48,13 @@ void Paquete::analizarPqtDestruirBloque(Uint8 *bytes) {
     bytes = leer(bytes, &pos_y2, sizeof(pos_y2));
     pos_y2 = ntohs(pos_y2);
 
+    bytes = leer(bytes, &id_bala, sizeof(id_bala));
 }
 
 void Paquete::analizarPqtDestruirObjeto(Uint8 *bytes) {
     bytes = leer(bytes, &num_jugador, sizeof(num_jugador));
     bytes = leer(bytes, &tipo_objeto, sizeof(tipo_objeto));
+    bytes = leer(bytes, &id_bala, sizeof(id_bala));
 }
 
 void Paquete::analizarPqtDestruirAbandonar(Uint8 *bytes) {
@@ -217,7 +219,7 @@ size_t Paquete::nuevoPqtEvento(Uint8 *buffer, Sint16 pos_x, Sint16 pos_y, Uint8 
     return (size_t)(ptr - buffer);
 }
 
-size_t Paquete::nuevoPqtDestruirBloque(Uint8 *buffer, Sint16 pos_x, Sint16 pos_y, Sint16 pos_x2, Sint16 pos_y2) {
+size_t Paquete::nuevoPqtDestruirBloque(Uint8 *buffer, Sint16 pos_x, Sint16 pos_y, Sint16 pos_x2, Sint16 pos_y2, Uint8 id_bala) {
     Uint8 *ptr;
     Uint8 tipo;
 
@@ -235,11 +237,12 @@ size_t Paquete::nuevoPqtDestruirBloque(Uint8 *buffer, Sint16 pos_x, Sint16 pos_y
     ptr = escribir(ptr, &pos_y, sizeof(pos_y));
     ptr = escribir(ptr, &pos_x2, sizeof(pos_x2));
     ptr = escribir(ptr, &pos_y2, sizeof(pos_y2));
+    ptr = escribir(ptr, &id_bala, sizeof(id_bala));
 
     return (size_t)(ptr - buffer);
 }
 
-size_t Paquete::nuevoPqtDestruirObjeto(Uint8 *buffer, Uint8 num_jugador, Uint8 tipo_objeto) {
+size_t Paquete::nuevoPqtDestruirObjeto(Uint8 *buffer, Uint8 num_jugador, Uint8 tipo_objeto, Uint8 id_bala) {
     Uint8 *ptr;
     Uint8 tipo;
 
@@ -250,6 +253,7 @@ size_t Paquete::nuevoPqtDestruirObjeto(Uint8 *buffer, Uint8 num_jugador, Uint8 t
     
     ptr = escribir(ptr, &num_jugador, sizeof(num_jugador));
     ptr = escribir(ptr, &tipo_objeto, sizeof(tipo_objeto));
+    ptr = escribir(ptr, &id_bala, sizeof(id_bala));
 
     return (size_t)(ptr - buffer);
 }

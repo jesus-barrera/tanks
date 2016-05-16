@@ -19,6 +19,7 @@
 class Bala: public Colisionador, public Objeto {
 public:
 	static SDL_Texture *mover_sprites[BALA_NUM_FRAMES_MOVER];
+	Uint8 id;
 	int frame_num;
 	bool disponible=true;
 	bool destruccion_activa;

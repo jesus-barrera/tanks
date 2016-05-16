@@ -163,6 +163,8 @@ void Jugar::actualizar() {
                             Escenario::destruirBloque(bloque);
                         }
 
+                        destruirBala(paquete.id_bala);
+
                     } else if (paquete.tipo == PQT_DESTRUIR_OBJETO) {
                         if (paquete.tipo_objeto == TIPO_OBJ_TANQUE) {
                             if (paquete.num_jugador == JUGADOR_1) {
@@ -178,6 +180,7 @@ void Jugar::actualizar() {
                             }
                         }
 
+                        destruirBala(paquete.id_bala);
                     }
                 }
             }
@@ -315,6 +318,15 @@ void Jugar::actualizarContadorVidas(Jugador *jugador, Etiqueta *contador) {
         jugador->num_vidas = num_vidas;
 
         contador->fijarTexto(to_string(num_vidas));
+    }
+}
+
+void Jugar::destruirBala(Uint8 id_bala) {
+    if ((id_bala >> 4) == JUGADOR_1) {
+        int num_bala = id_bala & 0x0F;
+
+        jugador_1.tanque->bala[num_bala].fijarVelocidad(0);   
+        jugador_1.tanque->bala[num_bala].disponible = true;   
     }
 }
 

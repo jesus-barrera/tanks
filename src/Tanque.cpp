@@ -31,6 +31,11 @@ Tanque::Tanque(int tipo) {
 
     frame_num = 0;
     animar_temp.iniciar();
+
+    for (int i = 0; i < MAX_BALAS; i++) {
+        // Identificar las balas con segun su indice y el tipo (num jugador) del tanque.
+        bala[i].id = ((tipo << 4) | i);
+    }
 }
 
 void Tanque::fijarVelocidad(float velocidad){

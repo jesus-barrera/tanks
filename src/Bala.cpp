@@ -217,17 +217,17 @@ void Bala::habilitarDestruccion(bool destruccion) {
 void Bala::enviarDestruirBloque(SDL_Point bloques[]) {
     int pqt_tam;
 
-    pqt_tam = Paquete::nuevoPqtDestruirBloque(buffer, bloques[0].x, bloques[0].y, bloques[1].x, bloques[1].y);
+    pqt_tam = Paquete::nuevoPqtDestruirBloque(buffer, bloques[0].x, bloques[0].y, bloques[1].x, bloques[1].y, id);
 
-    cout << "[Network] enviar destruir bloque" << endl;
+    cout << "[Protocolo] enviar destruir bloque" << endl;
     Net_enviar(buffer, pqt_tam);
 }
 
 void Bala::enviarDestruirObjeto(int num_jugador, int tipo_objeto) {
     int pqt_tam;
 
-    pqt_tam = Paquete::nuevoPqtDestruirObjeto(buffer, num_jugador, tipo_objeto);
+    pqt_tam = Paquete::nuevoPqtDestruirObjeto(buffer, num_jugador, tipo_objeto, id);
 
-    cout << "[Network] enviar destruir objeto" << endl;
+    cout << "[Enviar] enviar destruir objeto" << endl;
     Net_enviar(buffer, pqt_tam);  
 }

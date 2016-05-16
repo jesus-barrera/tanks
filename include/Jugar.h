@@ -67,7 +67,7 @@ private:
     void comprobarGanador();
     void abandonarPartida();
     void actualizarContadorVidas(Jugador *jugador, Etiqueta *contador);
-
+    void destruirBala(Uint8 id_bala);
 
 public:
     // Modos de juego
