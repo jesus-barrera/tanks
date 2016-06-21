@@ -1,24 +1,12 @@
-#ifndef _TIPOS_INCLUDE_
-#define _TIPOS_INCLUDE_
+#ifndef _TIPOS_H_INCLUDED_
+#define _TIPOS_H_INCLUDED_
 
-#include <SDL.h>
+/*
+ * Nuevos tipos de datos y estructuras se definen aqui.
+ */
 
-#define MAPAS_RUTA "mapas"
+typedef unsigned char byte;
 
-#define TAMANO_BLOQUE 16
-#define MAPA_FILAS 40	
-#define MAPA_COLUMNAS 50
+enum direccion_t {ARRIBA, DERECHA, ABAJO, IZQUIERDA, TOTAL_DIRECCIONES};
 
-const int MAPA_ANCHO = MAPA_COLUMNAS * TAMANO_BLOQUE;
-const int MAPA_ALTO = MAPA_FILAS * TAMANO_BLOQUE;
-
-const int VENTANA_ANCHO = MAPA_ANCHO + 125;
-const int VENTANA_ALTO = MAPA_ALTO;
-
-extern SDL_Renderer *renderer_principal;
-extern SDL_Rect vista_juego;
-extern SDL_Rect vista_estatus;
-
-typedef enum direccion_t {ARRIBA, ABAJO, IZQUIERDA, DERECHA, TOTAL_DIRECCIONES};
-
-#endif // _TIPOS_INCLUDE_
+#endif // _TIPOS_H_INCLUDED_

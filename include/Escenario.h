@@ -1,15 +1,10 @@
 #ifndef _ESCENARIO_INCLUDE_
 #define _ESCENARIO_INCLUDE_
 
-#include <vector>
-#include <iostream>
-#include <fstream>
 #include <SDL.h>
-#include <SDL_image.h>
-#include <time.h>
+#include <vector>
+#include "globales.h"
 #include "Temporizador.h"
-#include "tipos.h"
-#include "utiles.h"
 
 using namespace std;
 
@@ -35,8 +30,6 @@ public:
 
 	static void liberarMemoria();
 
-	static bool cargarMapaDesdeArchivo(char *nombre_archivo);
-
 	static void renderizarFondo();
 
 	static void renderizarMapa();
@@ -47,15 +40,13 @@ public:
 
 	static vector<SDL_Point> obtenerBloquesEnColision(SDL_Rect &rect);
 
-	static SDL_Point puntoAPosicionMapa(int x, int y);
+	static SDL_Point obtenerBloqueEnPunto(int x, int y);
 
 	static void destruirBloque(SDL_Point bloque_pos);
 
 	static void insertarBloque(SDL_Point posicion, int bloque);
 
-	static void cargarMapa();
-
-	static void guardarMapa();
+	static int obtenerBloque(SDL_Point posicion);
 
 	static void limpiarMapa();
 

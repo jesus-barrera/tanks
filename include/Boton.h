@@ -1,20 +1,29 @@
 #ifndef BOTON_H
 #define BOTON_H
 
-#include <SDL.h>
-#include "utiles.h"
-#include "tipos.h"
+#include "Hoverable.h"
+#include "Etiqueta.h"
 
-class Boton {
+#define BTN_HOVER_OFFSET 20
+
+class Boton: public Etiqueta, public Hoverable {
 private:
-	SDL_Rect rect;
-	SDL_Texture *textura;
+	static SDL_Color color_principal;
+    static SDL_Color color_mouse_over;
+	static SDL_Color color_seleccionado;
+	bool mouse_is_over;
+    bool seleccionado;
 
 public:
-	Boton(char *textura_nombre, SDL_Rect rect);
-	~Boton();
-	bool estaSeleccionado();
+	Boton(string texto, int x, int y, int tam_fuente = DEFAULT_FONT_SIZE);
 	void renderizar();
+    
+    bool estaSeleccionado();
+    bool estaSeleccionado(bool seleccionado);
+
+    static int obtenerBotonSeleccionado(Boton *botones[], int num_botones);
+    static void renderizarBotones(Boton *botones[], int num_botones);
+	static void eliminarBotones(Boton *botones[], int num_botones);
 };
 
 #endif // BOTON_H

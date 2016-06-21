@@ -2,82 +2,129 @@
 #define _TANK_INCLUDE_
 
 #include <SDL.h>
-#include <SDL_image.h>
-#include <stdio.h>
-#include "tipos.h"
+
 #include "Escenario.h"
 #include "Temporizador.h"
+#include "Colisionador.h"
+#include "Objeto.h"
+#include "Bala.h"
 
 #define TQ_TAMANO 2
-#define TQ_FRAMES_POR_SEC 20
+
+#define TQ_REAPARECER_TIEMPO 1500
+
+#define TQ_FRAMES_POR_SEC 10
 #define TQ_NUM_FRAMES_MOVER 7
+#define TQ_NUM_FRAMES_EXPLOSION 5
+
 #define TQ_RUTA_MEDIOS "media/tank"
+#define TQ_ETIQUETA "tank"
 
-class Tanque {
+#define MAX_BALAS 3
+
+// Controles
+enum {
+	MOVER_ARRIBA,
+	MOVER_ABAJO,
+	MOVER_IZQUIERDA,
+	MOVER_DERECHA,
+	DISPARAR,
+	NUM_ACCIONES
+};
+
+enum {
+	TQ_ST_MOVER,
+	TQ_ST_EXPLOTAR,
+	TQ_ST_ESPERAR
+};
+
+class Tanque: public Colisionador, public Objeto {
 private:
-	// texturas para la animación de movimiento
-	static SDL_Texture *mover_sprites[TQ_NUM_FRAMES_MOVER];
+	int estado;
 
-	// Dimensiones y posicion asociadas al tanque
-	SDL_Rect rect;
+	int num_vidas;
+	SDL_Point init_pos;
+	direccion_t init_direccion;
 
-	// Textura usada en el renderizado
-	SDL_Texture *textura;
+	// textura para la animación de movimiento
+	static SDL_Texture *mover_sprite;
 
-	direccion_t direccion; 
+	// Clips para la animación de movimiento
+	static SDL_Rect mover_clips[TQ_NUM_FRAMES_MOVER];
+
+	// textura para la animación de explosión
+	static SDL_Texture *explosion_sprite;
+
+	// Clips para la explosión
+	static SDL_Rect explosion_clips[TQ_NUM_FRAMES_EXPLOSION];
+
+	// Configuración del control
+	int *controles;
+
+	// Tecla actual presionada
+	SDL_Keycode tecla_actual;
 
 	// Número de frame
 	int frame_num;
 
-	int velocidad;
-
-	double angulo;
-
+	// Temporizador para la animación
 	Temporizador animar_temp;
 
-	// Actualiza el sprite actual
-	void actualizarSprite();
+	// Temporizador para la reaparición
+	Temporizador reaparecer_temp;
 
-	void sigFrame();
+	// bool esAnimationFrame()
+	bool comprobarAnim();
 
 public:
+	int tipo;
+
+	// Configuraciones del control
+	static int control_config[2][NUM_ACCIONES];
+
+    Bala bala[MAX_BALAS];
+
 	// Inicializa el tanque
-	Tanque(int x = 0, int y = 0, direccion_t direccion = ARRIBA);
+	Tanque(int tipo = JUGADOR_1);
 
-	// Libera memoria
-	~Tanque();
+	// Establece los controles para el tanque
+	void fijarControles(int controles[]);
 
-	// Carga imagenes y sonidos necesarios
+	// Carga recursos necesarios
 	static bool inicializar();
 
-	// Libera la memoria reservada al cargarse los medios
+	// Libera los recursos
 	static void liberarMemoria();
 
-	// Llamado en cada frame
+	// Llamado en cada ciclo de juego
 	void actualizar();
 
-	// Mueve el tanque en la dirección sobre la que apunta
+	// Mueve el tanque segun su velocidad y dirección
 	void mover();
 
-	// Cambia el frame actual
-	void animar();
-
 	// Manejar evento
-	void manejarEvento(SDL_Event& evento);
+	bool manejarEvento(SDL_Event& evento);
 
-	SDL_Rect obtenerRect();
+	bool disparar();
 
-	// Mueve el tanque a la posición indicada por x y y
-	void fijarPosicion(int x, int y);
+	// Manejar evento de colisión
+	void enColision(Colisionador *objeto);
 
-	// Establece la dirección del tanque (ARRIBA, ABAJO, IZQUIERDA, DERECHA)
-	void fijarDireccion(direccion_t direccion);
-
-	// Fija la velocidad del tanque
-	void fijarVelocidad(int velocidad);
-
-	// Renderiza el tanque en la ventana
+	// Renderizar
 	void renderizar();
+
+	// Destruir el tanque
+	void destruir();
+
+	void fijarNumVidas(int vidas);
+
+	int obtenerNumVidas();
+
+	void fijarVelocidad(float velocidad);
+
+	void capturarEstado();
+
+	void habilitarBalasDestruccion(bool destruir);
 };
 
 

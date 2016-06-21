@@ -1,38 +1,108 @@
+#include <SDL.h>
+
+#include "../include/globales.h"
+#include "../include/utiles.h"
 #include "../include/Boton.h"
+#include "../include/colores.h"
 
-Boton::Boton(char *textura_nombre, SDL_Rect rect) {
-	this->textura = cargarTextura(textura_nombre);
+SDL_Color Boton::color_principal    = COLOR_BLANCO;
+SDL_Color Boton::color_seleccionado = COLOR_VERDE;
+SDL_Color Boton::color_mouse_over   = COLOR_ROJO;
 
-	this->rect = rect;
-}
+Boton::Boton(string texto, int x, int y, int tam_fuente) 
+        : Etiqueta(texto, x, y, tam_fuente, Boton::color_principal), 
+          Hoverable(&this->rect) {
 
-Boton::~Boton() {
-	SDL_DestroyTexture(this->textura);
-}
-
-bool Boton::estaSeleccionado() {
-	SDL_Point mouse_pos;
-
-	SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
-
-	return SDL_PointInRect(&mouse_pos, &this->rect);
+    this->seleccionado = false;
+    this->mouse_is_over = false;
 }
 
 void Boton::renderizar() {
-	SDL_Rect clip;
-	SDL_Rect rect = this->rect;
+    bool is_mouse_over = this->isMouseOver();
 
-	clip.w = rect.w;
-	clip.h = rect.h;
-	clip.y = 0;
+    if (!this->seleccionado && (this->mouse_is_over != is_mouse_over)) {
+        // Actualizar color
+        if (is_mouse_over) {
+            this->fijarColor(Boton::color_mouse_over);
+        } else {
+            this->fijarColor(Boton::color_principal);
+        }
 
+        this->mouse_is_over = is_mouse_over;
+    }
 
-	if (this->estaSeleccionado()) {
-		clip.x = clip.w;
-		rect.x += 50;
-	} else {
-		clip.x = 0;
-	}	
+    Etiqueta::renderizar();
+}
 
-	SDL_RenderCopy(renderer_principal, this->textura, &clip, &rect);
+bool Boton::estaSeleccionado() {
+    return this->seleccionado;
+}
+
+bool Boton::estaSeleccionado(bool seleccionado) {
+    if (seleccionado != this->seleccionado) {
+        if (seleccionado) {
+            this->fijarColor(Boton::color_seleccionado);
+        } else {
+            if (this->mouse_is_over) {
+                this->fijarColor(Boton::color_mouse_over);
+            } else {
+                this->fijarColor(Boton::color_principal);
+            }
+        }
+
+        this->seleccionado = seleccionado;
+    }
+
+    return seleccionado;
+}
+
+/**
+ * Encuentra el boton seleccionado en un arreglo de botones
+ */
+int Boton::obtenerBotonSeleccionado(Boton *botones[], int num_botones) {
+    int boton_seleccionado = -1;
+
+    for (int i = 0; i < num_botones; i++) {
+        if (botones[i]->isMouseOver()) {
+            boton_seleccionado = i;
+            break;
+        }
+    }
+
+    return boton_seleccionado;
+}
+
+/**
+ * Renderiza una lista de botones
+ */
+void Boton::renderizarBotones(Boton *botones[], int num_botones) {
+    SDL_Rect *viewport, *btn_viewport;
+
+    viewport = &vista_juego;
+    
+    for (int i = 0; i < num_botones; i++) {
+        btn_viewport = botones[i]->getViewport();
+        
+        if (btn_viewport != viewport) {
+            if (btn_viewport) {
+                SDL_RenderSetViewport(renderer_principal, btn_viewport);
+            } else {
+                SDL_RenderSetViewport(renderer_principal, &vista_juego);
+            }
+
+            viewport = btn_viewport;
+        }
+
+        botones[i]->renderizar();
+    }
+}
+
+/**
+ * Elimina una lista de botones instanciados con new
+ */
+void Boton::eliminarBotones(Boton *botones[], int num_botones) {
+    for (int i = 0; i < num_botones; i++) {
+        delete(botones[i]);
+        botones[i] = NULL;   
+    }
 }
