@@ -16,7 +16,7 @@ public:
 	TextInput(string prompt, int x = 0, int y = 0, int max_len = -1);
 	~TextInput();
 
-	void actualizar();
+	void renderizar();
 	void manejarEvento(SDL_Event &evento);
 	
 	string obtenerTexto();

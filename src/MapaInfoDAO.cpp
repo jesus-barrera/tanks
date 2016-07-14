@@ -100,7 +100,7 @@ bool MapaInfoDAO::eliminar(Uint32 id) {
     if ((pos = buscarRegistro(id)) >= 0) {
         MapaInfo registro;
         Uint32 num_registros;
-         unsigned int i;
+        unsigned int i;
 
         num_registros = obtenerTotalRegistros() - 1;
         i = pos;
@@ -110,7 +110,7 @@ bool MapaInfoDAO::eliminar(Uint32 id) {
             SDL_RWread(archivo, &registro, sizeof(MapaInfo), 1);
             moverPuntero(i);
             SDL_RWwrite(archivo, &registro, sizeof(MapaInfo), 1);
-            i--;
+            i++;
         }
 
         SDL_RWseek(archivo, sizeof(Uint32), RW_SEEK_SET);

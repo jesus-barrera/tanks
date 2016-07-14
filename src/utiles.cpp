@@ -30,7 +30,7 @@ SDL_Texture *cargarTextura(string nombre_archivo, Uint8 r, Uint8 g, Uint8 b) {
 
     if (surface != NULL) {
         SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, r, g, b));
-        
+
         textura = SDL_CreateTextureFromSurface(renderer_principal, surface);
 
         SDL_FreeSurface(surface);
@@ -40,7 +40,7 @@ SDL_Texture *cargarTextura(string nombre_archivo, Uint8 r, Uint8 g, Uint8 b) {
 }
 
 void renderizarCapaGris() {
-    SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0x88);
+    SDL_SetRenderDrawColor(renderer_principal, 0x00, 0x00, 0x00, 0x99);
     SDL_RenderFillRect(renderer_principal, &vista_juego);
 }
 
@@ -52,7 +52,7 @@ SDL_Texture *renderizarTexto(string texto, SDL_Color color, int tam_fuente) {
     if (fuentes.count(tam_fuente)) {
         font = fuentes[tam_fuente];
     } else {
-        font = TTF_OpenFont("media/fonts/Roboto-Regular.ttf", tam_fuente);
+        font = TTF_OpenFont("media/fonts/Orbitron/orbitron-medium.otf", tam_fuente);
 
         if (font == NULL) {
             return NULL;
@@ -60,7 +60,7 @@ SDL_Texture *renderizarTexto(string texto, SDL_Color color, int tam_fuente) {
             fuentes[tam_fuente] = font;
         }
     }
-    
+
     surface = TTF_RenderText_Blended(font, texto.c_str(), color);
 
     if (surface != NULL) {

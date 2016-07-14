@@ -12,7 +12,7 @@ TextInput::~TextInput() {
 	delete(input);
 }
 
-void TextInput::actualizar() {
+void TextInput::renderizar() {
 	etiqueta->renderizar();
 	input->renderizar();
 }
