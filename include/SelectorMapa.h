@@ -16,9 +16,12 @@ private:
 	Etiqueta *et_mapas_juego;
 	Etiqueta *et_mapas_usr;
 
-	int btn_seleccionado;
+	int indice_seleccionado;
 	int pos_x;
 	int pos_y;
+
+	void abrirArchivoPara(MapaInfo *mapa);
+	int buscarPorId(Uint32 id);
 
 public:
 	static const Uint8 MAPAS_JUEGO     = 0x01;
@@ -31,11 +34,11 @@ public:
 	void renderizar();
 	MapaInfo *obtenerMapaSelecInfo();
 	void borrarBotones();
-
 	void fijarPosicion(int x, int y);
-
 	void cargarMapasInfo();
 	MapaInfo *agregar(string nombre, string ruta, SDL_bool en_juego = SDL_FALSE);
+	bool actualizarNombreMapa(string nombre);
+	bool eliminarMapa();
 };
 
 #endif

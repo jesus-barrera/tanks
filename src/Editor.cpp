@@ -48,8 +48,9 @@ Editor::Editor() {
     cancelar_btn = new Boton("Cancelar", btn_x, btn_y +  btn_sep, EDITOR_TAM_BTN);
     cancelar_btn->setViewport(&vista_estatus);
 
-    // Crear otros objetos
-    nombre_mapa   = new Etiqueta("", 15);
+    // Otros objetos
+    nombre_mapa = new Boton("", 15, 15, 15);
+    nombre_mapa->setViewport(&vista_estatus);
 
     #ifdef PUBLICAR_MAPA
     selector_mapa = new SelectorMapa();
@@ -141,7 +142,7 @@ void Editor::renderizar() {
 
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         cancelar_btn->renderizar();
-    } else if (estado == ESTADO_LEER) {
+    } else if (estado == ESTADO_INGRESAR_NOMBRE || estado == ESTADO_CAMBIAR_NOMBRE) {
         renderizarCapaGris();
         input_nombre->renderizar();
 
@@ -170,7 +171,6 @@ void Editor::renderizar() {
 
         SDL_RenderCopy(renderer_principal, bloque, NULL, &bloque_rect);
     }
-
 }
 
 /*
@@ -181,7 +181,7 @@ void Editor::manejarEvento(SDL_Event &evento) {
         editarManejarEvento(evento);
     } else if (estado == ESTADO_SELEC_MAPA) {
         selecMapaManejarEvento(evento);
-    } else if (estado == ESTADO_LEER) {
+    } else if (estado == ESTADO_INGRESAR_NOMBRE || estado == ESTADO_CAMBIAR_NOMBRE) {
         leerTextoManejarEvento(evento);
     }
 }
@@ -268,13 +268,15 @@ void Editor::editarManejarEvento(SDL_Event &evento) {
 }
 
 void Editor::manejarEventoBotones(SDL_Event &evento) {
-    for (int i = 0, estado_btn = BotonIcono::MOUSE_FUERA; i < NUM_BTN && estado_btn != BotonIcono::PRESIONADO; i++) {
+    int i, estado_btn;
+
+    for (i = 0, estado_btn = BotonIcono::MOUSE_FUERA; i < NUM_BTN && estado_btn != BotonIcono::PRESIONADO; i++) {
         estado_btn = botones[i]->manejarEvento(evento);
 
         if (estado_btn == BotonIcono::PRESIONADO) {
             switch (i) {
                 case BTN_NUEVO:
-                    Editor::entrar();
+                    entrar();
                     break;
                 case BTN_CARGAR:
                     estado = ESTADO_SELEC_MAPA;
@@ -282,11 +284,24 @@ void Editor::manejarEventoBotones(SDL_Event &evento) {
                 case BTN_GUARDAR:
                     botonGuardarPresionado();
                     break;
+                case BTN_BORRAR:
+                    eliminarMapa();
+                    break;
                 case BTN_ATRAS:
                     irAEscena("menu");
                     break;
             }
         }
+    }
+
+    if (mapa_info &&
+        evento.type == SDL_MOUSEBUTTONDOWN &&
+        evento.button.button == SDL_BUTTON_LEFT &&
+        nombre_mapa->isMouseOver()) {
+
+        input_nombre->fijarTexto(nombre_mapa->obtenerTexto());
+        SDL_StartTextInput();
+        estado = ESTADO_CAMBIAR_NOMBRE;
     }
 }
 
@@ -294,10 +309,14 @@ void Editor::manejarEventoBotones(SDL_Event &evento) {
  * Manejar evento mientras se selecciona un mapa
  */
 void Editor::selecMapaManejarEvento(SDL_Event &evento) {
-    if (evento.type == SDL_MOUSEBUTTONDOWN && evento.button.button == SDL_BUTTON_LEFT) {
-        mapa_info = selector_mapa->obtenerMapaSelecInfo();
+    MapaInfo *mapa;
 
-        if (mapa_info) {
+    if (evento.type == SDL_MOUSEBUTTONDOWN && evento.button.button == SDL_BUTTON_LEFT) {
+        mapa = selector_mapa->obtenerMapaSelecInfo();
+
+        if (mapa) {
+            mapa_info = mapa;
+
             Editor::cargarMapa(mapa_info->ruta, jugador_1, base_1, jugador_2, base_2);
             nombre_mapa->fijarTexto((string)(mapa_info->nombre));
 
@@ -314,17 +333,41 @@ void Editor::selecMapaManejarEvento(SDL_Event &evento) {
 void Editor::leerTextoManejarEvento(SDL_Event &evento) {
     if (evento.type == SDL_MOUSEBUTTONDOWN && evento.button.button == SDL_BUTTON_LEFT) {
         if (aceptar_btn->isMouseOver() && !input_nombre->vacio()) {
-            crearMapa(input_nombre->obtenerTexto());
+            if (estado == ESTADO_INGRESAR_NOMBRE) {
+                crearMapa(input_nombre->obtenerTexto());
+
+            } else if (estado == ESTADO_CAMBIAR_NOMBRE) {
+                actualizarNombreMapa(input_nombre->obtenerTexto());
+            }
 
             // ir a editar
             estado = ESTADO_EDITAR;
             SDL_StopTextInput();
+
         } else if (cancelar_btn->isMouseOver()) {
             estado = ESTADO_EDITAR;
             SDL_StopTextInput();
         }
     } else {
         input_nombre->manejarEvento(evento);
+    }
+}
+
+/**
+ * Actualiza el nombre del mapa actualmente cargado.
+ */
+void Editor::actualizarNombreMapa(string nombre) {
+    if (mapa_info && selector_mapa->actualizarNombreMapa(nombre)) {
+        nombre_mapa->fijarTexto((string)mapa_info->nombre);
+    }
+}
+
+/**
+ * Elimina el mapa actualmente cargado.
+ */
+void Editor::eliminarMapa() {
+    if (mapa_info && selector_mapa->eliminarMapa()) {
+        entrar();
     }
 }
 
@@ -401,7 +444,7 @@ void Editor::botonGuardarPresionado() {
     } else {
         // Nuevo mapa, solicitar nombre del mapa
         SDL_StartTextInput();
-        estado = ESTADO_LEER;
+        estado = ESTADO_INGRESAR_NOMBRE;
     }
 }
 

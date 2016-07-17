@@ -7,21 +7,22 @@
 
 class TextInput {
 private:
-	Etiqueta *etiqueta;
-	Etiqueta *input;
-	string texto;
-	int max_len;
+    Etiqueta *etiqueta;
+    Etiqueta *input;
+    string texto;
+    int max_len;
 
 public:
-	TextInput(string prompt, int x = 0, int y = 0, int max_len = -1);
-	~TextInput();
+    TextInput(string prompt, int x = 0, int y = 0, int max_len = -1);
+    ~TextInput();
 
-	void renderizar();
-	void manejarEvento(SDL_Event &evento);
-	
-	string obtenerTexto();
-	void limpiarTexto();
-	bool vacio();
+    void renderizar();
+    void manejarEvento(SDL_Event &evento);
+
+    string obtenerTexto();
+    void fijarTexto(string texto);
+    void limpiarTexto();
+    bool vacio();
 };
 
 #endif
