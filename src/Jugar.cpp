@@ -124,6 +124,8 @@ void Jugar::actualizar() {
                 mensaje->fijarTexto("Jugador \"" + nombre_oponente->obtenerTexto() + "\" abandono la partida");
                 estado = ST_ERROR;
 
+                cout << "[Protocolo] Abandonar: " << paquete.mensaje << endl;
+
             } else if (paquete.tipo == PQT_EVENTO) {
                 oponente->tanque->fijarPosicion(paquete.pos_x, paquete.pos_y);
 
@@ -135,10 +137,19 @@ void Jugar::actualizar() {
 
                 oponente->tanque->fijarVelocidad(paquete.velocidad);
 
+                cout << "[Protocolo] Evento: ";
+                cout << "pos_x=" << paquete.pos_x << ", ";
+                cout << "pos_y=" << paquete.pos_y << ", ";
+                cout << "evento=" << (int)paquete.evento << ", ";
+                cout << "velocidad=" << paquete.velocidad << endl;
+
             } else if (paquete.tipo == PQT_MANTENER_CONEXION) {
                 /**
                  * El otro jugador sigue conectado
                  */
+
+                cout << "[Protocolo] Mantener conexion: " << paquete.mensaje << endl;
+
             } else {
                 if (modo_net == MODO_CLIENTE) {
                     if (paquete.tipo == PQT_TERMINAR_PARTIDA) {
@@ -149,6 +160,8 @@ void Jugar::actualizar() {
                         }
 
                         estado = ST_FIN_PARTIDA;
+
+                        cout << "[Protocolo] Fin de la partida: ganador=" << paquete.ganador << endl;
 
                     } else  if (paquete.tipo == PQT_DESTRUIR_BLOQUE) {
                         SDL_Point bloque;
@@ -164,6 +177,13 @@ void Jugar::actualizar() {
                         }
 
                         destruirBala(paquete.id_bala);
+
+                        cout << "[Protocolo] Destruir bloque: ";
+                        cout << "pos_x=" << paquete.pos_x << ", ";
+                        cout << "pos_y=" << paquete.pos_y << ", ";
+                        cout << "pos_x2=" << paquete.pos_x2 << ", ";
+                        cout << "pos_y2=" << paquete.pos_y2 << ", ";
+                        cout << "id_bala=" << (int)paquete.id_bala << endl;
 
                     } else if (paquete.tipo == PQT_DESTRUIR_OBJETO) {
                         if (paquete.tipo_objeto == TIPO_OBJ_TANQUE) {
@@ -181,6 +201,11 @@ void Jugar::actualizar() {
                         }
 
                         destruirBala(paquete.id_bala);
+
+                        cout << "[Protocolo] Destruir objeto: ";
+                        cout << "tipo_objeto=" << paquete.tipo_objeto << ", ";
+                        cout << "num_jugador=" << paquete.num_jugador << ", ";
+                        cout << "id_bala=" << (int)paquete.id_bala << endl;
                     }
                 }
             }

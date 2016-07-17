@@ -7,7 +7,7 @@
 #include "Tanque.h"
 #include "Base.h"
 #include "Boton.h"
-#include "Etiqueta.h"
+#include "BotonIcono.h"
 #include "SelectorMapa.h"
 #include "TextInput.h"
 
@@ -18,7 +18,7 @@
 #define MAXLEN_NOMBRE_MAPA 20
 #define EDITOR_TAM_BTN 20
 
-/** 
+/**
  * Cuando PUBLICAR_MAPA está definido los mapas creados con el editor serán incluidos
  * en el juego.
  */
@@ -26,72 +26,82 @@
 
 // Rango de tamaños de pincel
 #define PINCEL_MAX 2
-#define PINCEL_MIN 1	
-
-// Botones disponibles
-enum {
-	EDITOR_BTN_LIMPIAR,
-	EDITOR_BTN_CARGAR,
-	EDITOR_BTN_GUARDAR,
-	EDITOR_BTN_SALIR,
-	EDITOR_NUM_BTN
-};
-
-// Estados
-enum {
-	EDITOR_ST_SELEC_MAPA,
-	EDITOR_ST_EDITAR,
-	EDITOR_ST_LEER
-};
+#define PINCEL_MIN 1
 
 using namespace std;
 
 class Editor: public Escena {
 private:
-	static SelectorMapa *selector_mapa;
-	static MapaInfo *mapa_info;
-	static int estado;
 
-	static int bloque_seleccionado;
-	static int tamano_pincel;
-	static Objeto *objeto_seleccionado;
-	
-	static Tanque *jugador_1;
-	static Tanque *jugador_2;
-	static Base *base_1;
-	static Base *base_2;
+    // Botones disponibles
+    enum {
+        BTN_NUEVO,
+        BTN_CARGAR,
+        BTN_GUARDAR,
+        BTN_BORRAR,
+        BTN_ATRAS,
+        NUM_BTN
+    };
 
-	static TextInput *input_nombre;
-	static Boton *botones[EDITOR_NUM_BTN];
-	static Boton *cancelar_btn;
-	static Boton *aceptar_btn;
-	static Etiqueta *nombre_mapa;
+    // Estados
+    enum {
+        ESTADO_SELEC_MAPA,
+        ESTADO_EDITAR,
+        ESTADO_INGRESAR_NOMBRE,
+        ESTADO_CAMBIAR_NOMBRE
+    };
 
-	void editarManejarEvento(SDL_Event &evento);
-	void selecMapaManejarEvento(SDL_Event &evento);
-	void inputManejarEvento(SDL_Event &evento);
+    static string iconos[NUM_BTN];
+
+    SelectorMapa *selector_mapa;
+    MapaInfo *mapa_info;
+    int estado;
+
+    int bloque_seleccionado;
+    int tamano_pincel;
+    Objeto *objeto_seleccionado;
+
+    Tanque *jugador_1;
+    Tanque *jugador_2;
+    Base *base_1;
+    Base *base_2;
+
+    TextInput *input_nombre;
+    BotonIcono *botones[NUM_BTN];
+    Boton *cancelar_btn;
+    Boton *aceptar_btn;
+    Boton *nombre_mapa;
+
+    void manejarEventoBotones(SDL_Event &evento);
+
+    void editarManejarEvento(SDL_Event &evento);
+    void selecMapaManejarEvento(SDL_Event &evento);
+    void leerTextoManejarEvento(SDL_Event &evento);
+
+    void actualizarNombreMapa(string nombre);
+    void eliminarMapa();
+
 public:
-	static bool inicializar();
-	static void liberarMemoria();
-	
-	// Métodos de Escena
-	void entrar();
-	void actualizar();
-	void renderizar();
-	void manejarEvento(SDL_Event &evento);
+    Editor();
+    ~Editor();
 
-	void dibujar(int bloque);
-	void insertarObjeto();
+    // Métodos de Escena
+    void entrar();
+    void actualizar();
+    void renderizar();
+    void manejarEvento(SDL_Event &evento);
 
-	// Servicio para cargar mapa
-	static void cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque *t2, Base *b2);
-	static void cargarObjetoInfo(SDL_RWops *archivo, Objeto *objeto);
-	
-	void cargarMapa();
-	void botonGuardarPresionado();
-	void crearMapa(string nombre);
-	void guardarMapa(const char *nombre_archivo);
-	void guardarObjetoInfo(SDL_RWops *archivo, Objeto *objeto);
+    void dibujar(int bloque);
+    void insertarObjeto();
+
+    // Servicio para cargar mapa
+    static void cargarMapa(const char *nombre_archivo, Tanque *t1 = NULL, Base *b1 = NULL, Tanque *t2 = NULL, Base *b2 = NULL);
+    static void cargarObjetoInfo(SDL_RWops *archivo, Objeto *objeto);
+
+    void botonGuardarPresionado();
+    void crearMapa(string nombre);
+    void guardarMapa(const char *nombre_archivo);
+    void guardarObjetoInfo(SDL_RWops *archivo, Objeto *objeto);
 };
 
 #endif // EDITOR_H

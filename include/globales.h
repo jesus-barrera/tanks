@@ -3,7 +3,7 @@
 
 /*
  * Aqui se definen las constantes y variables globales del juego.
- */ 
+ */
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -23,7 +23,7 @@
 #define PANEL_ANCHO 200
 #define VENTANA_ANCHO (MAPA_ANCHO + PANEL_ANCHO)
 #define VENTANA_ALTO  MAPA_ALTO
-#define VENTANA_PADDING 15
+#define VENTANA_PADDING 20
 
 #define USER_MAPS_INFO "mapas/user/maps_user.dat"
 #define GAME_MAPS_INFO "mapas/maps.dat"

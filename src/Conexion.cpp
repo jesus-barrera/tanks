@@ -96,7 +96,7 @@ void Conexion::renderizar() {
     Escenario::renderizar();
 	renderizarCapaGris();
 
-    input_IP->actualizar();
+    input_IP->renderizar();
     input_NombreJugador->renderizar();
     ejemplo->renderizar();
 

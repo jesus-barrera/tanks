@@ -7,36 +7,15 @@
 #include "../include/Musica.h"
 #include "../include/Editor.h"
 
-// Inicializar atributos estáticos
-TextInput *Editor::input_nombre;
-SelectorMapa *Editor::selector_mapa;
-MapaInfo *Editor::mapa_info;
-
-int Editor::estado;
-
-int Editor::bloque_seleccionado = BLOQUE_BRICK;
-int Editor::tamano_pincel = PINCEL_MIN;
-
-Tanque *Editor::jugador_1;
-Tanque *Editor::jugador_2;
-Base *Editor::base_1;
-Base *Editor::base_2;
-
-Objeto *Editor::objeto_seleccionado;
-Etiqueta *Editor::nombre_mapa;
-
-Boton *Editor::botones[EDITOR_NUM_BTN];
-Boton *Editor::cancelar_btn;
-Boton *Editor::aceptar_btn;
-
-string btn_etiquetas[EDITOR_NUM_BTN] = {
-    "Nuevo",
-    "Cargar",
-    "Guardar",
-    "Volver",
+string Editor::iconos[NUM_BTN] = {
+    "media/icons/sheet.png",
+    "media/icons/folder.png",
+    "media/icons/floppy.png",
+    "media/icons/trash.png",
+    "media/icons/back.png",
 };
 
-bool Editor::inicializar() {
+Editor::Editor() {
     int btn_y;
     int btn_x;
     int btn_sep;
@@ -49,48 +28,48 @@ bool Editor::inicializar() {
     base_2 = new Base(JUGADOR_2);
 
     // Crear botones
-    btn_sep = EDITOR_TAM_BTN + 10;
-    btn_y = VENTANA_ALTO - (btn_sep * EDITOR_NUM_BTN + 10);
-    btn_x = 15;
+    botones[BTN_NUEVO] = new BotonIcono(iconos[BTN_NUEVO], 10, 50, 0.75);
+    botones[BTN_CARGAR] = new BotonIcono(iconos[BTN_CARGAR], 55, 50, 0.75);
+    botones[BTN_GUARDAR] = new BotonIcono(iconos[BTN_GUARDAR], 100, 50, 0.75);
+    botones[BTN_BORRAR] = new BotonIcono(iconos[BTN_BORRAR], 145, 50, 0.75);
+    botones[BTN_ATRAS] = new BotonIcono(iconos[BTN_ATRAS], 15, VENTANA_ALTO - 60);
 
-    for (int i = 0; i < EDITOR_NUM_BTN; i++) {
-        Editor::botones[i] = new Boton(btn_etiquetas[i], btn_x, btn_y, EDITOR_TAM_BTN);
-        Editor::botones[i]->setViewport(&vista_estatus);
-
-        btn_y += btn_sep;
+    for (int i = 0; i < NUM_BTN; i++) {
+        botones[i]->setViewport(&vista_estatus);
     }
 
+    btn_sep = EDITOR_TAM_BTN + 10;
     btn_y = VENTANA_ALTO - (btn_sep * 2 + 10);
-    
+    btn_x = 15;
+
     aceptar_btn = new Boton("Aceptar", btn_x,  btn_y, EDITOR_TAM_BTN);
     aceptar_btn->setViewport(&vista_estatus);
 
     cancelar_btn = new Boton("Cancelar", btn_x, btn_y +  btn_sep, EDITOR_TAM_BTN);
     cancelar_btn->setViewport(&vista_estatus);
 
-    // Crear otros
-    Editor::nombre_mapa   = new Etiqueta("", 15);
+    // Otros objetos
+    nombre_mapa = new Boton("", 15, 15, 15);
+    nombre_mapa->setViewport(&vista_estatus);
 
     #ifdef PUBLICAR_MAPA
-    Editor::selector_mapa = new SelectorMapa();
+    selector_mapa = new SelectorMapa();
     #else
-    Editor::selector_mapa = new SelectorMapa(SelectorMapa::MAPAS_USUARIO);
+    selector_mapa = new SelectorMapa(SelectorMapa::MAPAS_USUARIO);
     #endif
 
-    Editor::selector_mapa->fijarPosicion(VENTANA_PADDING, VENTANA_PADDING);
+    selector_mapa->fijarPosicion(VENTANA_PADDING, VENTANA_PADDING);
 
-    Editor::input_nombre  = new TextInput("Nombre del mapa: ", 15, VENTANA_ALTO - 35, MAXLEN_NOMBRE_MAPA);
-
-    return true;
+    input_nombre  = new TextInput("Nombre del mapa: ", 15, VENTANA_ALTO - 35, MAXLEN_NOMBRE_MAPA);
 }
 
-void Editor::liberarMemoria() {
+Editor::~Editor() {
     delete(jugador_1);
     delete(jugador_2);
     delete(base_1);
     delete(base_2);
 
-    for (int i = 0; i < EDITOR_NUM_BTN; i++) {
+    for (int i = 0; i < NUM_BTN; i++) {
         delete(botones[i]);
     }
 
@@ -107,14 +86,19 @@ void Editor::liberarMemoria() {
  * Limpia el mapa y reposiciona los objetos.
  */
 void Editor::entrar() {
-//    cambiarMusicaFondo(MusicaFondoCrearMapa);
-//    ReproducirMusicaFondo();
+    // cambiarMusicaFondo(MusicaFondoCrearMapa);
+    // ReproducirMusicaFondo();
+
     Escenario::limpiarMapa();
     nombre_mapa->fijarTexto("");
     mapa_info = NULL;
+
+    // Inicializar herramienta
+    bloque_seleccionado = BLOQUE_BRICK;
+    tamano_pincel = PINCEL_MIN;
     objeto_seleccionado = NULL;
 
-    estado = EDITOR_ST_EDITAR;
+    estado = ESTADO_EDITAR;
 
     selector_mapa->cargarMapasInfo();
 
@@ -152,27 +136,27 @@ void Editor::renderizar() {
     jugador_1->renderizar();
     jugador_2->renderizar();
 
-    if (estado == EDITOR_ST_SELEC_MAPA) {
+    if (estado == ESTADO_SELEC_MAPA) {
         renderizarCapaGris();
         selector_mapa->renderizar();
 
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         cancelar_btn->renderizar();
-    } else if (estado == EDITOR_ST_LEER) {
+    } else if (estado == ESTADO_INGRESAR_NOMBRE || estado == ESTADO_CAMBIAR_NOMBRE) {
         renderizarCapaGris();
-        input_nombre->actualizar();
+        input_nombre->renderizar();
 
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
         cancelar_btn->renderizar();
         aceptar_btn->renderizar();
-    } else {
+    } else if (estado == ESTADO_EDITAR) {
         SDL_RenderSetViewport(renderer_principal, &vista_estatus);
 
         // Renderizar nombre del mapa
         nombre_mapa->renderizar();
 
         // Renderizar botones
-        for (int i = 0; i < EDITOR_NUM_BTN; i++) {
+        for (int i = 0; i < NUM_BTN; i++) {
             Editor::botones[i]->renderizar();
         }
 
@@ -184,21 +168,21 @@ void Editor::renderizar() {
 
         bloque_rect.x = vista_estatus.w / 2 - bloque_rect.w / 2;
         bloque_rect.y = vista_estatus.h / 2 - bloque_rect.h / 2;
-    }
 
-    SDL_RenderCopy(renderer_principal, bloque, NULL, &bloque_rect);
+        SDL_RenderCopy(renderer_principal, bloque, NULL, &bloque_rect);
+    }
 }
 
 /*
  * Se encarga de manejar los eventos del mouse y teclado
  */
 void Editor::manejarEvento(SDL_Event &evento) {
-    if (estado == EDITOR_ST_EDITAR) {
+    if (estado == ESTADO_EDITAR) {
         editarManejarEvento(evento);
-    } else if (estado == EDITOR_ST_SELEC_MAPA) {
+    } else if (estado == ESTADO_SELEC_MAPA) {
         selecMapaManejarEvento(evento);
-    } else if (estado == EDITOR_ST_LEER) {
-        inputManejarEvento(evento);
+    } else if (estado == ESTADO_INGRESAR_NOMBRE || estado == ESTADO_CAMBIAR_NOMBRE) {
+        leerTextoManejarEvento(evento);
     }
 }
 
@@ -206,6 +190,9 @@ void Editor::manejarEvento(SDL_Event &evento) {
  * Manejar evento mientras se edita
  */
 void Editor::editarManejarEvento(SDL_Event &evento) {
+
+    manejarEventoBotones(evento);
+
     if (evento.type == SDL_MOUSEBUTTONDOWN) {
         int boton = evento.button.button;
 
@@ -224,26 +211,6 @@ void Editor::editarManejarEvento(SDL_Event &evento) {
             }
         }
 
-        // Revisar si se presionó algun botón
-        switch (Boton::obtenerBotonSeleccionado(Editor::botones, EDITOR_NUM_BTN)) {
-            case EDITOR_BTN_LIMPIAR:
-                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
-                Editor::entrar();
-                break;
-            case EDITOR_BTN_CARGAR:
-                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
-                cargarMapa();
-                break;
-            case EDITOR_BTN_GUARDAR:
-                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
-                botonGuardarPresionado();
-                break;
-            case EDITOR_BTN_SALIR:
-                ReproducirSonido(Snd_Click_boton, 100, 0, 0);
-                irAEscena("menu");
-                ;
-                break;
-        }
     } else if (evento.type == SDL_MOUSEMOTION) {
         if (objeto_seleccionado != NULL) {
             insertarObjeto();
@@ -300,20 +267,62 @@ void Editor::editarManejarEvento(SDL_Event &evento) {
     }
 }
 
+void Editor::manejarEventoBotones(SDL_Event &evento) {
+    int i, estado_btn;
+
+    for (i = 0, estado_btn = BotonIcono::MOUSE_FUERA; i < NUM_BTN && estado_btn != BotonIcono::PRESIONADO; i++) {
+        estado_btn = botones[i]->manejarEvento(evento);
+
+        if (estado_btn == BotonIcono::PRESIONADO) {
+            switch (i) {
+                case BTN_NUEVO:
+                    entrar();
+                    break;
+                case BTN_CARGAR:
+                    estado = ESTADO_SELEC_MAPA;
+                    break;
+                case BTN_GUARDAR:
+                    botonGuardarPresionado();
+                    break;
+                case BTN_BORRAR:
+                    eliminarMapa();
+                    break;
+                case BTN_ATRAS:
+                    irAEscena("menu");
+                    break;
+            }
+        }
+    }
+
+    if (mapa_info &&
+        evento.type == SDL_MOUSEBUTTONDOWN &&
+        evento.button.button == SDL_BUTTON_LEFT &&
+        nombre_mapa->isMouseOver()) {
+
+        input_nombre->fijarTexto(nombre_mapa->obtenerTexto());
+        SDL_StartTextInput();
+        estado = ESTADO_CAMBIAR_NOMBRE;
+    }
+}
+
 /**
  * Manejar evento mientras se selecciona un mapa
  */
 void Editor::selecMapaManejarEvento(SDL_Event &evento) {
-    if (evento.type == SDL_MOUSEBUTTONDOWN && evento.button.button == SDL_BUTTON_LEFT) {
-        mapa_info = selector_mapa->obtenerMapaSelecInfo();
+    MapaInfo *mapa;
 
-        if (mapa_info) {
+    if (evento.type == SDL_MOUSEBUTTONDOWN && evento.button.button == SDL_BUTTON_LEFT) {
+        mapa = selector_mapa->obtenerMapaSelecInfo();
+
+        if (mapa) {
+            mapa_info = mapa;
+
             Editor::cargarMapa(mapa_info->ruta, jugador_1, base_1, jugador_2, base_2);
             nombre_mapa->fijarTexto((string)(mapa_info->nombre));
 
-            estado = EDITOR_ST_EDITAR; // ir a editar
+            estado = ESTADO_EDITAR; // ir a editar
         } else if (cancelar_btn->isMouseOver()) {
-            estado = EDITOR_ST_EDITAR;
+            estado = ESTADO_EDITAR;
         }
     }
 }
@@ -321,20 +330,44 @@ void Editor::selecMapaManejarEvento(SDL_Event &evento) {
 /**
  * Manejar evento mientras se escribe
  */
-void Editor::inputManejarEvento(SDL_Event &evento) {
+void Editor::leerTextoManejarEvento(SDL_Event &evento) {
     if (evento.type == SDL_MOUSEBUTTONDOWN && evento.button.button == SDL_BUTTON_LEFT) {
         if (aceptar_btn->isMouseOver() && !input_nombre->vacio()) {
-            crearMapa(input_nombre->obtenerTexto());
+            if (estado == ESTADO_INGRESAR_NOMBRE) {
+                crearMapa(input_nombre->obtenerTexto());
+
+            } else if (estado == ESTADO_CAMBIAR_NOMBRE) {
+                actualizarNombreMapa(input_nombre->obtenerTexto());
+            }
 
             // ir a editar
-            estado = EDITOR_ST_EDITAR;
+            estado = ESTADO_EDITAR;
             SDL_StopTextInput();
+
         } else if (cancelar_btn->isMouseOver()) {
-            estado = EDITOR_ST_EDITAR;
+            estado = ESTADO_EDITAR;
             SDL_StopTextInput();
         }
     } else {
         input_nombre->manejarEvento(evento);
+    }
+}
+
+/**
+ * Actualiza el nombre del mapa actualmente cargado.
+ */
+void Editor::actualizarNombreMapa(string nombre) {
+    if (mapa_info && selector_mapa->actualizarNombreMapa(nombre)) {
+        nombre_mapa->fijarTexto((string)mapa_info->nombre);
+    }
+}
+
+/**
+ * Elimina el mapa actualmente cargado.
+ */
+void Editor::eliminarMapa() {
+    if (mapa_info && selector_mapa->eliminarMapa()) {
+        entrar();
     }
 }
 
@@ -350,16 +383,19 @@ void Editor::insertarObjeto() {
                                        mouse_pos.y - (mouse_pos.y % TAMANO_BLOQUE));
 }
 
+/**
+ * Inserta un bloque en el escenario
+ */
 void Editor::dibujar(int bloque) {
     int i, j;
     SDL_Point mouse_pos, bloque_pos, dibujar_pos;
 
     SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
 
-    // Bloque sobre el que se encuentra el puntero
+    // obtener bloque sobre el que se encuentra el puntero
     bloque_pos = Escenario::obtenerBloqueEnPunto(mouse_pos.x, mouse_pos.y);
 
-    // Alinear bloque a cuadrícula virtual
+    // Alinear bloque a cuadrícula
     bloque_pos.x -= (bloque_pos.x % tamano_pincel);
     bloque_pos.y -= (bloque_pos.y % tamano_pincel);
 
@@ -373,30 +409,30 @@ void Editor::dibujar(int bloque) {
     }
 }
 
-void Editor::cargarMapa() {
-    estado = EDITOR_ST_SELEC_MAPA;
-}
-
 void Editor::cargarMapa(const char *nombre_archivo, Tanque *t1, Base *b1, Tanque *t2, Base *b2) {
-    int i, j;
+    int fila, columna;
     Uint8 bloque;
     SDL_RWops *archivo;
+    Objeto *aux_obj;
 
     archivo = SDL_RWFromFile(nombre_archivo, "rb");
 
     if (archivo) {
-        cargarObjetoInfo(archivo, (t1) ? t1 : jugador_1);
-        cargarObjetoInfo(archivo, (b1) ? b1 : base_1);
-        cargarObjetoInfo(archivo, (t2) ? t2 : jugador_2);
-        cargarObjetoInfo(archivo, (b2) ? b2 : base_2);
+        aux_obj = new Objeto();
 
-        for (i = 0; i < MAPA_FILAS; i++) {
-            for (j = 0; j < MAPA_COLUMNAS; j++) {
+        cargarObjetoInfo(archivo, (t1) ? t1 : aux_obj);
+        cargarObjetoInfo(archivo, (b1) ? b1 : aux_obj);
+        cargarObjetoInfo(archivo, (t2) ? t2 : aux_obj);
+        cargarObjetoInfo(archivo, (b2) ? b2 : aux_obj);
+
+        for (fila = 0; fila < MAPA_FILAS; fila++) {
+            for (columna = 0; columna < MAPA_COLUMNAS; columna++) {
                 SDL_RWread(archivo, &bloque, sizeof(bloque), 1);
-                Escenario::insertarBloque({j, i}, bloque);
+                Escenario::insertarBloque({columna, fila}, bloque);
             }
         }
 
+        delete(aux_obj);
         SDL_RWclose(archivo);
     }
 }
@@ -408,7 +444,7 @@ void Editor::botonGuardarPresionado() {
     } else {
         // Nuevo mapa, solicitar nombre del mapa
         SDL_StartTextInput();
-        estado = EDITOR_ST_LEER;
+        estado = ESTADO_INGRESAR_NOMBRE;
     }
 }
 
@@ -478,4 +514,3 @@ void Editor::cargarObjetoInfo(SDL_RWops *archivo, Objeto *objeto) {
     objeto->fijarPosicion(posicion.x, posicion.y);
     objeto->fijarDireccion((direccion_t) direccion);
 }
-
